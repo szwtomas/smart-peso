@@ -1,10 +1,13 @@
 import { Providers } from "./Providers";
+import { Layout } from "./components/Layout";
 
 const App = () => {
   return (
     <>
       <Providers>
-        <h1>Hello Smart Peso!</h1>
+        <Layout>
+          <h1>Holis</h1>
+        </Layout>
       </Providers>
     </>
   );
