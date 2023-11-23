@@ -1,5 +1,13 @@
-import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Link as NextUILink,
+} from "@nextui-org/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 async function handleLogIn(email: string, password: string) {
   console.log(`Logging in email ${email} with password ${password}`);
@@ -8,6 +16,7 @@ async function handleLogIn(email: string, password: string) {
 export function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const navigate = useNavigate();
 
   return (
     <div className="w-full flex justify-center">
@@ -34,6 +43,15 @@ export function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <NextUILink
+            underline="always"
+            className="text-primary mx-2 my-1"
+            onClick={() => {
+              navigate("/forgot-password");
+            }}
+          >
+            Forgot Password?
+          </NextUILink>
           <Button
             color="primary"
             radius="sm"

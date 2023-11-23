@@ -4,6 +4,7 @@ import { Layout } from "./components/Layout";
 import { Login } from "./components/auth/Login";
 import { SignUp } from "./components/auth/SignUp";
 import { Logout } from "./components/auth/LogOut";
+import { ForgotPassword } from "./components/auth/ForgotPassword";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/logout",
     element: <Logout />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
   {
     path: "/dashboard",
