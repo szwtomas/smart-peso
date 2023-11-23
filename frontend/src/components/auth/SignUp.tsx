@@ -1,22 +1,34 @@
 import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
-import { useState } from "react";
-
-async function handleSignUp(
-  firstName: string,
-  lastName: string,
-  email: string,
-  password: string
-) {
-  console.log(
-    `Signing up ${firstName} ${lastName} with email ${email} and password ${password}`
-  );
-}
+import { useContext, useState } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export function SignUp() {
+  const { signUp } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
+
+  async function handleSignUp(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) {
+    console.log(
+      `Signing up ${firstName} ${lastName} with email ${email} and password ${password}`
+    );
+
+    try {
+      await signUp(email, password, `${firstName}${lastName}`);
+      navigate("/dashboard");
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   return (
     <div className="w-full flex justify-center">
