@@ -2,10 +2,11 @@ import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export function SignUp() {
   const { signUp } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -24,9 +25,10 @@ export function SignUp() {
 
     try {
       await signUp(email, password, `${firstName}${lastName}`);
-      navigate("/dashboard");
+      toast.success("User created successfully");
     } catch (err) {
       console.log(err);
+      toast.error("Error creating user");
     }
   }
 
@@ -78,6 +80,13 @@ export function SignUp() {
             onClick={() => handleSignUp(firstName, lastName, email, password)}
           >
             <b>Sign Up</b>
+          </Button>
+          <Button
+            onClick={() => {
+              toast.info("Hola que tal!");
+            }}
+          >
+            Click me!
           </Button>
         </CardBody>
       </Card>
