@@ -65,7 +65,7 @@ export function SignUp() {
             className="mt-2"
             onClick={() => handleSignUp(firstName, lastName, email, password)}
           >
-            <b>Log In</b>
+            <b>Sign Up</b>
           </Button>
         </CardBody>
       </Card>
