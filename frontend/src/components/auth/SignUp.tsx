@@ -1,4 +1,11 @@
-import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Input,
+  Link,
+} from "@nextui-org/react";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -76,6 +83,19 @@ export function SignUp() {
           >
             <b>Sign Up</b>
           </Button>
+          <div>
+            <span className="text-center">Already an account?</span>
+            <Link
+              underline="none"
+              className="mx-2 mt-3"
+              color="primary"
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              <p>Log In here!</p>
+            </Link>
+          </div>
         </CardBody>
       </Card>
     </div>

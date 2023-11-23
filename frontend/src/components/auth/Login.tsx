@@ -50,7 +50,7 @@ export function Login() {
               navigate("/forgot-password");
             }}
           >
-            Forgot Password?
+            <p>Forgot Password?</p>
           </NextUILink>
           <Button
             color="primary"
@@ -60,6 +60,19 @@ export function Login() {
           >
             <b>Log In</b>
           </Button>
+          <div>
+            <span className="text-center">Don't have an account?</span>
+            <NextUILink
+              underline="none"
+              className="mx-2 mt-3"
+              color="primary"
+              onClick={() => {
+                navigate("/signup");
+              }}
+            >
+              <p>Sign up here! </p>
+            </NextUILink>
+          </div>
         </CardBody>
       </Card>
     </div>
