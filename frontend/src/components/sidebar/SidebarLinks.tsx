@@ -37,8 +37,19 @@ export function SidebarLinks() {
               }
             )}
           >
-            <LinkIcon className="w-6" />
-            <span className="hidden md:block">{link.name}</span>
+            <LinkIcon
+              className={
+                "w-6 " + (pathname === link.href ? "text-primary" : "")
+              }
+            />
+            <span
+              className={
+                "hidden md:block " +
+                (pathname === link.href ? "text-primary" : "")
+              }
+            >
+              {link.name}
+            </span>
           </a>
         );
       })}

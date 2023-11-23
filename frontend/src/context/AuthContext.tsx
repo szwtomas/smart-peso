@@ -1,20 +1,32 @@
 import React, { createContext, useEffect, useState } from "react";
 import {
-  User,
   getAuth,
+  User as FirebaseUser,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { app } from "../firebase/firebase";
+
+export interface User {
+  email: string;
+  uid: string;
+  name: string;
+}
 
 interface AuthContextProps {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoggedIn: () => boolean;
-  signUp: (email: string, password: string, username: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => Promise<void>;
 }
 
 const initialAuthContext: AuthContextProps = {
@@ -34,13 +46,24 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const [user, setUser] = useState<User | null>(null);
 
+  function userFromFirebaseUser(firebaseUser: FirebaseUser | null): User {
+    return {
+      email: firebaseUser?.email as string,
+      uid: firebaseUser?.uid as string,
+      name: firebaseUser?.displayName as string,
+    };
+  }
+
   useEffect(() => {
     const auth = getAuth(app);
-    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
-      console.log("Setting user: ");
-      console.log(user);
-      setUser(user);
-    });
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user: FirebaseUser | null) => {
+        console.log("Setting user: ");
+        console.log(user);
+        setUser(userFromFirebaseUser(user));
+      }
+    );
 
     return () => {
       unsubscribe();
@@ -49,8 +72,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 
   const login = async (email: string, password: string) => {
     const auth = getAuth(app);
-    await signInWithEmailAndPassword(auth, email, password);
-    setUser(auth.currentUser);
+    const userCredentials = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const loggedUser: User = userFromFirebaseUser(userCredentials.user);
+    setUser(loggedUser);
   };
 
   const logout = async () => {
@@ -70,17 +98,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const signUp = async (
     email: string,
     password: string,
-    username: string
+    firstName: string,
+    lastName: string
   ): Promise<void> => {
-    console.log("Signin up in user: " + username);
     const auth = getAuth(app);
-    const response = await createUserWithEmailAndPassword(
+    const userSignUpResponse = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    console.log(response);
-    // ... Calls backend to create user
+
+    await updateProfile(userSignUpResponse.user, {
+      displayName: `${firstName} ${lastName}`,
+    });
+
+    setUser(userFromFirebaseUser(userSignUpResponse.user));
   };
 
   return (

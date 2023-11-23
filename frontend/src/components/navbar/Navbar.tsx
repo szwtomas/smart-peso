@@ -3,16 +3,19 @@ import {
   NavbarContent,
   NavbarBrand,
 } from "@nextui-org/react";
-import { LoginNavbarButton } from "./LoginNavbarButton";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export function Navbar() {
+  const { user } = useContext(AuthContext);
+
   return (
     <NextUINavbar
       maxWidth="full"
       position="sticky"
       isBlurred={false}
       isBordered
-      className="bg-primary shadow-xl"
+      className="bg-primary shadow-xl p-2"
     >
       <NavbarContent className="basis-1/5 sm:basis-full justify-start">
         <NavbarBrand className="gap-3 max-w-fit">
@@ -24,7 +27,7 @@ export function Navbar() {
         </NavbarBrand>
       </NavbarContent>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
-        <LoginNavbarButton />
+        <p className="text-white text-lg">{user ? user.name : ""}</p>
       </NavbarContent>
     </NextUINavbar>
   );
