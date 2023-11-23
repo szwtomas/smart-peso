@@ -1,12 +1,10 @@
 import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export function SignUp() {
   const { signUp } = useContext(AuthContext);
-  // const navigate = useNavigate();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -80,13 +78,6 @@ export function SignUp() {
             onClick={() => handleSignUp(firstName, lastName, email, password)}
           >
             <b>Sign Up</b>
-          </Button>
-          <Button
-            onClick={() => {
-              toast.info("Hola que tal!");
-            }}
-          >
-            Click me!
           </Button>
         </CardBody>
       </Card>
