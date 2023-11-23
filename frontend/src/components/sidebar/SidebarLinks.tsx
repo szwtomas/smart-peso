@@ -5,6 +5,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
 import { clsx } from "clsx";
+import { Link } from "react-router-dom";
 
 const links = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
@@ -27,9 +28,9 @@ export function SidebarLinks() {
       {links.map((link) => {
         const LinkIcon = link.icon;
         return (
-          <a
+          <Link
             key={link.name}
-            href={link.href}
+            to={link.href}
             className={clsx(
               "flex flex-row h-[48px] items-center justify-around gap-2 rounded-md p-1 text-xl font-medium hover:bg-sky-100 hover:text-primary md:flex-none md:justify-start md:p-2 md:px-3",
               {
@@ -50,7 +51,7 @@ export function SidebarLinks() {
             >
               {link.name}
             </span>
-          </a>
+          </Link>
         );
       })}
     </>
