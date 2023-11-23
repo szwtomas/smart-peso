@@ -2,6 +2,7 @@ import {
   Cog8ToothIcon,
   HomeIcon,
   BanknotesIcon,
+  ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { useLocation } from "react-router-dom";
 import { clsx } from "clsx";
@@ -18,6 +19,11 @@ const links = [
     name: "Configuration",
     href: "/configuration",
     icon: Cog8ToothIcon,
+  },
+  {
+    name: "Log Out",
+    href: "/logout",
+    icon: ArrowLeftOnRectangleIcon,
   },
 ];
 

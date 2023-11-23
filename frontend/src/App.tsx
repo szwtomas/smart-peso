@@ -3,6 +3,7 @@ import { Providers } from "./Providers";
 import { Layout } from "./components/Layout";
 import { Login } from "./components/auth/Login";
 import { SignUp } from "./components/auth/SignUp";
+import { Logout } from "./components/auth/LogOut";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <SignUp />,
+  },
+  {
+    path: "/logout",
+    element: <Logout />,
   },
   {
     path: "/dashboard",
