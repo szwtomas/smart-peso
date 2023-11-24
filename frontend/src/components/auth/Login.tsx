@@ -6,31 +6,40 @@ import {
   Input,
   Link as NextUILink,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-async function handleLogIn(email: string, password: string) {
-  console.log(`Logging in email ${email} with password ${password}`);
-}
+import { AuthContext } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 export function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  async function handleLogIn(email: string, password: string) {
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Wrong email or password!");
+      console.log(error);
+    }
+  }
 
   return (
     <div className="w-full flex justify-center">
       <Card className="w-[600px] m-10 p-5">
         <CardHeader title="Login">
           <h2 className="mx-2 text-3xl">
-            <b>Log In to Smart Peso</b>
+            <b>Iniciá sesión en Smart Peso</b>
           </h2>
         </CardHeader>
         <CardBody>
           <Input
             type="email"
             label="Email"
-            placeholder="Enter your email"
+            placeholder="Ingresá tu dirección de email"
             className="mt-1 mb-3"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -38,7 +47,7 @@ export function Login() {
           <Input
             type="password"
             label="Password"
-            placeholder="Enter your password"
+            placeholder="Ingresá tu contraseña"
             className="my-2"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -50,7 +59,7 @@ export function Login() {
               navigate("/forgot-password");
             }}
           >
-            <p>Forgot Password?</p>
+            <p>Olvidaste la contraseña?</p>
           </NextUILink>
           <Button
             color="primary"
@@ -58,10 +67,10 @@ export function Login() {
             className="mt-2"
             onClick={() => handleLogIn(email, password)}
           >
-            <b>Log In</b>
+            <b>Iniciar Sesión</b>
           </Button>
           <div>
-            <span className="text-center">Don't have an account?</span>
+            <span className="text-center">No tenés una cuenta?</span>
             <NextUILink
               underline="none"
               className="mx-2 mt-3"
@@ -70,7 +79,7 @@ export function Login() {
                 navigate("/signup");
               }}
             >
-              <p>Sign up here! </p>
+              <p>Creá una acá! </p>
             </NextUILink>
           </div>
         </CardBody>

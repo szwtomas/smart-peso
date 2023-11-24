@@ -5,6 +5,7 @@ import { Login } from "./components/auth/Login";
 import { SignUp } from "./components/auth/SignUp";
 import { Logout } from "./components/auth/LogOut";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
+import { TransactionPage } from "./components/transactions/TransactionsPage";
 
 const router = createBrowserRouter([
   {
@@ -43,7 +44,7 @@ const router = createBrowserRouter([
     path: "/transactions",
     element: (
       <Layout>
-        <div>Transactions</div>
+        <TransactionPage />
       </Layout>
     ),
   },

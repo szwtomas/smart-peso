@@ -39,22 +39,22 @@ export function SignUp() {
       <Card className="w-[600px] m-10 p-5">
         <CardHeader title="Login">
           <h2 className="mx-2 text-3xl">
-            <b>Create an user to use Smart Peso</b>
+            <b>Creá un usuario de Smart Peso</b>
           </h2>
         </CardHeader>
         <CardBody>
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4 mb-3">
             <Input
-              type="email"
-              label="First Name"
-              placeholder="Enter your first name"
+              type="name"
+              label="Nombre"
+              placeholder="Ingresá tu nombre"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
             <Input
-              type="email"
-              label="Last Name"
-              placeholder="Enter your last name"
+              type="apellido"
+              label="Apellido"
+              placeholder="Ingresá tu apellido"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
@@ -62,15 +62,15 @@ export function SignUp() {
           <Input
             type="email"
             label="Email"
-            placeholder="Enter your email"
+            placeholder="Ingresá tu dirección de email"
             className="mt-1 mb-3"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
             type="password"
-            label="Password"
-            placeholder="Enter your password"
+            label="Contraseña"
+            placeholder="Elegí una contraseña"
             className="my-2"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -81,10 +81,10 @@ export function SignUp() {
             className="mt-2"
             onClick={() => handleSignUp(firstName, lastName, email, password)}
           >
-            <b>Sign Up</b>
+            <b>Crear Cuenta</b>
           </Button>
           <div>
-            <span className="text-center">Already an account?</span>
+            <span className="text-center">Ya tenés una cuenta?</span>
             <Link
               underline="none"
               className="mx-2 mt-3"
@@ -93,7 +93,7 @@ export function SignUp() {
                 navigate("/login");
               }}
             >
-              <p>Log In here!</p>
+              <p>Iniciá Sesión acá!</p>
             </Link>
           </div>
         </CardBody>

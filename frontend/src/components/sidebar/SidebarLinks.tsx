@@ -9,19 +9,19 @@ import { clsx } from "clsx";
 import { Link } from "react-router-dom";
 
 const links = [
-  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { name: "Panel Principal", href: "/dashboard", icon: HomeIcon },
   {
-    name: "Transactions",
+    name: "Transacciones",
     href: "/transactions",
     icon: BanknotesIcon,
   },
   {
-    name: "Configuration",
+    name: "Configuración",
     href: "/configuration",
     icon: Cog8ToothIcon,
   },
   {
-    name: "Log Out",
+    name: "Cerrar Sesión",
     href: "/logout",
     icon: ArrowLeftOnRectangleIcon,
   },
