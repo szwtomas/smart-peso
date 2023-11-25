@@ -71,13 +71,6 @@ export function TransactionContainer() {
     });
   }, [sortDescriptor, filteredItems]);
 
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return sortedItems.slice(start, end);
-  }, [page, sortedItems, rowsPerPage]);
-
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
       const cellValue = transaction[columnKey as keyof Transaction];
