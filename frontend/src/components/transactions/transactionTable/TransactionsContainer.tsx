@@ -2,18 +2,15 @@ import { useCallback, useMemo, useState } from "react";
 import { Transaction, transactionData } from "../Transaction";
 import {
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
+  Selection,
+  Pagination,
 } from "@nextui-org/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { columns } from "./columnData";
 
 const ROWS_PER_PAGE = 5;
@@ -24,6 +21,7 @@ function dateToString(date: Date): string {
 
 export function TransactionContainer() {
   const [page, setPage] = useState(1);
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
   const pageCount = Math.ceil(transactionData.length / ROWS_PER_PAGE);
 
   const transactionsInPage = useMemo(() => {
@@ -88,6 +86,52 @@ export function TransactionContainer() {
     }
   }, [page]);
 
+  const bottomContent = useMemo(() => {
+    return (
+      <div className="py-2 px-2 flex justify-between items-center">
+        <span className="w-[30%] text-small text-default-400">
+          {selectedKeys === "all"
+            ? "All items selected"
+            : `${selectedKeys.size} of ${transactionsInPage.length} selected`}
+        </span>
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={pageCount}
+          onChange={setPage}
+        />
+        <div className="hidden sm:flex w-[30%] justify-end gap-2">
+          <Button
+            isDisabled={pageCount === 1}
+            size="sm"
+            variant="flat"
+            onPress={onPreviousPage}
+          >
+            Previous
+          </Button>
+          <Button
+            isDisabled={pageCount === 1}
+            size="sm"
+            variant="flat"
+            onPress={onNextPage}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    );
+  }, [
+    selectedKeys,
+    transactionsInPage.length,
+    page,
+    pageCount,
+    onNextPage,
+    onPreviousPage,
+  ]);
+
   return (
     <>
       <Table
@@ -96,6 +140,9 @@ export function TransactionContainer() {
         classNames={{
           wrapper: "max-h-[382px]",
         }}
+        selectionMode="multiple"
+        bottomContent={bottomContent}
+        bottomContentPlacement="outside"
       >
         <TableHeader columns={columns}>
           {columns.map((c) => {
