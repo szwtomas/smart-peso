@@ -32,6 +32,7 @@ export function TransactionContainer() {
   const [transactionTypeFilter, setTransactionTypeFilter] =
     useState<Selection>("all");
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
+  const hasSearchFilter = Boolean(filterValue);
 
   const transactionsInPage = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -39,6 +40,35 @@ export function TransactionContainer() {
 
     return transactionData.slice(start, end);
   }, [page, rowsPerPage]);
+
+  const filteredItems = useMemo(() => {
+    let filteredTransactions = [...transactionData];
+
+    if (hasSearchFilter) {
+      filteredTransactions = filteredTransactions.filter(
+        (transaction: Transaction) =>
+          transaction.name.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    }
+    if (
+      transactionTypeFilter !== "all" &&
+      Array.from(transactionTypeFilter).length !== transactionTypeOptions.length
+    ) {
+      filteredTransactions = filteredTransactions.filter(
+        (transaction: Transaction) =>
+          Array.from(transactionTypeFilter).includes(transaction.type)
+      );
+    }
+
+    return filteredTransactions;
+  }, [filterValue, transactionTypeFilter, hasSearchFilter]);
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return filteredItems.slice(start, end);
+  }, [page, filteredItems, rowsPerPage]);
 
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
@@ -87,7 +117,7 @@ export function TransactionContainer() {
             </div>
           );
         default:
-          return <p>Null</p>;
+          return <p className="text-red-600">Error</p>;
       }
     },
 
@@ -212,7 +242,7 @@ export function TransactionContainer() {
         <span className="w-[30%] text-small text-default-400">
           {selectedKeys === "all"
             ? "All items selected"
-            : `${selectedKeys.size} de ${transactionsInPage.length} seleccionadas`}
+            : `${selectedKeys.size} de ${filteredItems.length} seleccionadas`}
         </span>
         <Pagination
           isCompact
@@ -245,7 +275,7 @@ export function TransactionContainer() {
     );
   }, [
     selectedKeys,
-    transactionsInPage.length,
+    filteredItems.length,
     page,
     pageCount,
     onNextPage,
@@ -272,10 +302,7 @@ export function TransactionContainer() {
             return <TableColumn key={c.uid}>{c.name}</TableColumn>;
           })}
         </TableHeader>
-        <TableBody
-          emptyContent={"No hay Transacciones"}
-          items={transactionsInPage}
-        >
+        <TableBody emptyContent={"No hay Transacciones"} items={filteredItems}>
           {(t) => {
             return (
               <TableRow key={t.id}>
