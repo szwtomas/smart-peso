@@ -15,6 +15,7 @@ import {
   Input,
   DropdownMenu,
   DropdownItem,
+  SortDescriptor,
 } from "@nextui-org/react";
 import { columns, transactionTypeOptions } from "./columnData";
 import { capitalize } from "../../../utils/utils";
@@ -31,15 +32,12 @@ export function TransactionContainer() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [transactionTypeFilter, setTransactionTypeFilter] =
     useState<Selection>("all");
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    column: "date",
+    direction: "descending",
+  });
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
-
-  const transactionsInPage = useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return transactionData.slice(start, end);
-  }, [page, rowsPerPage]);
 
   const filteredItems = useMemo(() => {
     let filteredTransactions = [...transactionData];
@@ -63,12 +61,22 @@ export function TransactionContainer() {
     return filteredTransactions;
   }, [filterValue, transactionTypeFilter, hasSearchFilter]);
 
+  const sortedItems = useMemo(() => {
+    return [...filteredItems].sort((a: Transaction, b: Transaction) => {
+      const first = a[sortDescriptor.column as keyof Transaction] as number;
+      const second = b[sortDescriptor.column as keyof Transaction] as number;
+      const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+      return sortDescriptor.direction === "descending" ? -cmp : cmp;
+    });
+  }, [sortDescriptor, filteredItems]);
+
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
+    return sortedItems.slice(start, end);
+  }, [page, sortedItems, rowsPerPage]);
 
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
@@ -296,13 +304,19 @@ export function TransactionContainer() {
         topContentPlacement="outside"
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
+        sortDescriptor={sortDescriptor}
+        onSortChange={setSortDescriptor}
       >
         <TableHeader columns={columns}>
           {columns.map((c) => {
-            return <TableColumn key={c.uid}>{c.name}</TableColumn>;
+            return (
+              <TableColumn key={c.uid} allowsSorting={c.sortable}>
+                {c.name}
+              </TableColumn>
+            );
           })}
         </TableHeader>
-        <TableBody emptyContent={"No hay Transacciones"} items={filteredItems}>
+        <TableBody emptyContent={"No hay Transacciones"} items={sortedItems}>
           {(t) => {
             return (
               <TableRow key={t.id}>
