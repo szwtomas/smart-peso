@@ -16,11 +16,12 @@ export function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { login, user } = useContext(AuthContext);
+  if (user) {
+    navigate("/dashboard");
+  }
 
-  console.log("User is:");
-  console.log(user);
   async function handleLogIn(
     email: string,
     password: string,
