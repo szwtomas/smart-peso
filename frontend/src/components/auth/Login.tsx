@@ -3,6 +3,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Checkbox,
   Input,
   Link as NextUILink,
 } from "@nextui-org/react";
@@ -14,12 +15,19 @@ import { toast } from "react-toastify";
 export function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { login } = useContext(AuthContext);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  async function handleLogIn(email: string, password: string) {
+  console.log("User is:");
+  console.log(user);
+  async function handleLogIn(
+    email: string,
+    password: string,
+    rememberMe: boolean
+  ) {
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       navigate("/dashboard");
     } catch (error) {
       toast.error("Wrong email or password!");
@@ -52,35 +60,48 @@ export function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <NextUILink
-            underline="always"
-            className="text-primary mx-2 my-1"
-            onClick={() => {
-              navigate("/forgot-password");
+          <Checkbox
+            isSelected={rememberMe}
+            className="my-2 mx-1 p-0"
+            onValueChange={() => {
+              setRememberMe(!rememberMe);
             }}
           >
-            <p>Olvidaste la contraseña?</p>
-          </NextUILink>
+            Recordar Inicio de Sesión
+          </Checkbox>
           <Button
             color="primary"
             radius="sm"
             className="mt-2"
-            onClick={() => handleLogIn(email, password)}
+            onClick={() => handleLogIn(email, password, rememberMe)}
           >
             <b>Iniciar Sesión</b>
           </Button>
           <div>
-            <span className="text-center">No tenés una cuenta?</span>
-            <NextUILink
-              underline="none"
-              className="mx-2 mt-3"
-              color="primary"
-              onClick={() => {
-                navigate("/signup");
-              }}
-            >
-              <p>Creá una acá! </p>
-            </NextUILink>
+            <div>
+              <span className="text-center">No tenés una cuenta?</span>
+
+              <NextUILink
+                underline="none"
+                className="mx-2 mt-3"
+                color="primary"
+                onClick={() => {
+                  navigate("/signup");
+                }}
+              >
+                <p>Creá una acá! </p>
+              </NextUILink>
+              <span>O quizás</span>
+              <NextUILink
+                underline="none"
+                className="text-primary mx-2 my-1"
+                onClick={() => {
+                  navigate("/forgot-password");
+                }}
+              >
+                <p>olvidaste la contraseña?</p>
+              </NextUILink>
+            </div>
           </div>
         </CardBody>
       </Card>

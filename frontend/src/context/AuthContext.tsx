@@ -7,6 +7,8 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   updateProfile,
+  setPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
 import { app } from "../firebase/firebase";
 
@@ -18,7 +20,11 @@ export interface User {
 
 interface AuthContextProps {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    rememberMe: boolean
+  ) => Promise<void>;
   logout: () => Promise<void>;
   isLoggedIn: () => boolean;
   signUp: (
@@ -59,8 +65,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     const unsubscribe = onAuthStateChanged(
       auth,
       (user: FirebaseUser | null) => {
-        console.log("Setting user: ");
-        console.log(user);
         setUser(userFromFirebaseUser(user));
       }
     );
@@ -70,8 +74,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string,
+    shouldRemember: boolean
+  ) => {
     const auth = getAuth(app);
+    if (shouldRemember) {
+      console.log("Setting persistance...");
+      await setPersistence(auth, browserLocalPersistence);
+      console.log("Persistance set!");
+    }
+
     const userCredentials = await signInWithEmailAndPassword(
       auth,
       email,
