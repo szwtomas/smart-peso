@@ -6,6 +6,7 @@ export interface Transaction {
     type: "income" | "expense";
     description: string;
     category: string;
+    currency: "ARS" | "USD";
 }
 
 export const transactionData: Transaction[] = [
@@ -16,7 +17,8 @@ export const transactionData: Transaction[] = [
         amount: 1000,
         type: "income",
         description: "Sueldo de enero",
-        category: "Sueldo"
+        category: "Sueldo",
+        currency: "ARS",
     },
     {
         id: 2,
@@ -25,7 +27,8 @@ export const transactionData: Transaction[] = [
         amount: 300,
         type: "expense",
         description: "Alquiler de enero",
-        category: "Alquiler"
+        category: "Alquiler",
+        currency: "ARS",
     },
     {
         id: 3,
@@ -35,6 +38,7 @@ export const transactionData: Transaction[] = [
         type: "expense",
         description: "Compra grande de comida para todo el mes",
         category: "Comida",
+        currency: "ARS",
     },
     {
         id: 4,
@@ -44,14 +48,26 @@ export const transactionData: Transaction[] = [
         type: "expense",
         description: "Boleta de internet",
         category: "Servicios",
+        currency: "ARS",
     },
     {
         id: 5,
+        name: "Auriculares",
+        description: "Auriculares nuevos",
+        date: new Date("2023-1-4"),
+        amount: 30,
+        type: "expense",
+        category: "Otros",
+        currency: "USD",
+    },
+    {
+        id: 6,
         name: "Changa",
         date: new Date("2023-1-5"),
         amount: 50,
         type: "income",
         description: "Ayude a X y me pagó 50 pesos",
         category: "other",
+        currency: "ARS",
     }
 ]

@@ -93,6 +93,8 @@ export function TransactionContainer() {
           );
         case "date":
           return <p>{dateToString(cellValue as Date)}</p>;
+        case "currency":
+          return <p>{cellValue as string}</p>;
         case "amount":
           return (
             <p
@@ -283,6 +285,12 @@ export function TransactionContainer() {
     onPreviousPage,
   ]);
 
+  const itemsToShow = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return sortedItems.slice(start, end);
+  }, [page, rowsPerPage, sortedItems]);
+
   return (
     <>
       <Table
@@ -309,7 +317,7 @@ export function TransactionContainer() {
             );
           })}
         </TableHeader>
-        <TableBody emptyContent={"No hay Transacciones"} items={sortedItems}>
+        <TableBody emptyContent={"No hay Transacciones"} items={itemsToShow}>
           {(t) => {
             return (
               <TableRow key={t.id}>
