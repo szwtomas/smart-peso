@@ -1,23 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { Transaction, transactionData } from "../Transaction";
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Selection,
-  Pagination,
-  SortDescriptor,
-} from "@nextui-org/react";
+import { Selection, SortDescriptor } from "@nextui-org/react";
 import { columns, transactionTypeOptions } from "./columnData";
 import { TransactionsTableTopContent } from "./TransactionsTableTopContent";
-
-function dateToString(date: Date): string {
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-}
+import { TransactionTableBottomContent } from "./TransactionTableBottomContent";
+import { TransactionTableCell } from "./TransactionTableCell";
+import { TransactionsTable } from "./TrasactionsTable";
 
 export function TransactionContainer() {
   const [page, setPage] = useState(1);
@@ -67,59 +55,13 @@ export function TransactionContainer() {
 
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
-      const cellValue = transaction[columnKey as keyof Transaction];
-      switch (columnKey) {
-        case "id":
-          return <p>{cellValue as string}</p>;
-        case "name":
-          return <p>{cellValue as string}</p>;
-        case "type":
-          return (
-            <p
-              className={
-                transaction.type === "income"
-                  ? "text-green-600"
-                  : "text-red-600"
-              }
-            >
-              {cellValue === "income" ? "Ingreso" : "Gasto"}
-            </p>
-          );
-        case "date":
-          return <p>{dateToString(cellValue as Date)}</p>;
-        case "currency":
-          return <p>{cellValue as string}</p>;
-        case "amount":
-          return (
-            <p
-              className={
-                transaction.type === "income"
-                  ? "text-green-600"
-                  : "text-red-600"
-              }
-            >
-              ${cellValue as string}
-            </p>
-          );
-        case "category":
-          return <p>{cellValue as string}</p>;
-        case "actions":
-          return (
-            <div>
-              <Button size="sm" variant="light">
-                <p className="text-xl text-primary">
-                  <b>+</b>
-                </p>
-              </Button>
-            </div>
-          );
-        default:
-          return <p className="text-red-600">Error</p>;
-      }
+      return (
+        <TransactionTableCell transaction={transaction} columnKey={columnKey} />
+      );
     },
-
     []
   );
+
   const onNextPage = useCallback(() => {
     if (page < pageCount) {
       setPage(page + 1);
@@ -177,44 +119,19 @@ export function TransactionContainer() {
 
   const bottomContent = useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400">
-          {selectedKeys === "all"
-            ? "All items selected"
-            : `${selectedKeys.size} de ${filteredItems.length} seleccionadas`}
-        </span>
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={pageCount}
-          onChange={setPage}
-        />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pageCount === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Previous
-          </Button>
-          <Button
-            isDisabled={pageCount === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <TransactionTableBottomContent
+        selectedKeys={selectedKeys}
+        page={page}
+        pageCount={pageCount}
+        setPage={setPage}
+        onNextPage={onNextPage}
+        onPreviousPage={onPreviousPage}
+        filteredItems={filteredItems}
+      />
     );
   }, [
     selectedKeys,
-    filteredItems.length,
+    filteredItems,
     page,
     pageCount,
     onNextPage,
@@ -228,43 +145,15 @@ export function TransactionContainer() {
   }, [page, rowsPerPage, sortedItems]);
 
   return (
-    <>
-      <Table
-        aria-label="users-transactions"
-        isHeaderSticky
-        classNames={{
-          wrapper: "max-h-[382px]",
-        }}
-        selectionMode="multiple"
-        onSelectionChange={setSelectedKeys}
-        topContent={topContent}
-        topContentPlacement="outside"
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        sortDescriptor={sortDescriptor}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={columns}>
-          {columns.map((c) => {
-            return (
-              <TableColumn key={c.uid} allowsSorting={c.sortable}>
-                {c.name}
-              </TableColumn>
-            );
-          })}
-        </TableHeader>
-        <TableBody emptyContent={"No hay Transacciones"} items={itemsToShow}>
-          {(t) => {
-            return (
-              <TableRow key={t.id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(t, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            );
-          }}
-        </TableBody>
-      </Table>
-    </>
+    <TransactionsTable
+      itemsToShow={itemsToShow}
+      columns={columns}
+      renderCell={renderCell}
+      topContent={topContent}
+      bottomContent={bottomContent}
+      sortDescriptor={sortDescriptor}
+      setSortDescriptor={setSortDescriptor}
+      setSelectedKeys={setSelectedKeys}
+    />
   );
 }
