@@ -13,14 +13,12 @@ import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 
 export function Login() {
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const { login, user } = useContext(AuthContext);
-  if (user) {
-    navigate("/dashboard");
-  }
 
   async function handleLogIn(
     email: string,

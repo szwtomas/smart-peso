@@ -33,6 +33,7 @@ interface AuthContextProps {
     firstName: string,
     lastName: string
   ) => Promise<void>;
+  setAuthUser(user: User | null): void;
 }
 
 const initialAuthContext: AuthContextProps = {
@@ -41,6 +42,7 @@ const initialAuthContext: AuthContextProps = {
   logout: async () => console.log("Logout"),
   isLoggedIn: () => false,
   signUp: async () => console.log("Signup"),
+  setAuthUser: () => console.log("Set user"),
 };
 
 export const AuthContext = createContext<AuthContextProps>(initialAuthContext);
@@ -129,8 +131,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     setUser(userFromFirebaseUser(userSignUpResponse.user));
   };
 
+  const setAuthUser = (user: User | null) => {
+    setUser(user);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoggedIn, signUp }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isLoggedIn, signUp, setAuthUser }}
+    >
       {props.children}
     </AuthContext.Provider>
   );

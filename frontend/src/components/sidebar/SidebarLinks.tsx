@@ -4,9 +4,13 @@ import {
   BanknotesIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { clsx } from "clsx";
 import { Link } from "react-router-dom";
+
+export interface SidebarLinksProps {
+  logout: () => void;
+}
 
 const links = [
   { name: "Panel Principal", href: "/dashboard", icon: HomeIcon },
@@ -27,8 +31,9 @@ const links = [
   },
 ];
 
-export function SidebarLinks() {
+export function SidebarLinks(props: SidebarLinksProps) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   return (
     <>
       {links.map((link) => {
@@ -36,7 +41,14 @@ export function SidebarLinks() {
         return (
           <Link
             key={link.name}
-            to={link.href}
+            to={link.href !== "/logout" ? link.href : "#"}
+            onClick={async () => {
+              console.log("Clicked logout!");
+              if (link.href === "/logout") {
+                await props.logout();
+                navigate("/login");
+              }
+            }}
             className={clsx(
               "flex flex-row h-[48px] items-center justify-around gap-2 rounded-md p-1 text-xl font-medium hover:bg-sky-100 hover:text-primary md:flex-none md:justify-start md:p-2 md:px-3",
               {
