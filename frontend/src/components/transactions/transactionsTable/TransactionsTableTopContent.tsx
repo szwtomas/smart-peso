@@ -1,8 +1,9 @@
-import { Selection } from "@nextui-org/react";
+import { Button, Selection } from "@nextui-org/react";
 import { TransactionTypeOption } from "./columnData";
 import { RowsPerPageSelector } from "./RowsPerPageSelector";
 import { TransactioTypeSelectorDropdown } from "./TransactionTypeSelectorDropdown";
 import { TransactionTableFilterInput } from "./TransactionTableFilterInput";
+import { PlusIcon } from "./Icons";
 
 interface TransactionTableTopContentProps {
   filterValue: string;
@@ -32,6 +33,14 @@ export function TransactionsTableTopContent(
             transactionTypeOptions={props.transactionTypeOptions}
             setTransactionTypeFilter={props.setTransactionTypeFilter}
           />
+          <Button
+            color="primary"
+            endContent={<PlusIcon />}
+            size="lg"
+            variant="shadow"
+          >
+            Agregar Nueva Transacción
+          </Button>
         </div>
       </div>
       <div className="flex justify-between items-center">
