@@ -1,11 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
-import { Transaction, transactionData } from "../Transaction";
+import { Transaction, transactionData } from "./Transaction";
 import { Selection, SortDescriptor } from "@nextui-org/react";
-import { columns, transactionTypeOptions } from "./columnData";
-import { TransactionsTableTopContent } from "./TransactionsTableTopContent";
-import { TransactionTableBottomContent } from "./TransactionTableBottomContent";
-import { TransactionTableCell } from "./TransactionTableCell";
-import { TransactionsTable } from "./TrasactionsTable";
+import {
+  columns,
+  transactionTypeOptions,
+} from "./transactionsTable/columnData";
+import { TransactionsTableTopContent } from "./transactionsTable/TransactionsTableTopContent";
+import { TransactionTableBottomContent } from "./transactionsTable/TransactionTableBottomContent";
+import { TransactionTableCell } from "./transactionsTable/TransactionTableCell";
+import { TransactionsTable } from "./transactionsTable/TrasactionsTable";
 
 export function TransactionContainer() {
   const [page, setPage] = useState(1);

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { TransactionContainer } from "./transactionTable/TransactionsContainer";
+import { TransactionContainer } from "./TransactionsContainer";
 import { Layout } from "../Layout";
 
 export function TransactionPage() {
