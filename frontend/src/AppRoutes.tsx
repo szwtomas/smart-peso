@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { DashboardPage } from "./components/Dashboard/DashboardPage";
+import { DashboardPage } from "./components/dashboard/DashboardPage";
 import { Login } from "./components/auth/Login";
 import { SignUp } from "./components/auth/SignUp";
 import { ForgotPassword } from "./components/auth/ForgotPassword";

@@ -14,7 +14,12 @@ export const columns: Column[] = [
     { name: "VER MÁS", uid: "actions", sortable: false},
 ];
 
-export const transactionTypeOptions = [
+export interface TransactionTypeOption {
+  name: string;
+  uid: string;
+}
+
+export const transactionTypeOptions: TransactionTypeOption[] = [
   {name: "Ingreso", uid: "income"},
   {name: "Gasto", uid: "expense"},
 ];

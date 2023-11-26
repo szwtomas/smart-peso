@@ -10,16 +10,10 @@ import {
   TableRow,
   Selection,
   Pagination,
-  Dropdown,
-  DropdownTrigger,
-  Input,
-  DropdownMenu,
-  DropdownItem,
   SortDescriptor,
 } from "@nextui-org/react";
 import { columns, transactionTypeOptions } from "./columnData";
-import { capitalize } from "../../../utils/utils";
-import { ChevronDownIcon, PlusIcon, SearchIcon } from "./Icons";
+import { TransactionsTableTopContent } from "./TransactionsTableTopContent";
 
 function dateToString(date: Date): string {
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
@@ -162,74 +156,16 @@ export function TransactionContainer() {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            startContent={<SearchIcon />}
-            className="w-full"
-            size="sm"
-            placeholder="Buscar por nombre..."
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  endContent={<ChevronDownIcon />}
-                  variant="flat"
-                  size="lg"
-                >
-                  Tipo
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={transactionTypeFilter}
-                selectionMode="multiple"
-                onSelectionChange={setTransactionTypeFilter}
-              >
-                {transactionTypeOptions.map((transactionType) => (
-                  <DropdownItem
-                    key={transactionType.uid}
-                    className="capitalize"
-                  >
-                    {capitalize(transactionType.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Button
-              color="primary"
-              endContent={<PlusIcon />}
-              size="lg"
-              variant="shadow"
-            >
-              Agregar Nueva Transacción
-            </Button>
-          </div>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Total {transactionData.length} transacciones
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
-        </div>
-      </div>
+      <TransactionsTableTopContent
+        filterValue={filterValue}
+        onClear={onClear}
+        onSearchChange={onSearchChange}
+        onRowsPerPageChange={onRowsPerPageChange}
+        transactionTypeFilter={transactionTypeFilter}
+        setTransactionTypeFilter={setTransactionTypeFilter}
+        transactionTypeOptions={transactionTypeOptions}
+        transactionCount={transactionData.length}
+      />
     );
   }, [
     filterValue,
