@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { DashboardPage } from "./components/dashboard/DashboardPage";
 import { Login } from "./components/auth/Login";
 import { SignUp } from "./components/auth/SignUp";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
@@ -16,7 +15,15 @@ export function AppRoutes() {
     <Routes>
       <Route
         path="/dashboard"
-        element={isAuthenticated ? <DashboardPage /> : <Navigate to="/login" />}
+        element={
+          isAuthenticated ? (
+            <Layout>
+              <div>Dashboard page</div>
+            </Layout>
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
       />
       <Route
         path="/transactions"
