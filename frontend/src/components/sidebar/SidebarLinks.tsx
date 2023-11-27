@@ -50,7 +50,9 @@ export function SidebarLinks(props: SidebarLinksProps) {
               }
             }}
             className={clsx(
-              "flex flex-row h-[48px] items-center justify-around gap-2 rounded-md p-1 text-xl font-medium hover:bg-sky-100 hover:text-primary md:flex-none md:justify-start md:p-2 md:px-3",
+              `flex flex-row h-[48px] items-center justify-around gap-2 rounded-md p-1 text-xl font-${
+                pathname === link.href ? "medium" : "italic"
+              } hover:bg-sky-100 hover:text-primary md:flex-none md:justify-start md:p-2 md:px-3`,
               {
                 "bg-sky-100 text-blue-primary": pathname === link.href,
               }

@@ -39,7 +39,7 @@ export function TransactionsTableTopContent(
             size="lg"
             variant="shadow"
           >
-            Agregar Nueva Transacción
+            Nueva Transacción
           </Button>
         </div>
       </div>
