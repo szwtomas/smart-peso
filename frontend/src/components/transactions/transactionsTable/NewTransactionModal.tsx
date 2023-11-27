@@ -72,6 +72,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                   </p>
                   <Select
                     isRequired
+                    disallowEmptySelection
                     variant="flat"
                     placeholder="Ingreso"
                     defaultSelectedKeys={["income"]}
@@ -100,6 +101,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                   </p>
                   <Select
                     isRequired
+                    disallowEmptySelection
                     variant="flat"
                     placeholder="Pesos"
                     size="md"
