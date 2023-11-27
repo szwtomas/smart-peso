@@ -38,7 +38,7 @@ export function TransactionTableBottomContent(
           variant="flat"
           onPress={props.onPreviousPage}
         >
-          Previous
+          Anterior
         </Button>
         <Button
           isDisabled={props.pageCount === 1}
@@ -46,7 +46,7 @@ export function TransactionTableBottomContent(
           variant="flat"
           onPress={props.onNextPage}
         >
-          Next
+          Siguiente
         </Button>
       </div>
     </div>
