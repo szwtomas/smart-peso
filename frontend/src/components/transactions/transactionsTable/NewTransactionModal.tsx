@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Input,
   Modal,
@@ -17,11 +18,21 @@ export interface NewTransactionModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+export interface CreateTransactionFormData {
+  transactionName: string;
+  transactionType: string;
+  currency: string;
+  description: string;
+  transactionValue: number;
+  date: Date;
+}
+
 export function NewTransactionModal(props: NewTransactionModalProps) {
   const [transactionName, setTransactionName] = useState<string>("");
-  const [selectedTransactionType, setSelectedTransactionType] =
-    useState<string>("income");
+  const [transactionType, setTransactionType] = useState<string>("income");
+  const [currency, setCurrency] = useState<string>("ARS");
   const [description, setDescription] = useState<string>("");
+  const [transactionValue, setTransactionValue] = useState<number>(0);
 
   return (
     <Modal
@@ -66,8 +77,12 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     size="md"
                     radius="sm"
                     className="my-1"
-                    defaultSelectedKeys={["income"]}
                     label="Tipo transacción"
+                    value={transactionType}
+                    selectionMode="single"
+                    onChange={(e) => {
+                      setTransactionType(e.target.value);
+                    }}
                   >
                     <SelectItem key="income" value="income">
                       Ingreso
@@ -86,16 +101,53 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     isRequired
                     variant="flat"
                     placeholder="Pesos"
-                    defaultSelectedKeys={["ARS"]}
                     size="md"
                     radius="sm"
                     className="my-1"
                     label="Moneda"
+                    onChange={(e) => {
+                      setCurrency(e.target.value);
+                    }}
+                    startContent={
+                      currency === "ARS" ? (
+                        <Avatar
+                          alt="Argentina"
+                          className="w-4 h-4"
+                          src="https://flagcdn.com/ar.svg"
+                        />
+                      ) : (
+                        <Avatar
+                          alt="USA"
+                          className="w-4 h-4"
+                          src="https://flagcdn.com/us.svg"
+                        />
+                      )
+                    }
                   >
-                    <SelectItem key="ARS" value="ARS" startContent={<p>a</p>}>
+                    <SelectItem
+                      key="ARS"
+                      value="ARS"
+                      startContent={
+                        <Avatar
+                          alt="Argentina"
+                          className="w-6 h-6"
+                          src="https://flagcdn.com/ar.svg"
+                        />
+                      }
+                    >
                       Pesos
                     </SelectItem>
-                    <SelectItem key="USD" value="USD">
+                    <SelectItem
+                      key="USD"
+                      value="USD"
+                      startContent={
+                        <Avatar
+                          alt="USA"
+                          className="w-6 h-6"
+                          src="https://flagcdn.com/us.svg"
+                        />
+                      }
+                    >
                       Dólares
                     </SelectItem>
                   </Select>
@@ -109,11 +161,17 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     label="Valor"
                     size="md"
                     radius="sm"
-                    placeholder="0.00"
+                    placeholder="0"
                     startContent={
                       <div className="pointer-events-none flex items-center">
                         <span className="text-default-400 text-small">$</span>
                       </div>
+                    }
+                    value={
+                      transactionValue !== 0 ? transactionValue.toString() : ""
+                    }
+                    onChange={(e) =>
+                      setTransactionValue(e.target.valueAsNumber)
                     }
                   />
                 </div>
@@ -146,7 +204,17 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
               <Button
                 variant="shadow"
                 color="primary"
-                onPress={onClose}
+                onClick={() => {
+                  console.log({
+                    name: transactionName,
+                    type: transactionType,
+                    value: transactionValue,
+                    currency: currency,
+                    description: description,
+                    date: new Date(),
+                  });
+                  onClose();
+                }}
                 radius="sm"
               >
                 Crear Transacción
