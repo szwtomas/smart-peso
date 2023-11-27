@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Transaction, transactionData } from "./Transaction";
-import { Selection, SortDescriptor } from "@nextui-org/react";
+import { Selection, SortDescriptor, useDisclosure } from "@nextui-org/react";
 import {
   columns,
   transactionTypeOptions,
