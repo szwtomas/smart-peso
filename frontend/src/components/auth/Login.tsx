@@ -30,7 +30,7 @@ export function Login() {
       navigate("/dashboard");
     } catch (error) {
       toast.error("Wrong email or password!");
-      console.log(error);
+      console.error(error);
     }
   }
 

@@ -43,7 +43,6 @@ export function SidebarLinks(props: SidebarLinksProps) {
             key={link.name}
             to={link.href !== "/logout" ? link.href : "#"}
             onClick={async () => {
-              console.log("Clicked logout!");
               if (link.href === "/logout") {
                 await props.logout();
                 navigate("/login");

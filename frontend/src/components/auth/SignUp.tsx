@@ -29,7 +29,7 @@ export function SignUp() {
       await signUp(email, password, firstName, lastName);
       navigate("/dashboard");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error("Error creating user");
     }
   }

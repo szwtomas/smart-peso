@@ -1,12 +1,7 @@
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { TransactionContainer } from "./TransactionsContainer";
 import { Layout } from "../Layout";
+import { TransactionContainer } from "./TransactionsContainer";
 
 export function TransactionPage() {
-  const { user } = useContext(AuthContext);
-  console.log(user);
-
   return (
     <Layout>
       <TransactionContainer />
