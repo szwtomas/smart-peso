@@ -1,9 +1,10 @@
-import { Button, Selection } from "@nextui-org/react";
+import { Button, Selection, useDisclosure } from "@nextui-org/react";
 import { TransactionTypeOption } from "./columnData";
 import { RowsPerPageSelector } from "./RowsPerPageSelector";
 import { TransactioTypeSelectorDropdown } from "./TransactionTypeSelectorDropdown";
 import { TransactionTableFilterInput } from "./TransactionTableFilterInput";
 import { PlusIcon } from "./Icons";
+import { NewTransactionModal } from "./NewTransactionModal";
 
 interface TransactionTableTopContentProps {
   filterValue: string;
@@ -19,6 +20,8 @@ interface TransactionTableTopContentProps {
 export function TransactionsTableTopContent(
   props: TransactionTableTopContentProps
 ) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-3 items-end">
@@ -38,9 +41,11 @@ export function TransactionsTableTopContent(
             endContent={<PlusIcon />}
             size="lg"
             variant="shadow"
+            onPress={onOpen}
           >
             Nueva Transacción
           </Button>
+          <NewTransactionModal onOpenChange={onOpenChange} isOpen={isOpen} />
         </div>
       </div>
       <div className="flex justify-between items-center">
