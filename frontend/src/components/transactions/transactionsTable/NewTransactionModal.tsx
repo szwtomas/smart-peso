@@ -30,6 +30,7 @@ export interface CreateTransactionFormData {
 export function NewTransactionModal(props: NewTransactionModalProps) {
   const [transactionName, setTransactionName] = useState<string>("");
   const [transactionType, setTransactionType] = useState<string>("income");
+  const [category, setCategory] = useState<string>("");
   const [currency, setCurrency] = useState<string>("ARS");
   const [description, setDescription] = useState<string>("");
   const [transactionValue, setTransactionValue] = useState<number>(0);
@@ -177,9 +178,24 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     onChange={(e) =>
                       setTransactionValue(e.target.valueAsNumber)
                     }
+                    className="my-1"
                   />
                 </div>
-
+                <div className="mt-2">
+                  <p className="text-md text-default-500">Categoría</p>
+                  <Input
+                    size="md"
+                    radius="sm"
+                    value={category}
+                    onChange={(e) => {
+                      setCategory(e.target.value);
+                    }}
+                    className="my-1"
+                    type="text"
+                    placeholder="Ej: Servicios"
+                    label="Categoría"
+                  />
+                </div>
                 <div className="mt-2">
                   <p className="text-md text-default-500">
                     Descripción de la transacción
@@ -216,6 +232,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     currency: currency,
                     description: description,
                     date: new Date(),
+                    category: category === "" ? "Otros" : category,
                   });
                   onClose();
                 }}
