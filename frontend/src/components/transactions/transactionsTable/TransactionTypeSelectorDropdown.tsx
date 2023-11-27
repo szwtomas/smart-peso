@@ -22,7 +22,12 @@ export function TransactioTypeSelectorDropdown(
   return (
     <Dropdown>
       <DropdownTrigger className="hidden sm:flex">
-        <Button endContent={<ChevronDownIcon />} variant="flat" size="lg">
+        <Button
+          endContent={<ChevronDownIcon />}
+          variant="flat"
+          size="lg"
+          radius="sm"
+        >
           Tipo
         </Button>
       </DropdownTrigger>

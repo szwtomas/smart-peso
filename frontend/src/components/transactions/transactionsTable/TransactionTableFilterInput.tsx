@@ -16,6 +16,7 @@ export function TransactionTableFilterInput(
       startContent={<SearchIcon />}
       className="w-full"
       size="sm"
+      radius="sm"
       placeholder="Buscar por nombre..."
       value={props.filterValue}
       onClear={() => props.onClear()}

@@ -42,6 +42,7 @@ export function TransactionsTableTopContent(
             size="lg"
             variant="shadow"
             onPress={onOpen}
+            radius="sm"
           >
             Nueva Transacción
           </Button>

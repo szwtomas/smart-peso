@@ -74,6 +74,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     isRequired
                     variant="flat"
                     placeholder="Ingreso"
+                    defaultSelectedKeys={["income"]}
                     size="md"
                     radius="sm"
                     className="my-1"
@@ -105,6 +106,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     radius="sm"
                     className="my-1"
                     label="Moneda"
+                    defaultSelectedKeys={["ARS"]}
                     onChange={(e) => {
                       setCurrency(e.target.value);
                     }}
