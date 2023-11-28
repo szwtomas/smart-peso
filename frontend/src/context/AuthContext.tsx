@@ -16,6 +16,7 @@ export interface User {
   email: string;
   uid: string;
   name: string;
+  tokenId: string;
 }
 
 interface AuthContextProps {
@@ -54,11 +55,15 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const [user, setUser] = useState<User | null>(null);
 
-  function userFromFirebaseUser(firebaseUser: FirebaseUser | null): User {
+  function userFromFirebaseUser(
+    firebaseUser: FirebaseUser | null,
+    tokenId: string
+  ): User {
     return {
       email: firebaseUser?.email as string,
       uid: firebaseUser?.uid as string,
       name: firebaseUser?.displayName as string,
+      tokenId,
     };
   }
 
@@ -66,8 +71,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user: FirebaseUser | null) => {
-        setUser(userFromFirebaseUser(user));
+      async (user: FirebaseUser | null) => {
+        setUser(
+          userFromFirebaseUser(user, (await user?.getIdToken()) as string)
+        );
       }
     );
 
@@ -93,7 +100,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
       email,
       password
     );
-    const loggedUser: User = userFromFirebaseUser(userCredentials.user);
+
+    const tokenId = await userCredentials.user.getIdToken();
+
+    const loggedUser: User = userFromFirebaseUser(
+      userCredentials.user,
+      tokenId
+    );
     setUser(loggedUser);
   };
 
@@ -128,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
       displayName: `${firstName} ${lastName}`,
     });
 
-    setUser(userFromFirebaseUser(userSignUpResponse.user));
+    await login(email, password, false);
   };
 
   const setAuthUser = (user: User | null) => {
