@@ -16,7 +16,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserValidator userValidator;
 
-    @Autowired
     public AuthService(UserRepository userRepository, UserValidator userValidator) {
         this.userRepository = userRepository;
         this.userValidator = userValidator;

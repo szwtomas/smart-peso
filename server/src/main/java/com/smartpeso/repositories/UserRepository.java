@@ -16,7 +16,6 @@ public class UserRepository {
     private final String USER_COLLECTION = "users";
     private final MongoTemplate mongoTemplate;
 
-    @Autowired
     public UserRepository(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }

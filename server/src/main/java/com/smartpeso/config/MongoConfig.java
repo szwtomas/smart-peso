@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoConfig {
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
+
     @Bean
     public MongoClient mongoClient() {
         return MongoClients.create(mongoUri);
