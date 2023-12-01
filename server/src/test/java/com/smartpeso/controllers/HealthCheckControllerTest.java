@@ -32,7 +32,7 @@ public class HealthCheckControllerTest {
     public void givenHealthCheckFails_shouldReturn500AsResponseStatusCode() {
         doThrow(new RuntimeException("some error")).when(healthCheckServiceMock).doHealthCheck();
         HealthCheckController unit = new HealthCheckController(healthCheckServiceMock);
-        
+
         ResponseEntity<String> response = unit.healthCheck();
 
         assertEquals(500, response.getStatusCode().value());
