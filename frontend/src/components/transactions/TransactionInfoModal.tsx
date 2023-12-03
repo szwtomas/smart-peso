@@ -17,7 +17,7 @@ export function TransactionInfoModal(props: TransactionInfoModalProps) {
       className="p-4"
     >
       <ModalContent>
-        {(onClose) => {
+        {() => {
           return (
             <>
               <ModalHeader>
