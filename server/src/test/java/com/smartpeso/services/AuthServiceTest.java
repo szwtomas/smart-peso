@@ -155,9 +155,7 @@ public class AuthServiceTest {
         doThrow(new BadCredentialsException("bad credentials")).when(authenticationManagerMock).authenticate(any(Authentication.class));
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
 
-        assertThrows(BadCredentialsException.class, () -> {
-            unit.authenticate(email, rawPassword);
-        });
+        assertThrows(BadCredentialsException.class, () -> unit.authenticate(email, rawPassword));
     }
 
     @Test
@@ -169,8 +167,6 @@ public class AuthServiceTest {
 
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
 
-        assertThrows(Exception.class, () -> {
-            unit.authenticate(email, rawPassword);
-        });
+        assertThrows(Exception.class, () -> unit.authenticate(email, rawPassword));
     }
 }
