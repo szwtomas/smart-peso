@@ -27,7 +27,9 @@ export function Navbar() {
         </NavbarBrand>
       </NavbarContent>
       <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
-        <p className="text-white text-lg">{user ? user.name : ""}</p>
+        <p className="text-white text-lg">
+          {user ? `${user.firstName} ${user.lastName}` : ""}
+        </p>
       </NavbarContent>
     </NextUINavbar>
   );

@@ -30,7 +30,7 @@ export function SignUp() {
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      toast.error("Error creating user");
+      toast.error(err as string);
     }
   }
 

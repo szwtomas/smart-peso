@@ -3,7 +3,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Checkbox,
   Input,
   Link as NextUILink,
 } from "@nextui-org/react";
@@ -14,19 +13,14 @@ import { toast } from "react-toastify";
 
 export function Login() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { logIn } = useContext(AuthContext);
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
-  async function handleLogIn(
-    email: string,
-    password: string,
-    rememberMe: boolean
-  ) {
+  async function handleLogIn(email: string, password: string) {
     try {
-      await login(email, password, rememberMe);
+      await logIn(email, password);
       navigate("/dashboard");
     } catch (error) {
       toast.error("Wrong email or password!");
@@ -59,20 +53,11 @@ export function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Checkbox
-            isSelected={rememberMe}
-            className="my-2 mx-1 p-0"
-            onValueChange={() => {
-              setRememberMe(!rememberMe);
-            }}
-          >
-            Recordar Inicio de Sesión
-          </Checkbox>
           <Button
             color="primary"
             radius="sm"
             className="mt-2"
-            onClick={() => handleLogIn(email, password, rememberMe)}
+            onClick={() => handleLogIn(email, password)}
           >
             <b>Iniciar Sesión</b>
           </Button>

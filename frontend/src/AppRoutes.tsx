@@ -9,7 +9,7 @@ import { Layout } from "./components/Layout";
 
 export function AppRoutes() {
   const { user } = useContext(AuthContext);
-  const isAuthenticated = user !== null && user.email !== undefined;
+  const isAuthenticated = user !== null && user.accessToken !== undefined;
 
   return (
     <Routes>
