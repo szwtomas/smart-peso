@@ -119,7 +119,7 @@ public class AuthServiceTest {
         String lastName = "Doe";
         String password = "password";
 
-        doThrow(new UserValidationException("invalid user")).when(userValidatorMock).validateUser(eq(email), eq(firstName), eq(lastName));
+        doThrow(new UserValidationException("invalid user")).when(userValidatorMock).validateUser(eq(email), eq(password), eq(firstName), eq(lastName));
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
 
         UserCreationResult creationResult = unit.signUp(email, password, firstName, lastName);

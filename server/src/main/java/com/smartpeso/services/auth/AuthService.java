@@ -38,7 +38,7 @@ public class AuthService {
 
     public UserCreationResult signUp(String email, String rawPassword, String firstName, String lastName) {
         try {
-            userValidator.validateUser(email, firstName, lastName);
+            userValidator.validateUser(email, rawPassword, firstName, lastName);
             String encodedPassword = passwordEncoder.encode(rawPassword);
             User user = userRepository.createUser(email, encodedPassword, "user", firstName, lastName);
             String accessToken = jwtService.generateAccessToken(email);

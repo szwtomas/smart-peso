@@ -1,5 +1,6 @@
 package com.smartpeso.validators;
 
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
@@ -16,13 +17,10 @@ public class UserValidator {
     }
 
 
-    public void validateUser(String email, String firstName, String lastName) {
-        if (email == null || firstName == null || lastName == null) {
-            throw new UserValidationException("Validation error: email, password, firstName and lastName fields are mandatory");
+    public void validateUser(@NonNull String email, @NonNull String password, @NonNull String firstName, @NonNull String lastName) {
+        if (!passwordValidator.isValidPassword(password)) {
+            throw new UserValidationException("Invalid password");
         }
-
-        // TODO: Add password validation here
-        passwordValidator.validatePassword();
 
         validateEmail(email);
         validateName(firstName);
