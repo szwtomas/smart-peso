@@ -26,7 +26,7 @@ public class HealthCheckServiceTest {
 
     @Test
     public void healthCheck_mongoIsOk_shouldNotThrowException() {
-        Document pingResult = new Document().append("ok", "1");
+        Document pingResult = new Document().append("ok", "1.0");
         when(mongoDatabaseMock.runCommand(any(Document.class))).thenReturn(pingResult);
         when(mongoTemplateMock.getDb()).thenReturn(mongoDatabaseMock);
 

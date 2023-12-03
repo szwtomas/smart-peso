@@ -1,7 +1,7 @@
 package com.smartpeso.controllers;
 
-import com.smartpeso.model.User;
-import com.smartpeso.model.dto.auth.SignUpDTO;
+import com.smartpeso.model.dto.auth.AuthenticationResponse;
+import com.smartpeso.model.dto.auth.SignUpRequest;
 import com.smartpeso.repositories.UserCreationException;
 import com.smartpeso.services.auth.AuthService;
 import com.smartpeso.services.auth.UserCreationResult;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-public class SignUpControllerTest {
+public class AuthControllerTest {
     @Mock
     AuthService authServiceMock;
 
@@ -30,19 +30,23 @@ public class SignUpControllerTest {
         String email = "john.doe@mail.com";
         String firstName = "John";
         String lastName = "Doe";
-        SignUpDTO signUpDTO = new SignUpDTO(email, firstName, lastName);
-        UserCreationResult userCreationResult = UserCreationResult.success(new User("someId", email, firstName, lastName));
-        when(authServiceMock.signUp(eq(email), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
+        String password = "somepassword";
+
+        SignUpRequest signUpDTO = new SignUpRequest(email, password, firstName, lastName);
+        AuthenticationResponse authResponse = new AuthenticationResponse("access-token", email, firstName, lastName);
+        UserCreationResult userCreationResult = UserCreationResult.success(authResponse);
+        when(authServiceMock.signUp(eq(email), eq(password), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
         AuthController unit = new AuthController(authServiceMock);
 
         ResponseEntity<?> response = unit.signUp(signUpDTO);
-        User userResponse = (User) response.getBody();
+        AuthenticationResponse actual = (AuthenticationResponse) response.getBody();
 
         assertEquals(201, response.getStatusCode().value());
-        assertNotNull(userResponse);
-        assertEquals("john.doe@mail.com", userResponse.email());
-        assertEquals("John", userResponse.firstName());
-        assertEquals("Doe", userResponse.lastName());
+        assertNotNull(actual);
+        assertEquals("access-token", actual.accessToken());
+        assertEquals("john.doe@mail.com", actual.email());
+        assertEquals("John", actual.firstName());
+        assertEquals("Doe", actual.lastName());
     }
 
     @Test
@@ -50,9 +54,11 @@ public class SignUpControllerTest {
         String email = "john.doe@mail.com";
         String firstName = "John";
         String lastName = "Doe";
-        SignUpDTO signUpDTO = new SignUpDTO(email, firstName, lastName);
+        String password = "somepassword";
+
+        SignUpRequest signUpDTO = new SignUpRequest(email, password, firstName, lastName);
         UserCreationResult userCreationResult = UserCreationResult.userAlreadyExists(email);
-        when(authServiceMock.signUp(eq(email), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
+        when(authServiceMock.signUp(eq(email), eq(password), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
         AuthController unit = new AuthController(authServiceMock);
 
         ResponseEntity<?> response = unit.signUp(signUpDTO);
@@ -68,9 +74,11 @@ public class SignUpControllerTest {
         String email = "john.doe@mail.com";
         String firstName = "John";
         String lastName = "Doe";
-        SignUpDTO signUpDTO = new SignUpDTO(email, firstName, lastName);
+        String password = "somepassword";
+
+        SignUpRequest signUpDTO = new SignUpRequest(email, password, firstName, lastName);
         UserCreationResult userCreationResult = UserCreationResult.failure(new UserCreationException("some error"));
-        when(authServiceMock.signUp(eq(email), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
+        when(authServiceMock.signUp(eq(email), eq(password), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
 
         AuthController unit = new AuthController(authServiceMock);
 

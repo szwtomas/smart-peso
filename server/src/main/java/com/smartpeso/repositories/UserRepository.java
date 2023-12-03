@@ -1,7 +1,6 @@
 package com.smartpeso.repositories;
 
 import com.smartpeso.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -20,12 +19,12 @@ public class UserRepository {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public User createUser(String email, String firstName, String lastName) {
+    public User createUser(String email, String password, String role, String firstName, String lastName) {
         checkIfUserExistsByEmail(email);
         try {
-            Document userDocument = createUserDocument(email, firstName, lastName);
+            Document userDocument = createUserDocument(email, password, role, firstName, lastName);
             mongoTemplate.insert(userDocument, USER_COLLECTION);
-            return new User(userDocument.getString("_id"), email, firstName, lastName);
+            return new User(email, password, role, firstName, lastName);
         } catch(Exception e) {
             throw new UserCreationException("Failed creating new user, got error: " + e.getMessage());
         }
@@ -43,11 +42,13 @@ public class UserRepository {
         }
     }
 
-    private Document createUserDocument(String email, String firstName, String lastName) {
+    private Document createUserDocument(String email, String password, String role, String firstName, String lastName) {
         String userId = UUID.randomUUID().toString();
         return new Document()
                 .append("_id", userId)
                 .append("email", email)
+                .append("password", password)
+                .append("role", role)
                 .append("firstName", firstName)
                 .append("lastName", lastName);
     }

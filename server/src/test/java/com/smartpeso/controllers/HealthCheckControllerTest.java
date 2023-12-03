@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
 
+
 public class HealthCheckControllerTest {
     @Mock
     private HealthCheckService healthCheckServiceMock;

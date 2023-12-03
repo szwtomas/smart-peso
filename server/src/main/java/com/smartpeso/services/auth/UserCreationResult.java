@@ -1,22 +1,22 @@
 package com.smartpeso.services.auth;
 
-import com.smartpeso.model.User;
+import com.smartpeso.model.dto.auth.AuthenticationResponse;
 import lombok.Getter;
 
 @Getter
 public class UserCreationResult {
-    private final User user;
+    private final AuthenticationResponse authenticationResponse;
     private final Throwable error;
     private final String existingUserEmail;
 
-    private UserCreationResult(User user, Throwable error, String existingUserEmail) {
-        this.user = user;
+    private UserCreationResult(AuthenticationResponse authenticationResponse, Throwable error, String existingUserEmail) {
+        this.authenticationResponse = authenticationResponse;
         this.error = error;
         this.existingUserEmail = existingUserEmail;
     }
 
-    public static UserCreationResult success(User user) {
-        return new UserCreationResult(user,  null, null);
+    public static UserCreationResult success(AuthenticationResponse authenticationResponse) {
+        return new UserCreationResult(authenticationResponse,  null, null);
     }
 
     public static UserCreationResult failure(Throwable error) {
@@ -28,7 +28,7 @@ public class UserCreationResult {
     }
 
     public boolean isSuccess() {
-        return this.error == null && this.existingUserEmail == null;
+        return this.authenticationResponse != null && this.error == null && this.existingUserEmail == null;
     }
 
     public boolean isUserAlreadyExists() {

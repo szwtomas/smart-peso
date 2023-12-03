@@ -9,10 +9,21 @@ public class UserValidator {
     private final static String VALID_EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
     private final static String VALID_NAME_REGEX = "^[a-zA-ZÁáÉéÍíÓóÚúÂâÊêÎîÔôÛûÇç ]+$";
 
+    private final PasswordValidator passwordValidator;
+
+    public UserValidator(PasswordValidator passwordValidator) {
+        this.passwordValidator = passwordValidator;
+    }
+
+
     public void validateUser(String email, String firstName, String lastName) {
         if (email == null || firstName == null || lastName == null) {
-            throw new UserValidationException("Validation error: email, firstName and lastName fields are mandatory");
+            throw new UserValidationException("Validation error: email, password, firstName and lastName fields are mandatory");
         }
+
+        // TODO: Add password validation here
+        passwordValidator.validatePassword();
+
         validateEmail(email);
         validateName(firstName);
         validateName(lastName);

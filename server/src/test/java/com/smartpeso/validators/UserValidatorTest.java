@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserValidatorTest {
-    private final UserValidator unit = new UserValidator();
+    private final PasswordValidator passwordValidator = new PasswordValidator();
+    private final UserValidator unit = new UserValidator(passwordValidator);
 
     @Test
     public void userValidator_correctEmail_shouldNotThrowAnException() {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class HealthCheckService {
+    private final String MONGO_PING_OK = "1.0";
     MongoTemplate mongoTemplate;
 
     public HealthCheckService(MongoTemplate mongoTemplate) {
@@ -20,8 +21,8 @@ public class HealthCheckService {
 
     private void verifyMongoIsUp() {
         Document ping = new Document().append("ping", "1");
-        String pingResult = mongoTemplate.getDb().runCommand(ping).getString("ok");
-        if (!pingResult.equals("1")) {
+        String pingResult = mongoTemplate.getDb().runCommand(ping).get("ok").toString();
+        if (!pingResult.equals(MONGO_PING_OK)) {
             throw new RuntimeException("Mongo health check failed");
         }
     }
