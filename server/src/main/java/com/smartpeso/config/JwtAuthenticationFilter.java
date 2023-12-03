@@ -36,14 +36,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
+        if (isUserAlreadyAuthenticated() || authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String jwtToken = authorizationHeader.substring(BEARER_PREFIX.length());
         String userEmail = jwtService.extractSubject(jwtToken);
-        if (userEmail == null || isUserAlreadyAuthenticated()) {
+        if (userEmail == null) {
             filterChain.doFilter(request, response);
             return;
         }
