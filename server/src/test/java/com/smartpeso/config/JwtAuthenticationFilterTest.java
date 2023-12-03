@@ -69,7 +69,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_InvalidToken_AuthenticationFailed() throws ServletException, IOException {
+    public void doFilterInternal_givenInvalidToken_AuthenticationFailed() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn("Bearer invalid_token");
         when(jwtService.extractSubject("invalid_token")).thenReturn(null);
 
@@ -83,7 +83,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_NoBearerToken_AuthenticationSkipped() throws ServletException, IOException {
+    public void doFilterInternal_givenNoBearerToken_AuthenticationSkipped() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn("invalid_format_token");
 
         JwtAuthenticationFilter unit = new JwtAuthenticationFilter(jwtService, userDetailsService);
@@ -96,7 +96,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_UserAlreadyAuthenticated_AuthenticationSkipped() throws ServletException, IOException {
+    public void doFilterInternal_givenUserAlreadyAuthenticated_AuthenticationSkipped() throws ServletException, IOException {
         when(request.getHeader("Authorization")).thenReturn("Bearer valid_token");
 
         UserDetails userDetails = mock(UserDetails.class);

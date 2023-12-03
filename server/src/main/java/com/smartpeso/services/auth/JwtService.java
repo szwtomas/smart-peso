@@ -16,6 +16,15 @@ import java.util.Date;
 @Service
 public class JwtService {
     private final static long ACCESS_TOKEN_DURATION_MILLIS = 1000 * 60 * 24;
+
+    public String generateAccessToken(String email, long duration) {
+        return buildToken(email, duration);
+    }
+
+    public String generateAccessToken(String email) {
+        return buildToken(email, ACCESS_TOKEN_DURATION_MILLIS);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -23,6 +32,11 @@ public class JwtService {
 
     public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public boolean isValidToken(String token, UserDetails userDetails) {
+        final String subject = extractSubject(token);
+        return subject.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     private Date extractExpiration(String token) {
@@ -33,16 +47,11 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public boolean isValidToken(String token, UserDetails userDetails) {
-        final String subject = extractSubject(token);
-        return subject.equals(userDetails.getUsername()) && !isTokenExpired(token);
-    }
-
-    public String generateAccessToken(String email) {
-        return buildToken(email, ACCESS_TOKEN_DURATION_MILLIS);
-    }
-
     private String buildToken(String email, long durationMillis) {
+        if (email == null || email.isEmpty()) {
+            return null;
+        }
+
         return Jwts
                 .builder()
                 .setClaims(new HashMap<>())
