@@ -1,5 +1,6 @@
 package com.smartpeso.controllers;
 
+import com.smartpeso.model.User;
 import com.smartpeso.model.dto.auth.AuthenticationResponse;
 import com.smartpeso.model.dto.auth.LogInRequest;
 import com.smartpeso.model.dto.auth.SignUpRequest;
@@ -8,8 +9,8 @@ import com.smartpeso.services.auth.UserCreationResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -49,16 +50,19 @@ public class AuthController {
         try {
             AuthenticationResponse authenticationResponse = authService.authenticate(logInRequest.email(), logInRequest.password());
             return new ResponseEntity<>(authenticationResponse, HttpStatus.OK);
-        } catch(Exception e) {
-            log.error("Failed authenticating: " + e.getMessage());
+        } catch(BadCredentialsException e) {
+            log.error("Invalid credentials: " + e.getMessage());
             return new ResponseEntity<>("Wrong email/password combination", HttpStatus.NOT_FOUND);
+        } catch(Exception e) {
+            log.error("Unexpected error on login: " + e.getMessage());
+            return new ResponseEntity<>("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/userdata")
-    public String userData(@AuthenticationPrincipal UserDetails userDetails) {
-        String email = userDetails.getUsername();
-        String role = String.valueOf(userDetails.getAuthorities().stream().toList().get(0));
-        return email + " " + role;
+    public String userData(@AuthenticationPrincipal User user) {
+        String userId = user.getUserId();
+        String role = String.valueOf(user.getAuthorities().stream().toList().get(0));
+        return userId + " " + role;
     }
 }

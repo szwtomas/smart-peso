@@ -62,10 +62,9 @@ public class TransactionServiceTest {
         when(transactionRepositoryMock.getTransactionsByUserId("someId")).thenReturn(Arrays.asList(createTransaction("id1"), createTransaction("id2"), createTransaction("id3")));
         when(transactionRepositoryMock.getTransactionsByUserId("otherId")).thenReturn(List.of(createTransaction("id4")));
 
-
         TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
-        List<Transaction> firstUserTransactions = unit.getTransactions(new User("someId"));
-        List<Transaction> secondUserTransactions = unit.getTransactions(new User("otherId"));
+        List<Transaction> firstUserTransactions = unit.getTransactions(getUser("someId"));
+        List<Transaction> secondUserTransactions = unit.getTransactions(getUser("otherId"));
 
         assertEquals(firstUserTransactions.size(), 3);
         assertEquals("id1", firstUserTransactions.get(0).getTransactionId());
@@ -117,5 +116,11 @@ public class TransactionServiceTest {
 
     private User getUser() {
         return new User("john.doe@mail.com", "password", "user", "John", "Doe");
+    }
+
+    private User getUser(String userId) {
+        User user = getUser();
+        user.setUserId(userId);
+        return user;
     }
 }

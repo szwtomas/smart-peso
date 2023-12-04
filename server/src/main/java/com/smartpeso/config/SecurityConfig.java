@@ -4,6 +4,7 @@ import com.smartpeso.repositories.UserRepository;
 import com.smartpeso.services.auth.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -40,6 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         http.authorizeHttpRequests((authorizeHttpRequests) -> {
             authorizeHttpRequests
+                    .requestMatchers(HttpMethod.OPTIONS).permitAll()
                     .requestMatchers("/health-check", "/api/auth/**").permitAll()
                     .anyRequest().authenticated();
         });

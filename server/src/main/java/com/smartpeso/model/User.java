@@ -2,6 +2,7 @@ package com.smartpeso.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -16,6 +17,7 @@ import java.util.*;
 public class User implements UserDetails {
         @Id
         @Getter
+        @Setter
         @Field(name = "_id")
         private String userId;
 
@@ -44,10 +46,6 @@ public class User implements UserDetails {
                 this.role = role;
                 this.firstName = firstName;
                 this.lastName = lastName;
-        }
-
-        public User(String userId) {
-                this.userId = userId;
         }
 
         @Override
