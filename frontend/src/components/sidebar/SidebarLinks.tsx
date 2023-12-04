@@ -41,6 +41,9 @@ export function SidebarLinks(props: SidebarLinksProps) {
         return (
           <Link
             key={link.name}
+            style={{
+              transition: "background-color 0.35s ease",
+            }}
             to={link.href !== "/logout" ? link.href : "#"}
             onClick={async () => {
               if (link.href === "/logout") {
@@ -50,7 +53,7 @@ export function SidebarLinks(props: SidebarLinksProps) {
             }}
             className={clsx(
               `flex flex-row h-[48px] items-center justify-around gap-2 rounded-md p-1 text-xl font-${
-                pathname === link.href ? "medium" : "italic"
+                pathname === link.href ? "semibold" : "normal"
               } hover:bg-sky-100 hover:text-primary md:flex-none md:justify-start md:p-2 md:px-3`,
               {
                 "bg-sky-100 text-blue-primary": pathname === link.href,
