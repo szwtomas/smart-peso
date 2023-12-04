@@ -23,7 +23,10 @@ export function Login() {
       await logIn(email, password);
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Wrong email or password!");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+
       console.error(error);
     }
   }
