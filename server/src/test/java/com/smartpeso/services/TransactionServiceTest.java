@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,6 +57,25 @@ public class TransactionServiceTest {
         assertThrows(TransactionValidationException.class, () -> unit.createTransaction(getTransactionDTO(), getUser()));
     }
 
+    @Test
+    public void getTransactionByUser_shouldReturnOnlyUserTransactions() {
+        when(transactionRepositoryMock.getTransactionsByUserId("someId")).thenReturn(Arrays.asList(createTransaction("id1"), createTransaction("id2"), createTransaction("id3")));
+        when(transactionRepositoryMock.getTransactionsByUserId("otherId")).thenReturn(List.of(createTransaction("id4")));
+
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+        List<Transaction> firstUserTransactions = unit.getTransactions(new User("someId"));
+        List<Transaction> secondUserTransactions = unit.getTransactions(new User("otherId"));
+
+        assertEquals(firstUserTransactions.size(), 3);
+        assertEquals("id1", firstUserTransactions.get(0).getTransactionId());
+        assertEquals("id2", firstUserTransactions.get(1).getTransactionId());
+        assertEquals("id3", firstUserTransactions.get(2).getTransactionId());
+
+        assertEquals(secondUserTransactions.size(), 1);
+        assertEquals("id4", secondUserTransactions.get(0).getTransactionId());
+    }
+
     private TransactionDTO getTransactionDTO() {
         return new TransactionDTO(
                 "Salary Paycheck",
@@ -77,6 +98,20 @@ public class TransactionServiceTest {
                 transactionDTO.value(),
                 transactionDTO.category(),
                 transactionDTO.description()
+        );
+    }
+
+    private Transaction createTransaction(String id) {
+        return new Transaction(
+                id,
+                new User("john.doe@mail.com", "password", "user", "John", "Doe"),
+                "Salary Paycheck",
+                new Date(),
+                "income",
+                "USD",
+                1000.0,
+                "Salary",
+                "This month paycheck"
         );
     }
 

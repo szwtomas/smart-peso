@@ -46,6 +46,10 @@ public class User implements UserDetails {
                 this.lastName = lastName;
         }
 
+        public User(String userId) {
+                this.userId = userId;
+        }
+
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
                 List<GrantedAuthority> authorities = new ArrayList<>();

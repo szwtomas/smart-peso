@@ -8,6 +8,7 @@ import com.smartpeso.validators.TransactionValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +25,10 @@ public class TransactionService {
         Transaction transaction = createTransactionModel(transactionDTO, user);
         transactionValidator.validateTransaction(transaction);
         return transactionRepository.createTransaction(transaction);
+    }
+
+    public List<Transaction> getTransactions(User user) {
+        return transactionRepository.getTransactionsByUserId(user.getUserId());
     }
 
     private String createTransactionId() {
