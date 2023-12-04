@@ -1,5 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
-import { Transaction, transactionData } from "./Transaction";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Selection, SortDescriptor } from "@nextui-org/react";
 import {
   columns,
@@ -9,8 +8,15 @@ import { TransactionsTableTopContent } from "./transactionsTable/TransactionsTab
 import { TransactionTableBottomContent } from "./transactionsTable/TransactionTableBottomContent";
 import { TransactionTableCell } from "./transactionsTable/TransactionTableCell";
 import { TransactionsTable } from "./transactionsTable/TrasactionsTable";
+import {
+  Transaction,
+  TransactionContext,
+} from "../../context/TransactionContext";
 
 export function TransactionContainer() {
+  const transactionContext = useContext(TransactionContext);
+  const transactionData = transactionContext.transactions;
+
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());

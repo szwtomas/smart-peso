@@ -9,7 +9,7 @@ export const columns: Column[] = [
     { name: "FECHA", uid: "date", sortable: true},
     { name: "TIPO", uid: "type", sortable: true},
     { name: "MONEDA", uid: "currency", sortable: true },
-    { name: "VALOR", uid: "amount", sortable: true},
+    { name: "VALOR", uid: "value", sortable: true},
     { name: "CATEGORÍA", uid: "category", sortable: true},
     { name: "VER MÁS", uid: "actions", sortable: false},
 ];

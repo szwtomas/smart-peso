@@ -225,15 +225,6 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                 variant="shadow"
                 color="primary"
                 onClick={() => {
-                  console.log({
-                    name: transactionName,
-                    type: transactionType,
-                    value: transactionValue,
-                    currency: currency,
-                    description: description,
-                    date: new Date(),
-                    category: category === "" ? "Otros" : category,
-                  });
                   onClose();
                 }}
                 radius="sm"

@@ -1,13 +1,4 @@
-export interface Transaction {
-    id: number;
-    name: string;
-    date: Date;
-    amount: number;
-    type: "income" | "expense";
-    description: string;
-    category: string;
-    currency: "ARS" | "USD";
-}
+import { Transaction } from "../../context/TransactionContext";
 
 export const transactionData: Transaction[] = [
     {

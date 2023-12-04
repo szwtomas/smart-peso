@@ -9,8 +9,8 @@ import {
   Selection,
 } from "@nextui-org/react";
 import { Dispatch } from "react";
-import { Transaction } from "../Transaction";
 import { Column } from "./columnData";
+import { Transaction } from "../../../context/TransactionContext";
 
 export interface TransactionsTableProps {
   itemsToShow: Transaction[];
@@ -53,9 +53,10 @@ export function TransactionsTable(props: TransactionsTableProps) {
         emptyContent={"No hay Transacciones"}
         items={props.itemsToShow}
       >
-        {(t) => {
+        {(t: Transaction) => {
+          console.log(t);
           return (
-            <TableRow key={t.id}>
+            <TableRow key={t.transactionId}>
               {(columnKey) => (
                 <TableCell>{props.renderCell(t, columnKey)}</TableCell>
               )}

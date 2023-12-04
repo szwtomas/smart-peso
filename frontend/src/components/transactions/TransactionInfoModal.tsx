@@ -1,5 +1,5 @@
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
-import { Transaction } from "./Transaction";
+import { Transaction } from "../../context/TransactionContext";
 
 export interface TransactionInfoModalProps {
   isOpen: boolean;
