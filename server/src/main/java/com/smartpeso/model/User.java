@@ -15,12 +15,12 @@ import java.util.*;
 @JsonIgnoreProperties({ "userId", "password" })
 public class User implements UserDetails {
         @Id
+        @Getter
         @Field(name = "_id")
         private String userId;
 
         @Getter
         @Field(name = "email")
-
         private String email;
 
         @Field(name = "password")
