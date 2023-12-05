@@ -12,11 +12,7 @@ export class Api {
     }
 
     public async logIn(email: string, password: string): Promise<AuthenticationResponse> {
-        const response = await fetch(`${this.host}/api/auth/log-in`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
+        const response = await this.post("/api/auth/log-in", { email, password });
 
         if (response.status === HTTP_STATUS_NOT_FOUND) {
             throw new Error("Invalid email/password");
@@ -30,11 +26,7 @@ export class Api {
     }
 
     public async signUp(signUpData: SignUpRequestBody): Promise<AuthenticationResponse> {
-        const response = await fetch(`${this.host}/api/auth/sign-up`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(signUpData)
-        });
+        const response = await this.post("/api/auth/sign-up", signUpData);
 
         if (response.status === HTTP_STATUS_CONFLICT) {
             throw new Error("User already exists");
@@ -48,24 +40,44 @@ export class Api {
     }
 
     public async getTransactions(): Promise<Transaction[]> {
-        if (this.accessToken == null) {
-            throw new Error("Can't get transactions, Not authenticated");
-        }
-
-        const headers = {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${this.accessToken}`
-        };
-        
-        const response = await fetch(`${this.host}/api/transaction`, {
-            method: "GET",
-            headers
-        });
-
+        const response = await this.get("/api/transaction");
         const jsonResponse = (await response.json()) as unknown as Transaction[];
-
         return jsonResponse.map((transaction: Transaction) => {
             return {...transaction, date: new Date(transaction.date)};
         });
+    }
+
+    private async get(path: string): Promise<Response> {
+        try {
+            return await fetch(`${this.host}${path}`, {
+                method: "GET",
+                headers: this.getHeaders(),
+            });
+        } catch(err) {
+            console.error(err);
+            throw new Error("Unexpected error");
+        }
+    }
+
+    private async post(path: string, body: unknown): Promise<Response> {
+        try {
+            return await fetch(`${this.host}${path}`, {
+                method: "POST",
+                headers: this.getHeaders(),
+                body: JSON.stringify(body),
+            });
+        } catch(err) {
+            console.log(err);
+            throw new Error("Unexpected error");
+        }
+    }
+
+    private getHeaders(): Headers {
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        if (this.accessToken != null) {
+            headers.append("Authorization", `Bearer ${this.accessToken}`);
+        }
+        return headers;
     }
 }
