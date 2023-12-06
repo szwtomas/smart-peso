@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { api } from "../api";
 
 export interface User {
@@ -35,6 +35,17 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const defaultLogin = async () => {
+      const defaultEmail = import.meta.env.VITE_DEFAULT_EMAIL as string;
+      if (defaultEmail) {
+        logIn(defaultEmail, import.meta.env.VITE_DEFAULT_PASSWORD as string);
+      }
+    };
+
+    defaultLogin();
+  }, []);
 
   const logIn = async (email: string, password: string) => {
     const logInResponse = await api.logIn(email, password);

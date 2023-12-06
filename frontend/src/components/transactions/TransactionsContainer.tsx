@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Selection, SortDescriptor } from "@nextui-org/react";
 import {
   columns,
@@ -14,9 +14,9 @@ import {
 } from "../../context/TransactionContext";
 
 export function TransactionContainer() {
-  const transactionContext = useContext(TransactionContext);
-  const transactionData = transactionContext.transactions;
-
+  const [needToFetchTransactions, setNeedToFetchTransactions] =
+    useState<boolean>(true);
+  const [transactionData, setTransactionData] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
@@ -27,8 +27,22 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
+  const { getTransactions } = useContext(TransactionContext);
+
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      console.log(`Should fetch transactions is ${needToFetchTransactions}`);
+      if (!needToFetchTransactions) return;
+      const transactions = await getTransactions();
+      setTransactionData(transactions);
+      setNeedToFetchTransactions(false);
+    };
+
+    fetchTransactions();
+  }, [getTransactions, needToFetchTransactions]);
 
   const filteredItems = useMemo(() => {
     let filteredTransactions = [...transactionData];
@@ -50,7 +64,7 @@ export function TransactionContainer() {
     }
 
     return filteredTransactions;
-  }, [filterValue, transactionTypeFilter, hasSearchFilter]);
+  }, [transactionData, filterValue, transactionTypeFilter, hasSearchFilter]);
 
   const sortedItems = useMemo(() => {
     return [...filteredItems].sort((a: Transaction, b: Transaction) => {
@@ -124,6 +138,7 @@ export function TransactionContainer() {
     onSearchChange,
     onRowsPerPageChange,
     onClear,
+    transactionData.length,
   ]);
 
   const bottomContent = useMemo(() => {

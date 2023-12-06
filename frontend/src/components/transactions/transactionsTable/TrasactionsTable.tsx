@@ -54,7 +54,6 @@ export function TransactionsTable(props: TransactionsTableProps) {
         items={props.itemsToShow}
       >
         {(t: Transaction) => {
-          console.log(t);
           return (
             <TableRow key={t.transactionId}>
               {(columnKey) => (

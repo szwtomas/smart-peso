@@ -1,6 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext } from "react";
 import { api } from "../api";
-import { AuthContext, User } from "./AuthContext";
 
 export interface Transaction {
   transactionId: string;
@@ -14,12 +13,12 @@ export interface Transaction {
 }
 
 interface TransactionContextProps {
-  transactions: Transaction[];
+  getTransactions: () => Promise<Transaction[]>;
   addTransaction: (transaction: Transaction) => Promise<void>;
 }
 
 const initialTransactionContext: TransactionContextProps = {
-  transactions: [],
+  getTransactions: async () => [],
   addTransaction: async () => console.log("Add Transaction"),
 };
 
@@ -31,38 +30,21 @@ export interface TransactionProviderProps {
   children: React.ReactNode;
 }
 
-function isUserAuthenticated(user: User | null): boolean {
-  return user !== null && user.accessToken !== undefined;
-}
-
 export const TransactionProvider: React.FC<TransactionProviderProps> = (
   props: TransactionProviderProps
 ) => {
-  const authContext = useContext(AuthContext);
-  const isAuthenticated = isUserAuthenticated(authContext.user);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  async function getTransactions(): Promise<Transaction[]> {
+    return await api.getTransactions();
+  }
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      return;
-    }
-
-    const fetchTransactions = async () => {
-      const transactions = await api.getTransactions();
-      setTransactions(transactions);
-    };
-
-    fetchTransactions();
-  }, [isAuthenticated]);
-
-  const addTransaction = async (transaction: Transaction): Promise<void> => {
+  async function addTransaction(transaction: Transaction): Promise<void> {
     console.log(transaction);
-  };
+  }
 
   return (
     <TransactionContext.Provider
       value={{
-        transactions: transactions,
+        getTransactions,
         addTransaction,
       }}
     >
