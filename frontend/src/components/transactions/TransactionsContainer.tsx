@@ -9,9 +9,11 @@ import { TransactionTableBottomContent } from "./transactionsTable/TransactionTa
 import { TransactionTableCell } from "./transactionsTable/TransactionTableCell";
 import { TransactionsTable } from "./transactionsTable/TrasactionsTable";
 import {
+  CreateTransactionFormData,
   Transaction,
   TransactionContext,
 } from "../../context/TransactionContext";
+import { toast } from "react-toastify";
 
 export function TransactionContainer() {
   const [needToFetchTransactions, setNeedToFetchTransactions] =
@@ -27,18 +29,24 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
-  const { getTransactions } = useContext(TransactionContext);
+  const { getTransactions, addTransaction } = useContext(TransactionContext);
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      console.log(`Should fetch transactions is ${needToFetchTransactions}`);
       if (!needToFetchTransactions) return;
-      const transactions = await getTransactions();
-      setTransactionData(transactions);
-      setNeedToFetchTransactions(false);
+      try {
+        const transactions = await getTransactions();
+        setTransactionData(transactions);
+        setNeedToFetchTransactions(false);
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error("Error inesperado obteniendo las transacciones");
+        }
+        console.error(error);
+      }
     };
 
     fetchTransactions();
@@ -120,6 +128,20 @@ export function TransactionContainer() {
   }, []);
 
   const topContent = useMemo(() => {
+    const onCreateTransaction = async (
+      createTransactionData: CreateTransactionFormData
+    ) => {
+      try {
+        await addTransaction(createTransactionData);
+        setNeedToFetchTransactions(true);
+      } catch (error) {
+        console.error(error);
+        if (error instanceof Error) {
+          toast.error("Error inesperado creando la transacción");
+        }
+      }
+    };
+
     return (
       <TransactionsTableTopContent
         filterValue={filterValue}
@@ -130,6 +152,7 @@ export function TransactionContainer() {
         setTransactionTypeFilter={setTransactionTypeFilter}
         transactionTypeOptions={transactionTypeOptions}
         transactionCount={transactionData.length}
+        onCreateTransaction={onCreateTransaction}
       />
     );
   }, [
@@ -139,6 +162,7 @@ export function TransactionContainer() {
     onRowsPerPageChange,
     onClear,
     transactionData.length,
+    addTransaction,
   ]);
 
   const bottomContent = useMemo(() => {

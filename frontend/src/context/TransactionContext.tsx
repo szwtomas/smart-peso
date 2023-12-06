@@ -12,9 +12,27 @@ export interface Transaction {
   currency: "ARS" | "USD";
 }
 
+export interface CreateTransactionFormData {
+  transactionName: string;
+  transactionType: string;
+  currency: string;
+  description: string;
+  transactionValue: number;
+  category: string;
+}
+
+export interface TransactionDTO {
+  name: string;
+  type: string;
+  currency: string;
+  value: number;
+  category: string;
+  description: string;
+}
+
 interface TransactionContextProps {
   getTransactions: () => Promise<Transaction[]>;
-  addTransaction: (transaction: Transaction) => Promise<void>;
+  addTransaction: (transaction: CreateTransactionFormData) => Promise<void>;
 }
 
 const initialTransactionContext: TransactionContextProps = {
@@ -37,8 +55,17 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = (
     return await api.getTransactions();
   }
 
-  async function addTransaction(transaction: Transaction): Promise<void> {
-    console.log(transaction);
+  async function addTransaction(
+    createTransactionData: CreateTransactionFormData
+  ): Promise<void> {
+    await api.createTransaction({
+      name: createTransactionData.transactionName,
+      type: createTransactionData.transactionType,
+      currency: createTransactionData.currency,
+      value: createTransactionData.transactionValue,
+      category: createTransactionData.category,
+      description: createTransactionData.description,
+    });
   }
 
   return (

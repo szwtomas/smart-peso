@@ -5,6 +5,7 @@ import { TransactioTypeSelectorDropdown } from "./TransactionTypeSelectorDropdow
 import { TransactionTableFilterInput } from "./TransactionTableFilterInput";
 import { PlusIcon } from "./Icons";
 import { NewTransactionModal } from "./NewTransactionModal";
+import { CreateTransactionFormData } from "../../../context/TransactionContext";
 
 interface TransactionTableTopContentProps {
   filterValue: string;
@@ -15,6 +16,7 @@ interface TransactionTableTopContentProps {
   transactionTypeOptions: TransactionTypeOption[];
   transactionCount: number;
   onRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onCreateTransaction: (transaction: CreateTransactionFormData) => void;
 }
 
 export function TransactionsTableTopContent(
@@ -46,7 +48,11 @@ export function TransactionsTableTopContent(
           >
             Nueva Transacción
           </Button>
-          <NewTransactionModal onOpenChange={onOpenChange} isOpen={isOpen} />
+          <NewTransactionModal
+            onOpenChange={onOpenChange}
+            isOpen={isOpen}
+            onCreateTransaction={props.onCreateTransaction}
+          />
         </div>
       </div>
       <div className="flex justify-between items-center">

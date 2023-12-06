@@ -1,4 +1,4 @@
-import { Transaction } from "../context/TransactionContext";
+import { CreateTransactionFormData, Transaction, TransactionDTO } from "../context/TransactionContext";
 import { HTTP_STATUS_CONFLICT, HTTP_STATUS_CREATED, HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from "./constants";
 import { AuthenticationResponse, SignUpRequestBody } from "./types";
 
@@ -45,6 +45,13 @@ export class Api {
         return jsonResponse.map((transaction: Transaction) => {
             return {...transaction, date: new Date(transaction.date)};
         });
+    }
+
+    public async createTransaction(transaction: TransactionDTO): Promise<void> {
+        const response = await this.post("/api/transaction", transaction);
+        if (response.status !== HTTP_STATUS_CREATED) {
+            throw new Error("Failed to create transaction");
+        }
     }
 
     private async get(path: string): Promise<Response> {

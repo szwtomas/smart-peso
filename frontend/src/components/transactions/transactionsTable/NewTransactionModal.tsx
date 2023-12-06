@@ -13,15 +13,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { useState } from "react";
-
-export interface CreateTransactionFormData {
-  transactionName: string;
-  transactionType: string;
-  currency: string;
-  description: string;
-  transactionValue: number;
-  date: Date;
-}
+import { CreateTransactionFormData } from "../../../context/TransactionContext";
 
 export interface NewTransactionModalProps {
   isOpen: boolean;
@@ -236,6 +228,15 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                 variant="shadow"
                 color="primary"
                 onClick={() => {
+                  props.onCreateTransaction({
+                    transactionName,
+                    transactionType,
+                    currency,
+                    description,
+                    transactionValue,
+                    category,
+                    date: new Date(),
+                  });
                   onClose();
                 }}
                 radius="sm"
