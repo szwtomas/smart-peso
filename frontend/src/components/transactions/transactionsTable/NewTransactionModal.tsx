@@ -9,14 +9,10 @@ import {
   ModalHeader,
   Select,
   SelectItem,
+  Switch,
   Textarea,
 } from "@nextui-org/react";
 import { useState } from "react";
-
-export interface NewTransactionModalProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-}
 
 export interface CreateTransactionFormData {
   transactionName: string;
@@ -25,6 +21,12 @@ export interface CreateTransactionFormData {
   description: string;
   transactionValue: number;
   date: Date;
+}
+
+export interface NewTransactionModalProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreateTransaction: (transaction: CreateTransactionFormData) => void;
 }
 
 export function NewTransactionModal(props: NewTransactionModalProps) {
@@ -181,6 +183,15 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     className="my-1"
                   />
                 </div>
+                {transactionType === "expense" && (
+                  <div className="my-2 mb-3">
+                    <Switch className="mt-3 inline-flex flex-row-reverse">
+                      <p className="text-md text-default-500 mr-3">
+                        Pago con tarjeta de crédito
+                      </p>
+                    </Switch>
+                  </div>
+                )}
                 <div className="mt-2">
                   <p className="text-md text-default-500">Categoría</p>
                   <Input
