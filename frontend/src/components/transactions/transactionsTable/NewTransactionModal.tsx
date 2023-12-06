@@ -235,7 +235,6 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     description,
                     transactionValue,
                     category,
-                    date: new Date(),
                   });
                   onClose();
                 }}
