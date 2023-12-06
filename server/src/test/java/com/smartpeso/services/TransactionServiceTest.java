@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,6 +81,7 @@ public class TransactionServiceTest {
                 "Salary Paycheck",
                 "income",
                 "USD",
+                Optional.of("cash"),
                 1000.0,
                 "Salary",
                 "This month paycheck"
@@ -96,7 +98,8 @@ public class TransactionServiceTest {
                 transactionDTO.currency(),
                 transactionDTO.value(),
                 transactionDTO.category(),
-                transactionDTO.description()
+                transactionDTO.description(),
+                transactionDTO.paymentMethod().orElse(null)
         );
     }
 
@@ -110,7 +113,8 @@ public class TransactionServiceTest {
                 "USD",
                 1000.0,
                 "Salary",
-                "This month paycheck"
+                "This month paycheck",
+                null
         );
     }
 

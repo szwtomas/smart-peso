@@ -86,7 +86,8 @@ public class TransactionRepositoryTest {
                 "USD",
                 1000.0,
                 "Salary",
-                "This month paycheck"
+                "This month paycheck",
+                null
         );
     }
 
@@ -100,7 +101,8 @@ public class TransactionRepositoryTest {
                 "USD",
                 1000.0,
                 "Salary",
-                "This month paycheck"
+                "This month paycheck",
+                null
         );
     }
 }

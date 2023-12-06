@@ -45,7 +45,8 @@ public class TransactionService {
                 createTransactionRequest.currency(),
                 createTransactionRequest.value(),
                 createTransactionRequest.category(),
-                createTransactionRequest.description()
+                createTransactionRequest.description(),
+                createTransactionRequest.paymentMethod().orElse(null)
         );
     }
 }

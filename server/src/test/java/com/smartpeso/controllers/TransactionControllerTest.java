@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -115,6 +114,7 @@ public class TransactionControllerTest {
                 "Salary Paycheck",
                 "income",
                 "USD",
+                null,
                 1000.0,
                 "Salary",
                 "This month paycheck"
@@ -131,7 +131,8 @@ public class TransactionControllerTest {
                 transactionDTO.currency(),
                 transactionDTO.value(),
                 transactionDTO.category(),
-                transactionDTO.description()
+                transactionDTO.description(),
+                null
         );
     }
 
@@ -145,7 +146,8 @@ public class TransactionControllerTest {
                 "usd",
                 100.0,
                 "Groceries",
-                "Monthly groceries :)"
+                "Monthly groceries :)",
+                null
         );
     }
 

@@ -1,6 +1,7 @@
 package com.smartpeso.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
@@ -43,4 +44,7 @@ public class Transaction {
 
     @Field(name = "description")
     private String description;
+
+    @Field(name = "paymentMethod")
+    private String paymentMethod;
 }
