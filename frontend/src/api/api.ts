@@ -1,4 +1,4 @@
-import { CreateTransactionFormData, Transaction, TransactionDTO } from "../context/TransactionContext";
+import { Transaction, TransactionDTO } from "../context/TransactionContext";
 import { HTTP_STATUS_CONFLICT, HTTP_STATUS_CREATED, HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from "./constants";
 import { AuthenticationResponse, SignUpRequestBody } from "./types";
 
@@ -15,9 +15,9 @@ export class Api {
         const response = await this.post("/api/auth/log-in", { email, password });
 
         if (response.status === HTTP_STATUS_NOT_FOUND) {
-            throw new Error("Invalid email/password");
+            throw new Error("mail/contraseña invalido/s");
         } else if (response.status !== HTTP_STATUS_OK) {
-            throw new Error("Log in failed unexpectedly");
+            throw new Error("Inicio de sesión falló inesperadamente");
         }
         
         const authResponse: AuthenticationResponse = await response.json();
@@ -29,9 +29,9 @@ export class Api {
         const response = await this.post("/api/auth/sign-up", signUpData);
 
         if (response.status === HTTP_STATUS_CONFLICT) {
-            throw new Error("User already exists");
+            throw new Error("El usuario ya existe");
         } else if (response.status !== HTTP_STATUS_CREATED) {
-            throw new Error("Sign up failed unexpectedly");
+            throw new Error("La creación del usuario falló inesperadamente");
         }
 
         const authResponse: AuthenticationResponse = await response.json();
@@ -50,7 +50,7 @@ export class Api {
     public async createTransaction(transaction: TransactionDTO): Promise<void> {
         const response = await this.post("/api/transaction", transaction);
         if (response.status !== HTTP_STATUS_CREATED) {
-            throw new Error("Failed to create transaction");
+            throw new Error("Error inesperado al crear la transacción");
         }
     }
 
@@ -62,7 +62,7 @@ export class Api {
             });
         } catch(err) {
             console.error(err);
-            throw new Error("Unexpected error");
+            throw new Error("Error inesperado");
         }
     }
 
@@ -75,7 +75,7 @@ export class Api {
             });
         } catch(err) {
             console.log(err);
-            throw new Error("Unexpected error");
+            throw new Error("Error inesperado");
         }
     }
 
