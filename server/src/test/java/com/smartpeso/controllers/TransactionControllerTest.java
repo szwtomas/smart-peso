@@ -2,8 +2,10 @@ package com.smartpeso.controllers;
 
 import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
+import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
 import com.smartpeso.repositories.TransactionCreationException;
+import com.smartpeso.services.transaction.TransactionNotFoundException;
 import com.smartpeso.services.transaction.TransactionService;
 import com.smartpeso.validators.TransactionValidationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +17,12 @@ import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TransactionControllerTest {
@@ -109,6 +113,72 @@ public class TransactionControllerTest {
         assertEquals("Failed getting user transactions", message);
     }
 
+    @Test
+    public void editTransactionGivenExistingAndValidTransaction_shouldReturnStatusOk() {
+        User user = getUser();
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+
+        Transaction newTransaction = getTransaction(editTransactionRequest.id());
+        newTransaction.setName(editTransactionRequest.name());
+
+        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenReturn(newTransaction);
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
+        Transaction actualTransaction = (Transaction) actualResponse.getBody();
+
+        verify(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
+
+        assertEquals(200, actualResponse.getStatusCode().value());
+        assertNotNull(actualTransaction);
+        assertEquals("Updated Salary Paycheck", actualTransaction.getName());
+    }
+
+    @Test
+    public void editTransaction_GivenTransactionIsNotFound_shouldReturnNotFound() {
+        User user = getUser();
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+
+        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenThrow(new TransactionNotFoundException("not found"));
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
+
+        verify(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
+
+        assertEquals(404, actualResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void editTransaction_givenTransactionValidationFails_shouldReturnBadRequest() {
+        User user = getUser();
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+
+        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenThrow(new TransactionValidationException("validation failed"));
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
+
+        verify(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
+
+        assertEquals(400, actualResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void editTransaction_givenTransactionUpserFailsWithUnexpectedError_shouldReturnInternalServerError() {
+        User user = getUser();
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+
+        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenThrow(new RuntimeException("something failed"));
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
+
+        verify(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
+
+        assertEquals(500, actualResponse.getStatusCode().value());
+    }
+
     private TransactionDTO getTransactionDTO() {
         return new TransactionDTO(
                 "Salary Paycheck",
@@ -153,5 +223,18 @@ public class TransactionControllerTest {
 
     private User getUser() {
         return new User("john.doe@mail.com", "password", "user", "John", "Doe");
+    }
+
+    private EditTransactionRequest getEditTransactionRequest() {
+        return new EditTransactionRequest(
+                "someId",
+                "Updated Salary Paycheck",
+                "income",
+                "USD",
+                Optional.of("cash"),
+                1500.0,
+                "Updated Salary",
+                "Updated this month paycheck"
+        );
     }
 }

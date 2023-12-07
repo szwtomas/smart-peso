@@ -2,6 +2,7 @@ package com.smartpeso.services.transaction;
 
 import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
+import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
 import com.smartpeso.repositories.TransactionRepository;
 import com.smartpeso.validators.TransactionValidator;
@@ -24,7 +25,7 @@ public class TransactionService {
     public Transaction createTransaction(TransactionDTO transactionDTO, User user) {
         Transaction transaction = createTransactionModel(transactionDTO, user);
         transactionValidator.validateTransaction(transaction);
-        return transactionRepository.createTransaction(transaction);
+        return transactionRepository.upsertTransaction(transaction);
     }
 
     public List<Transaction> getTransactions(User user) {
@@ -48,5 +49,34 @@ public class TransactionService {
                 createTransactionRequest.description(),
                 createTransactionRequest.paymentMethod().orElse(null)
         );
+    }
+
+    public Transaction editTransaction(EditTransactionRequest editTransactionRequest, User user) {
+        Transaction transaction = findUserTransaction(editTransactionRequest.id(), user.getUserId());
+        setNewFieldsToTransaction(transaction, editTransactionRequest);
+        transactionValidator.validateTransaction(transaction);
+        return transactionRepository.upsertTransaction(transaction);
+    }
+
+    private Transaction findUserTransaction(String transactionId, String userId) {
+        Transaction transaction = transactionRepository
+                .getTransactionById(transactionId)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction with id " + transactionId + " not found"));
+
+        if (!transaction.getUser().getUserId().equals(userId)) {
+            throw new TransactionNotFoundException(String.format("User %s does not have transaction %s", userId, transactionId));
+        }
+
+        return transaction;
+    }
+
+    private void setNewFieldsToTransaction(Transaction transaction, EditTransactionRequest editTransactionRequest) {
+        transaction.setName(editTransactionRequest.name());
+        transaction.setType(editTransactionRequest.type());
+        transaction.setValue(editTransactionRequest.value());
+        transaction.setCurrency(editTransactionRequest.currency());
+        transaction.setCategory(editTransactionRequest.category());
+        transaction.setDescription(editTransactionRequest.description());
+        transaction.setPaymentMethod(editTransactionRequest.paymentMethod().orElse(null));
     }
 }

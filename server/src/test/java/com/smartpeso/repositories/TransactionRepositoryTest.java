@@ -7,12 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +32,7 @@ public class TransactionRepositoryTest {
         Transaction transactionToCreate = createTransaction();
         when(mongoTemplateMock.save(eq(transactionToCreate), eq("transactions"))).thenReturn(transactionToCreate);
         TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-        Transaction createdTransaction = unit.createTransaction(transactionToCreate);
+        Transaction createdTransaction = unit.upsertTransaction(transactionToCreate);
 
         verify(mongoTemplateMock).save(eq(transactionToCreate), eq("transactions"));
 
@@ -46,7 +44,7 @@ public class TransactionRepositoryTest {
         Transaction transactionToCreate = createTransaction();
         when(mongoTemplateMock.save(eq(transactionToCreate), eq("transactions"))).thenThrow(new RuntimeException("some error"));
         TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-        assertThrows(TransactionCreationException.class, () -> unit.createTransaction(transactionToCreate));
+        assertThrows(TransactionCreationException.class, () -> unit.upsertTransaction(transactionToCreate));
     }
 
     @Test
@@ -75,6 +73,38 @@ public class TransactionRepositoryTest {
         assertEquals("id2", transactions.get(1).getTransactionId());
         assertEquals("id3", transactions.get(2).getTransactionId());
     }
+
+    @Test
+    public void getTransactionById_givenExistingTransactionId_shouldReturnTransaction() {
+        String existingTransactionId = "existingId";
+        Transaction existingTransaction = createTransaction(existingTransactionId);
+        Query query = new Query(Criteria.where("_id").is(existingTransactionId));
+
+        when(mongoTemplateMock.findOne(query, Transaction.class, "transactions")).thenReturn(existingTransaction);
+
+        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+
+        Optional<Transaction> actual = unit.getTransactionById(existingTransactionId);
+
+        // Assert
+        assertTrue(actual.isPresent());
+        assertEquals(existingTransactionId, actual.get().getTransactionId());
+    }
+
+    @Test
+    public void getTransactionById_givenNonExistingTransactionId_shouldReturnEmptyOptional() {
+        String nonExistingTransactionId = "nonExistingId";
+        Query query = new Query(Criteria.where("_id").is(nonExistingTransactionId));
+
+        when(mongoTemplateMock.findOne(query, Transaction.class, "transactions")).thenReturn(null);
+
+        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+
+        Optional<Transaction> result = unit.getTransactionById(nonExistingTransactionId);
+
+        assertFalse(result.isPresent());
+    }
+
 
     private Transaction createTransaction() {
         return new Transaction(

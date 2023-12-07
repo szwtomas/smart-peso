@@ -2,8 +2,10 @@ package com.smartpeso.controllers;
 
 import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
+import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
 import com.smartpeso.repositories.TransactionCreationException;
+import com.smartpeso.services.transaction.TransactionNotFoundException;
 import com.smartpeso.services.transaction.TransactionService;
 import com.smartpeso.validators.TransactionValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,24 @@ public class TransactionController {
         } catch(Exception e) {
             log.error("Failed getting transactions for user " + user.getEmail() + ", error: " + e.getMessage());
             return new ResponseEntity<>("Failed getting user transactions", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<?> editTransaction(
+            @AuthenticationPrincipal User user,
+            @RequestBody EditTransactionRequest editTransactionRequest) {
+        try {
+            Transaction transaction = transactionService.editTransaction(editTransactionRequest, user);
+            log.info(String.format("Transaction with id %s successfully edited", editTransactionRequest.id()));
+            return new ResponseEntity<>(transaction, HttpStatus.OK);
+        } catch (TransactionNotFoundException e) {
+            log.error(String.format("User %s tried to edit transaction [%s], but it does not exist", user.getEmail(), editTransactionRequest.id()));
+            return new ResponseEntity<>("Transaction %s does not exist", HttpStatus.NOT_FOUND);
+        } catch (TransactionValidationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed editing transaction", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

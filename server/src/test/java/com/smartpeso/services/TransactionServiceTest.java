@@ -2,8 +2,10 @@ package com.smartpeso.services;
 
 import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
+import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
 import com.smartpeso.repositories.TransactionRepository;
+import com.smartpeso.services.transaction.TransactionNotFoundException;
 import com.smartpeso.services.transaction.TransactionService;
 import com.smartpeso.validators.TransactionValidationException;
 import com.smartpeso.validators.TransactionValidator;
@@ -38,7 +40,7 @@ public class TransactionServiceTest {
         TransactionDTO transactionDTO = getTransactionDTO();
         User user = getUser();
         Transaction transaction = transactionFromTransactionDTO(transactionDTO);
-        when(transactionRepositoryMock.createTransaction(any(Transaction.class))).thenReturn(transaction);
+        when(transactionRepositoryMock.upsertTransaction(any(Transaction.class))).thenReturn(transaction);
 
         TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
 
@@ -74,6 +76,70 @@ public class TransactionServiceTest {
 
         assertEquals(secondUserTransactions.size(), 1);
         assertEquals("id4", secondUserTransactions.get(0).getTransactionId());
+    }
+
+    @Test
+    public void editTransaction_givenExistingTransactionAndValidRequest_shouldReturnUpdatedTransaction() {
+        User user = getUser();
+        user.setUserId("user-id");
+
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+        Transaction existingTransaction = createTransaction("someId");
+        existingTransaction.setUser(user);
+
+        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.of(existingTransaction));
+        when(transactionRepositoryMock.upsertTransaction(any(Transaction.class))).thenReturn(existingTransaction);
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+        Transaction editedTransaction = unit.editTransaction(editTransactionRequest, user);
+
+        verify(transactionRepositoryMock).getTransactionById(eq(editTransactionRequest.id()));
+        verify(transactionValidatorMock).validateTransaction(eq(existingTransaction));
+        verify(transactionRepositoryMock).upsertTransaction(eq(existingTransaction));
+
+        assertEquals(editTransactionRequest.name(), editedTransaction.getName());
+        assertEquals(editTransactionRequest.value(), editedTransaction.getValue());
+        assertEquals(editTransactionRequest.type(), editedTransaction.getType());
+        assertEquals(editTransactionRequest.category(), editedTransaction.getCategory());
+        assertEquals(editTransactionRequest.currency(), editedTransaction.getCurrency());
+        assertEquals(editTransactionRequest.value(), editedTransaction.getValue(), 0.01);
+        assertEquals(editTransactionRequest.description(), editedTransaction.getDescription());
+        assertEquals(editTransactionRequest.paymentMethod().orElse(null), editedTransaction.getPaymentMethod());
+    }
+
+    @Test
+    public void editTransaction_givenTransactionDoesNotExist_shouldThrowTransactionNotFoundException() {
+        User user = getUser();
+        user.setUserId("user-id");
+
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+        Transaction existingTransaction = createTransaction("someId");
+        existingTransaction.setUser(user);
+
+        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.empty());
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+
+        assertThrows(TransactionNotFoundException.class, () -> unit.editTransaction(editTransactionRequest, user));
+    }
+
+    @Test
+    public void editTransaction_givenTransactionExistsButBelongsToDifferentUser_shouldThrowTransactionNotFoundException() {
+        User user = getUser();
+        user.setUserId("user-id");
+
+        User otherUser = getUser();
+        otherUser.setUserId("other-user-id");
+
+        EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
+        Transaction existingTransaction = createTransaction("someId");
+        existingTransaction.setUser(otherUser);
+
+        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.of(existingTransaction));
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+
+        assertThrows(TransactionNotFoundException.class, () -> unit.editTransaction(editTransactionRequest, user));
     }
 
     private TransactionDTO getTransactionDTO() {
@@ -115,6 +181,19 @@ public class TransactionServiceTest {
                 "Salary",
                 "This month paycheck",
                 null
+        );
+    }
+
+    private EditTransactionRequest getEditTransactionRequest() {
+        return new EditTransactionRequest(
+                "someId",
+                "Updated Salary Paycheck",
+                "income",
+                "USD",
+                Optional.of("cash"),
+                1500.0,
+                "Updated Salary",
+                "Updated this month paycheck"
         );
     }
 
