@@ -277,7 +277,8 @@ public class TransactionControllerTest {
                 Optional.of("cash"),
                 1500.0,
                 "Updated Salary",
-                "Updated this month paycheck"
+                "Updated this month paycheck",
+                LocalDateTime.now()
         );
     }
 }

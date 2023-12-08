@@ -83,6 +83,7 @@ public class TransactionService {
         transaction.setCurrency(editTransactionRequest.currency());
         transaction.setCategory(editTransactionRequest.category());
         transaction.setDescription(editTransactionRequest.description());
+        transaction.setDate(editTransactionRequest.date());
         transaction.setPaymentMethod(editTransactionRequest.paymentMethod().orElse(null));
     }
 }
