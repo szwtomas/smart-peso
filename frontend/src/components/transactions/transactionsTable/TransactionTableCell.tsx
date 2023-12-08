@@ -5,6 +5,7 @@ import { Transaction } from "../../../context/TransactionContext";
 export interface TransactionTableCellProps {
   transaction: Transaction;
   columnKey: React.Key;
+  onOpen: () => void;
 }
 
 export function TransactionTableCell(props: TransactionTableCellProps) {
@@ -44,7 +45,7 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
     case "actions":
       return (
         <div>
-          <Button size="sm" variant="light">
+          <Button size="sm" variant="light" onClick={props.onOpen}>
             <p className="text-xl text-primary">
               <b>+</b>
             </p>

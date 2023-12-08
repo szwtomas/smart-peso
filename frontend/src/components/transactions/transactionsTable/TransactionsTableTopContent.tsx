@@ -4,7 +4,7 @@ import { RowsPerPageSelector } from "./RowsPerPageSelector";
 import { TransactioTypeSelectorDropdown } from "./TransactionTypeSelectorDropdown";
 import { TransactionTableFilterInput } from "./TransactionTableFilterInput";
 import { PlusIcon } from "./Icons";
-import { NewTransactionModal } from "./NewTransactionModal";
+import { NewTransactionModal } from "../modal/NewTransactionModal";
 import { CreateTransactionFormData } from "../../../context/TransactionContext";
 
 interface TransactionTableTopContentProps {

@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Selection, SortDescriptor } from "@nextui-org/react";
+import { Selection, SortDescriptor, useDisclosure } from "@nextui-org/react";
 import {
   columns,
   transactionTypeOptions,
@@ -14,6 +14,7 @@ import {
   TransactionContext,
 } from "../../context/TransactionContext";
 import { toast } from "react-toastify";
+import { TransactionModal } from "./modal/TransactionModal";
 
 export function TransactionContainer() {
   const [needToFetchTransactions, setNeedToFetchTransactions] =
@@ -29,7 +30,10 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
+  const [transactionForEditing, setTransactionForEdit] =
+    useState<Transaction | null>(null);
   const { getTransactions, addTransaction } = useContext(TransactionContext);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
@@ -87,10 +91,17 @@ export function TransactionContainer() {
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
       return (
-        <TransactionTableCell transaction={transaction} columnKey={columnKey} />
+        <TransactionTableCell
+          transaction={transaction}
+          columnKey={columnKey}
+          onOpen={() => {
+            setTransactionForEdit(transaction);
+            onOpen();
+          }}
+        />
       );
     },
-    []
+    [onOpen]
   );
 
   const onNextPage = useCallback(() => {
@@ -133,6 +144,7 @@ export function TransactionContainer() {
     ) => {
       try {
         await addTransaction(createTransactionData);
+        toast.success("Transacción creada exitosamente");
         setNeedToFetchTransactions(true);
       } catch (error) {
         console.error(error);
@@ -193,15 +205,22 @@ export function TransactionContainer() {
   }, [page, rowsPerPage, sortedItems]);
 
   return (
-    <TransactionsTable
-      itemsToShow={itemsToShow}
-      columns={columns}
-      renderCell={renderCell}
-      topContent={topContent}
-      bottomContent={bottomContent}
-      sortDescriptor={sortDescriptor}
-      setSortDescriptor={setSortDescriptor}
-      setSelectedKeys={setSelectedKeys}
-    />
+    <>
+      <TransactionsTable
+        itemsToShow={itemsToShow}
+        columns={columns}
+        renderCell={renderCell}
+        topContent={topContent}
+        bottomContent={bottomContent}
+        sortDescriptor={sortDescriptor}
+        setSortDescriptor={setSortDescriptor}
+        setSelectedKeys={setSelectedKeys}
+      />
+      <TransactionModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        transaction={transactionForEditing as Transaction}
+      />
+    </>
   );
 }
