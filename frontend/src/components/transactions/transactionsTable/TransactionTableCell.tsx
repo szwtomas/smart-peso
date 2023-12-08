@@ -1,6 +1,6 @@
 import { Button } from "@nextui-org/react";
-import { dateToString } from "../../../utils/utils";
 import { Transaction } from "../../../context/TransactionContext";
+import { yyyyMMddToddMMyyyy } from "../../../utils/utils";
 
 export interface TransactionTableCellProps {
   transaction: Transaction;
@@ -27,7 +27,7 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
         </p>
       );
     case "date":
-      return <p>{dateToString(cellValue as Date)}</p>;
+      return <p>{yyyyMMddToddMMyyyy(cellValue as string)}</p>;
     case "currency":
       return <p>{cellValue as string}</p>;
     case "value":
