@@ -5,6 +5,9 @@ import com.smartpeso.model.Transaction;
 import com.smartpeso.repositories.exceptions.DeleteTransactionException;
 import com.smartpeso.repositories.exceptions.TransactionCreationException;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,7 +39,7 @@ public class TransactionRepository {
     }
 
     public List<Transaction> getTransactionsByUserId(String userId) {
-        Query query = new Query(Criteria.where("user.$id").is(userId));
+        Query query = new Query(Criteria.where("userId").is(userId));
         return mongoTemplate.find(query, Transaction.class, TRANSACTION_COLLECTION);
     }
 

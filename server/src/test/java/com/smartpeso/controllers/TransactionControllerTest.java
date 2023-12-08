@@ -235,7 +235,7 @@ public class TransactionControllerTest {
     private Transaction transactionFromTransactionDTO(TransactionDTO transactionDTO) {
         return new Transaction(
                 "someId",
-                getUser(),
+                "userId",
                 transactionDTO.name(),
                 new Date(),
                 transactionDTO.type(),
@@ -250,7 +250,7 @@ public class TransactionControllerTest {
     private Transaction getTransaction(String transactionId) {
         return new Transaction(
                 transactionId,
-                getUser(),
+                "userId",
                 "Shopping",
                 new Date(),
                 "expense",

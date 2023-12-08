@@ -2,7 +2,6 @@ package com.smartpeso.repositories;
 
 import com.mongodb.client.result.DeleteResult;
 import com.smartpeso.model.Transaction;
-import com.smartpeso.model.User;
 import com.smartpeso.repositories.exceptions.DeleteTransactionException;
 import com.smartpeso.repositories.exceptions.TransactionCreationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +88,6 @@ public class TransactionRepositoryTest {
 
         Optional<Transaction> actual = unit.getTransactionById(existingTransactionId);
 
-        // Assert
         assertTrue(actual.isPresent());
         assertEquals(existingTransactionId, actual.get().getTransactionId());
     }
@@ -154,7 +152,7 @@ public class TransactionRepositoryTest {
     private Transaction createTransaction() {
         return new Transaction(
                 "someId",
-                new User("john.doe@mail.com", "password", "user", "John", "Doe"),
+                "userId",
                 "Salary Paycheck",
                 new Date(),
                 "income",
@@ -169,7 +167,7 @@ public class TransactionRepositoryTest {
     private Transaction createTransaction(String id) {
         return new Transaction(
                 id,
-                new User("john.doe@mail.com", "password", "user", "John", "Doe"),
+                "userId",
                 "Salary Paycheck",
                 new Date(),
                 "income",

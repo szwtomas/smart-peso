@@ -85,7 +85,7 @@ public class TransactionServiceTest {
 
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUser(user);
+        existingTransaction.setUserId("user-id");
 
         when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.of(existingTransaction));
         when(transactionRepositoryMock.upsertTransaction(any(Transaction.class))).thenReturn(existingTransaction);
@@ -114,7 +114,7 @@ public class TransactionServiceTest {
 
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUser(user);
+        existingTransaction.setUserId("user-id");
 
         when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.empty());
 
@@ -128,12 +128,9 @@ public class TransactionServiceTest {
         User user = getUser();
         user.setUserId("user-id");
 
-        User otherUser = getUser();
-        otherUser.setUserId("other-user-id");
-
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUser(otherUser);
+        existingTransaction.setUserId("other-user-id");
 
         when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.of(existingTransaction));
 
@@ -148,7 +145,7 @@ public class TransactionServiceTest {
         user.setUserId("user-id");
 
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUser(user);
+        existingTransaction.setUserId("user-id");
 
         when(transactionRepositoryMock.getTransactionById(eq("someId"))).thenReturn(Optional.of(existingTransaction));
 
@@ -174,11 +171,8 @@ public class TransactionServiceTest {
         User user = getUser();
         user.setUserId("user-id");
 
-        User otherUser = getUser();
-        otherUser.setUserId("other-user-id");
-
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUser(otherUser);
+        existingTransaction.setUserId("other-user-id");
 
         when(transactionRepositoryMock.getTransactionById(eq("someId"))).thenReturn(Optional.of(existingTransaction));
 
@@ -202,7 +196,7 @@ public class TransactionServiceTest {
     private Transaction transactionFromTransactionDTO(TransactionDTO transactionDTO) {
         return new Transaction(
                 "someId",
-                getUser(),
+                "user-id",
                 transactionDTO.name(),
                 new Date(),
                 transactionDTO.type(),
@@ -217,7 +211,7 @@ public class TransactionServiceTest {
     private Transaction createTransaction(String id) {
         return new Transaction(
                 id,
-                new User("john.doe@mail.com", "password", "user", "John", "Doe"),
+                "user-id",
                 "Salary Paycheck",
                 new Date(),
                 "income",

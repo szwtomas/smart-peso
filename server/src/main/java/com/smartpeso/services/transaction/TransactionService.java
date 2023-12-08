@@ -6,6 +6,7 @@ import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
 import com.smartpeso.repositories.TransactionRepository;
 import com.smartpeso.validators.TransactionValidator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionValidator transactionValidator;
@@ -23,7 +25,7 @@ public class TransactionService {
     }
 
     public Transaction createTransaction(TransactionDTO transactionDTO, User user) {
-        Transaction transaction = createTransactionModel(transactionDTO, user);
+        Transaction transaction = createTransactionModel(transactionDTO, user.getUserId());
         transactionValidator.validateTransaction(transaction);
         return transactionRepository.upsertTransaction(transaction);
     }
@@ -36,10 +38,10 @@ public class TransactionService {
         return UUID.randomUUID().toString();
     }
 
-    private Transaction createTransactionModel(TransactionDTO createTransactionRequest, User user) {
+    private Transaction createTransactionModel(TransactionDTO createTransactionRequest, String userId) {
         return new Transaction(
                 createTransactionId(),
-                user,
+                userId,
                 createTransactionRequest.name(),
                 new Date(),
                 createTransactionRequest.type(),
@@ -68,7 +70,7 @@ public class TransactionService {
                 .getTransactionById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction with id " + transactionId + " not found"));
 
-        if (!transaction.getUser().getUserId().equals(userId)) {
+        if (!transaction.getUserId().equals(userId)) {
             throw new TransactionNotFoundException(String.format("User %s does not have transaction %s", userId, transactionId));
         }
 

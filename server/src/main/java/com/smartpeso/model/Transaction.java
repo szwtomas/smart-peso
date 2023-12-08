@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -21,10 +20,9 @@ public class Transaction {
     @Field(name = "_id")
     private String transactionId;
 
-    @DBRef
-    @Field(name = "user")
+    @Field(name = "userId")
     @JsonIgnore
-    private User user;
+    private String userId;
 
     @Field(name = "name")
     private String name;

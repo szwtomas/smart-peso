@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionValidator {
     public void validateTransaction(@NonNull Transaction transaction) {
-        validateTransactionUser(transaction.getUser());
+        validateTransactionUser(transaction.getUserId());
         validateTransactionType(transaction.getType());
     }
 
-    private void validateTransactionUser(User user) {
-        if (user == null) {
+    private void validateTransactionUser(String userId) {
+        if (userId == null) {
             throw new TransactionValidationException("User must exist");
         }
     }

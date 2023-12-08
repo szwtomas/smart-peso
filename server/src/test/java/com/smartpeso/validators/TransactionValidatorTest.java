@@ -13,7 +13,7 @@ public class TransactionValidatorTest {
     public void validateTransaction_givenValidTransaction_itShouldValidateCorrectly() {
         Transaction transaction = new Transaction(
                 "someId",
-                getUser(),
+                "userId",
                 "Salary Paycheck",
                 new Date(),
                 "income",
@@ -49,7 +49,24 @@ public class TransactionValidatorTest {
         });
     }
 
-    private User getUser() {
-        return new User("john.doe@mail.com", "password", "user", "John", "Doe");
+    @Test
+    public void validateTransaction_givenTransactionTypeIsNotIncomeOrExpense_itShouldThrowValidationException() {
+        Transaction transaction = new Transaction(
+                "someId",
+                null,
+                "Salary Paycheck",
+                new Date(),
+                "invalid type",
+                "USD",
+                1000.0,
+                "Salary",
+                "This month paycheck",
+                null
+        );
+
+        TransactionValidator unit = new TransactionValidator();
+        assertThrows(TransactionValidationException.class, () -> {
+            unit.validateTransaction(transaction);
+        });
     }
 }
