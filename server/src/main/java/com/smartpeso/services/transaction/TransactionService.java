@@ -9,7 +9,6 @@ import com.smartpeso.validators.TransactionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +42,7 @@ public class TransactionService {
                 createTransactionId(),
                 userId,
                 createTransactionRequest.name(),
-                new Date(),
+                createTransactionRequest.date(),
                 createTransactionRequest.type(),
                 createTransactionRequest.currency(),
                 createTransactionRequest.value(),

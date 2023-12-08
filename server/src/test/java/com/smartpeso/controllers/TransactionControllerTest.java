@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -228,7 +229,8 @@ public class TransactionControllerTest {
                 null,
                 1000.0,
                 "Salary",
-                "This month paycheck"
+                "This month paycheck",
+                LocalDateTime.now()
         );
     }
 
@@ -237,7 +239,7 @@ public class TransactionControllerTest {
                 "someId",
                 "userId",
                 transactionDTO.name(),
-                new Date(),
+                LocalDateTime.now(),
                 transactionDTO.type(),
                 transactionDTO.currency(),
                 transactionDTO.value(),
@@ -252,7 +254,7 @@ public class TransactionControllerTest {
                 transactionId,
                 "userId",
                 "Shopping",
-                new Date(),
+                LocalDateTime.now(),
                 "expense",
                 "usd",
                 100.0,

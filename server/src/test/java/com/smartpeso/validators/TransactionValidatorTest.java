@@ -4,6 +4,7 @@ import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,7 +16,7 @@ public class TransactionValidatorTest {
                 "someId",
                 "userId",
                 "Salary Paycheck",
-                new Date(),
+                LocalDateTime.now(),
                 "income",
                 "USD",
                 1000.0,
@@ -34,7 +35,7 @@ public class TransactionValidatorTest {
                 "someId",
                 null,
                 "Salary Paycheck",
-                new Date(),
+                LocalDateTime.now(),
                 "income",
                 "USD",
                 1000.0,
@@ -55,7 +56,7 @@ public class TransactionValidatorTest {
                 "someId",
                 null,
                 "Salary Paycheck",
-                new Date(),
+                LocalDateTime.now(),
                 "invalid type",
                 "USD",
                 1000.0,

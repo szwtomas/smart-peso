@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -154,7 +155,7 @@ public class TransactionRepositoryTest {
                 "someId",
                 "userId",
                 "Salary Paycheck",
-                new Date(),
+                LocalDateTime.now(),
                 "income",
                 "USD",
                 1000.0,
@@ -169,7 +170,7 @@ public class TransactionRepositoryTest {
                 id,
                 "userId",
                 "Salary Paycheck",
-                new Date(),
+                LocalDateTime.now(),
                 "income",
                 "USD",
                 1000.0,

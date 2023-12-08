@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -189,7 +190,8 @@ public class TransactionServiceTest {
                 Optional.of("cash"),
                 1000.0,
                 "Salary",
-                "This month paycheck"
+                "This month paycheck",
+                LocalDateTime.now()
         );
     }
 
@@ -198,7 +200,7 @@ public class TransactionServiceTest {
                 "someId",
                 "user-id",
                 transactionDTO.name(),
-                new Date(),
+                LocalDateTime.now(),
                 transactionDTO.type(),
                 transactionDTO.currency(),
                 transactionDTO.value(),
@@ -213,7 +215,7 @@ public class TransactionServiceTest {
                 id,
                 "user-id",
                 "Salary Paycheck",
-                new Date(),
+                LocalDateTime.now(),
                 "income",
                 "USD",
                 1000.0,
