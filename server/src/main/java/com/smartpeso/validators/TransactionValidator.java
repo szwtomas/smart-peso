@@ -1,14 +1,27 @@
 package com.smartpeso.validators;
 
 import com.smartpeso.model.Transaction;
+import com.smartpeso.model.User;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionValidator {
     public void validateTransaction(@NonNull Transaction transaction) {
-        if (transaction.getUser() == null) {
+        validateTransactionUser(transaction.getUser());
+        validateTransactionType(transaction.getType());
+    }
+
+    private void validateTransactionUser(User user) {
+        if (user == null) {
             throw new TransactionValidationException("User must exist");
+        }
+    }
+
+    private void validateTransactionType(String type) {
+        String typeLower = type.toLowerCase();
+        if (!(typeLower.equals("income") || typeLower.equals("expense"))) {
+            throw new TransactionValidationException("Transaction type can only be income or expense");
         }
     }
 }
