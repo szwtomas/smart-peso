@@ -2,9 +2,11 @@ package com.smartpeso.controllers;
 
 import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
+import com.smartpeso.model.dto.transaction.DeleteTransactionRequest;
 import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
-import com.smartpeso.repositories.TransactionCreationException;
+import com.smartpeso.repositories.exceptions.DeleteTransactionException;
+import com.smartpeso.repositories.exceptions.TransactionCreationException;
 import com.smartpeso.services.transaction.TransactionNotFoundException;
 import com.smartpeso.services.transaction.TransactionService;
 import com.smartpeso.validators.TransactionValidationException;
@@ -22,8 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TransactionControllerTest {
     @Mock
@@ -165,7 +166,7 @@ public class TransactionControllerTest {
     }
 
     @Test
-    public void editTransaction_givenTransactionUpserFailsWithUnexpectedError_shouldReturnInternalServerError() {
+    public void editTransaction_givenTransactionUpsertFailsWithUnexpectedError_shouldReturnInternalServerError() {
         User user = getUser();
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
 
@@ -175,6 +176,46 @@ public class TransactionControllerTest {
         ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
 
         verify(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
+
+        assertEquals(500, actualResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void deleteTransaction_givenDeletionIsSuccessful_shouldReturnSuccessStatus() {
+        User user = getUser();
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-id");
+
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.deleteTransaction(user, deleteRequest);
+
+        assertEquals(202, actualResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void deleteTransaction_givenDeletionThrowsNotFound_shouldReturnNotFoundStatus() {
+        User user = getUser();
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-id");
+
+        doThrow(new TransactionNotFoundException("not found")).when(transactionServiceMock).deleteTransaction(eq("some-id"), eq(user));
+
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.deleteTransaction(user, deleteRequest);
+
+        assertEquals(404, actualResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void deleteTransaction_givenDeletionThrowsDeletionException_shouldReturnInternalServerErrorStatus() {
+        User user = getUser();
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-id");
+
+        doThrow(new DeleteTransactionException("some error")).when(transactionServiceMock).deleteTransaction(eq("some-id"), eq(user));
+
+        TransactionController unit = new TransactionController(transactionServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.deleteTransaction(user, deleteRequest);
 
         assertEquals(500, actualResponse.getStatusCode().value());
     }

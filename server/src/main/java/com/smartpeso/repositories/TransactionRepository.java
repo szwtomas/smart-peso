@@ -1,6 +1,9 @@
 package com.smartpeso.repositories;
 
+import com.mongodb.client.result.DeleteResult;
 import com.smartpeso.model.Transaction;
+import com.smartpeso.repositories.exceptions.DeleteTransactionException;
+import com.smartpeso.repositories.exceptions.TransactionCreationException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -35,5 +38,12 @@ public class TransactionRepository {
     public List<Transaction> getTransactionsByUserId(String userId) {
         Query query = new Query(Criteria.where("user.$id").is(userId));
         return mongoTemplate.find(query, Transaction.class, TRANSACTION_COLLECTION);
+    }
+
+    public void deleteTransaction(Transaction transaction) {
+        DeleteResult deleteResult = mongoTemplate.remove(transaction, TRANSACTION_COLLECTION);
+        if (deleteResult.getDeletedCount() != 1) {
+            throw new DeleteTransactionException("transaction with id " + transaction.getTransactionId() + " not found");
+        }
     }
 }

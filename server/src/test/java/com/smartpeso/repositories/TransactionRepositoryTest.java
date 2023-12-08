@@ -1,7 +1,10 @@
 package com.smartpeso.repositories;
 
+import com.mongodb.client.result.DeleteResult;
 import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
+import com.smartpeso.repositories.exceptions.DeleteTransactionException;
+import com.smartpeso.repositories.exceptions.TransactionCreationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -105,6 +108,48 @@ public class TransactionRepositoryTest {
         assertFalse(result.isPresent());
     }
 
+    @Test
+    public void deleteTransaction_givenDeletionResultIsOk_shouldNotThrowException() {
+        Transaction transaction = createTransaction();
+
+        when(mongoTemplateMock.remove(eq(transaction), eq("transactions"))).thenReturn(new DeleteResult() {
+            @Override
+            public boolean wasAcknowledged() {
+                return false;
+            }
+
+            @Override
+            public long getDeletedCount() {
+                return 1;
+            }
+        });
+
+        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+        unit.deleteTransaction(transaction);
+
+        verify(mongoTemplateMock).remove(eq(transaction), eq("transactions"));
+    }
+
+    @Test
+    public void deleteTransaction_givenDeletionResultIsNotOk_shouldThrowTransactionDeletionException() {
+        Transaction transaction = createTransaction();
+
+        when(mongoTemplateMock.remove(eq(transaction), eq("transactions"))).thenReturn(new DeleteResult() {
+            @Override
+            public boolean wasAcknowledged() {
+                return false;
+            }
+
+            @Override
+            public long getDeletedCount() {
+                return 0;
+            }
+        });
+
+        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+
+        assertThrows(DeleteTransactionException.class, () -> unit.deleteTransaction(transaction));
+    }
 
     private Transaction createTransaction() {
         return new Transaction(

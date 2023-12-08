@@ -1,6 +1,8 @@
 package com.smartpeso.repositories;
 
 import com.smartpeso.model.User;
+import com.smartpeso.repositories.exceptions.UserAlreadyExistsException;
+import com.smartpeso.repositories.exceptions.UserCreationException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

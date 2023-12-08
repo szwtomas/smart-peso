@@ -2,8 +2,8 @@ package com.smartpeso.services;
 
 import com.smartpeso.model.User;
 import com.smartpeso.model.dto.auth.AuthenticationResponse;
-import com.smartpeso.repositories.UserAlreadyExistsException;
-import com.smartpeso.repositories.UserCreationException;
+import com.smartpeso.repositories.exceptions.UserAlreadyExistsException;
+import com.smartpeso.repositories.exceptions.UserCreationException;
 import com.smartpeso.repositories.UserRepository;
 import com.smartpeso.services.auth.AuthService;
 import com.smartpeso.services.auth.JwtService;

@@ -142,6 +142,51 @@ public class TransactionServiceTest {
         assertThrows(TransactionNotFoundException.class, () -> unit.editTransaction(editTransactionRequest, user));
     }
 
+    @Test
+    public void deleteTransaction_givenExistingTransactionAndCorrectUser_shouldNotThrowException() {
+        User user = getUser();
+        user.setUserId("user-id");
+
+        Transaction existingTransaction = createTransaction("someId");
+        existingTransaction.setUser(user);
+
+        when(transactionRepositoryMock.getTransactionById(eq("someId"))).thenReturn(Optional.of(existingTransaction));
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+        unit.deleteTransaction("someId", user);
+
+        verify(transactionRepositoryMock).deleteTransaction(eq(existingTransaction));
+    }
+
+    @Test
+    public void deleteTransaction_givenNonExistingTransactionAndCorrectUser_shouldNotThrowException() {
+        User user = getUser();
+
+        when(transactionRepositoryMock.getTransactionById(eq("otherId"))).thenReturn(Optional.empty());
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+
+        assertThrows(TransactionNotFoundException.class, () -> unit.deleteTransaction("otherId", user));
+    }
+
+    @Test
+    public void deleteTransaction_givenUserDoesNotHaveTheTransaction_shouldNotThrowException() {
+        User user = getUser();
+        user.setUserId("user-id");
+
+        User otherUser = getUser();
+        otherUser.setUserId("other-user-id");
+
+        Transaction existingTransaction = createTransaction("someId");
+        existingTransaction.setUser(otherUser);
+
+        when(transactionRepositoryMock.getTransactionById(eq("someId"))).thenReturn(Optional.of(existingTransaction));
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+
+        assertThrows(TransactionNotFoundException.class, () -> unit.deleteTransaction("someId", user));
+    }
+
     private TransactionDTO getTransactionDTO() {
         return new TransactionDTO(
                 "Salary Paycheck",

@@ -1,4 +1,4 @@
-package com.smartpeso.repositories;
+package com.smartpeso.repositories.exceptions;
 
 public class UserCreationException extends RuntimeException {
     public UserCreationException(String message) {

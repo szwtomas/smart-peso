@@ -1,4 +1,4 @@
-package com.smartpeso.repositories;
+package com.smartpeso.repositories.exceptions;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String message) {

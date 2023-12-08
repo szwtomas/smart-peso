@@ -2,7 +2,7 @@ package com.smartpeso.controllers;
 
 import com.smartpeso.model.dto.auth.AuthenticationResponse;
 import com.smartpeso.model.dto.auth.SignUpRequest;
-import com.smartpeso.repositories.UserCreationException;
+import com.smartpeso.repositories.exceptions.UserCreationException;
 import com.smartpeso.services.auth.AuthService;
 import com.smartpeso.services.auth.UserCreationResult;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,8 @@
 package com.smartpeso.repositories;
 
 import com.smartpeso.model.User;
+import com.smartpeso.repositories.exceptions.UserAlreadyExistsException;
+import com.smartpeso.repositories.exceptions.UserCreationException;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

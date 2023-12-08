@@ -58,6 +58,11 @@ public class TransactionService {
         return transactionRepository.upsertTransaction(transaction);
     }
 
+    public void deleteTransaction(String transactionId, User user) {
+        Transaction transactionToDelete = findUserTransaction(transactionId, user.getUserId());
+        transactionRepository.deleteTransaction(transactionToDelete);
+    }
+
     private Transaction findUserTransaction(String transactionId, String userId) {
         Transaction transaction = transactionRepository
                 .getTransactionById(transactionId)
