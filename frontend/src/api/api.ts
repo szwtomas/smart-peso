@@ -1,5 +1,5 @@
 import { Transaction, TransactionDTO } from "../context/TransactionContext";
-import { HTTP_STATUS_CONFLICT, HTTP_STATUS_CREATED, HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from "./constants";
+import { HTTP_STATUS_ACCEPTED, HTTP_STATUS_CONFLICT, HTTP_STATUS_CREATED, HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from "./httpConstants";
 import { HttpService } from "./httpService";
 import { AuthenticationResponse, SignUpRequestBody } from "./types";
 
@@ -56,6 +56,14 @@ export class Api {
         if (response.status !== HTTP_STATUS_OK) {
             console.error(await response.text());
             throw new Error("Error inesperado al actualizar la transacción");
+        }
+    }
+
+    public async deleteTransaction(transactionId: string): Promise<void> {
+        const response = await this.httpService.delete(`/api/transaction`, { transactionId });
+        if (response.status !== HTTP_STATUS_ACCEPTED) {
+            console.error(await response.text());
+            throw new Error("Error inesperado al eliminar la transacción");
         }
     }
 }

@@ -48,6 +48,19 @@ export class HttpService {
         }
     }
 
+    public async delete(path: string, body: unknown): Promise<Response> {
+        try {
+            return await fetch(`${this.host}${path}`, {
+                method: "DELETE",
+                headers: this.getHeaders(),
+                body: JSON.stringify(body),
+            });
+        } catch(err) {
+            console.error(err);
+            throw new Error("Error inesperado");
+        }
+    }
+
     private getHeaders(): Headers {
         const headers = new Headers();
         headers.append("Content-Type", "application/json");

@@ -29,8 +29,12 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
-  const { getTransactions, addTransaction, editTransaction } =
-    useContext(TransactionContext);
+  const {
+    getTransactions,
+    addTransaction,
+    editTransaction,
+    deleteTransaction,
+  } = useContext(TransactionContext);
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
@@ -99,15 +103,21 @@ export function TransactionContainer() {
         setNeedToFetchTransactions(true);
       };
 
+      const onDelete = async (transaction: Transaction) => {
+        await deleteTransaction(transaction);
+        setNeedToFetchTransactions(true);
+      };
+
       return (
         <TransactionTableCell
           transaction={transaction}
           columnKey={columnKey}
           onSaveEditTransaction={onSaveEdit}
+          onDeleteTransaction={onDelete}
         />
       );
     },
-    [editTransaction, setNeedToFetchTransactions]
+    [editTransaction, setNeedToFetchTransactions, deleteTransaction]
   );
 
   const onNextPage = useCallback(() => {

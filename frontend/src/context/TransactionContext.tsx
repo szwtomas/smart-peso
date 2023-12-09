@@ -36,12 +36,14 @@ interface TransactionContextProps {
   getTransactions: () => Promise<Transaction[]>;
   addTransaction: (transaction: CreateTransactionFormData) => Promise<void>;
   editTransaction: (transaction: Transaction) => Promise<void>;
+  deleteTransaction: (transaction: Transaction) => Promise<void>;
 }
 
 const initialTransactionContext: TransactionContextProps = {
   getTransactions: async () => [],
   addTransaction: async () => {},
   editTransaction: async () => {},
+  deleteTransaction: async () => {},
 };
 
 export const TransactionContext = createContext<TransactionContextProps>(
@@ -77,12 +79,17 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = (
     await api.updateTransaction(transaction);
   }
 
+  async function deleteTransaction(transaction: Transaction): Promise<void> {
+    await api.deleteTransaction(transaction.transactionId);
+  }
+
   return (
     <TransactionContext.Provider
       value={{
         getTransactions,
         addTransaction,
         editTransaction,
+        deleteTransaction,
       }}
     >
       {props.children}

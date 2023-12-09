@@ -1,4 +1,11 @@
-import { Tooltip, useDisclosure } from "@nextui-org/react";
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Tooltip,
+  useDisclosure,
+} from "@nextui-org/react";
 import { Transaction } from "../../../context/TransactionContext";
 import { yyyyMMddToddMMyyyy } from "../../../utils/utils";
 import { DeleteIcon, EditIcon, EyeIcon } from "../../Icons";
@@ -8,6 +15,7 @@ export interface TransactionTableCellProps {
   transaction: Transaction;
   columnKey: React.Key;
   onSaveEditTransaction: (transaction: Transaction) => void;
+  onDeleteTransaction: (transaction: Transaction) => void;
 }
 
 export function TransactionTableCell(props: TransactionTableCellProps) {
@@ -17,6 +25,28 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
   const onOpenEdit = editTrasactionDisclosure.onOpen;
   const onOpenChangeEdit = editTrasactionDisclosure.onOpenChange;
   const cellValue = transaction[columnKey as keyof Transaction];
+
+  const content = (
+    <PopoverContent>
+      <div className="px-1 py-2">
+        <div className="text-small font-bold">Eliminar transacción</div>
+        <div className="text-tiny">¿Estás seguro/a?</div>
+        <Button
+          color="danger"
+          variant="solid"
+          size="sm"
+          className="mt-2 flex items-center justify-center w-full font-bold"
+          startContent={<DeleteIcon />}
+          onClick={() => {
+            props.onDeleteTransaction(transaction);
+          }}
+        >
+          Eliminar
+        </Button>
+      </div>
+    </PopoverContent>
+  );
+
   switch (columnKey) {
     case "id":
       return <p>{cellValue as string}</p>;
@@ -73,11 +103,15 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
             transaction={transaction}
             onSaveEdit={props.onSaveEditTransaction}
           />
-          <Tooltip color="danger" content="Eliminar">
-            <span className="text-lg text-danger cursor-pointer active:opacity-50">
-              <DeleteIcon />
-            </span>
-          </Tooltip>
+          <Popover placement="bottom" color="default">
+            <PopoverTrigger>
+              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                <DeleteIcon />
+              </span>
+            </PopoverTrigger>
+
+            {content}
+          </Popover>
         </div>
       );
     default:
