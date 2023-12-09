@@ -6,7 +6,7 @@ import {
   DropdownTrigger,
   Selection,
 } from "@nextui-org/react";
-import { ChevronDownIcon } from "./Icons";
+import { ChevronDownIcon } from "../../Icons";
 import { capitalize } from "../../../utils/utils";
 import { TransactionTypeOption } from "./columnData";
 

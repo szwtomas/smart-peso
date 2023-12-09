@@ -1,15 +1,20 @@
-import { Button } from "@nextui-org/react";
+import { Tooltip, useDisclosure } from "@nextui-org/react";
 import { Transaction } from "../../../context/TransactionContext";
 import { yyyyMMddToddMMyyyy } from "../../../utils/utils";
+import { DeleteIcon, EditIcon, EyeIcon } from "../../Icons";
+import { EditTransactionModal } from "../modal/EditTransactionModal";
 
 export interface TransactionTableCellProps {
   transaction: Transaction;
   columnKey: React.Key;
-  onOpen: () => void;
 }
 
 export function TransactionTableCell(props: TransactionTableCellProps) {
   const { transaction, columnKey } = props;
+  const editTrasactionDisclosure = useDisclosure();
+  const isOpenEdit = editTrasactionDisclosure.isOpen;
+  const onOpenEdit = editTrasactionDisclosure.onOpen;
+  const onOpenChangeEdit = editTrasactionDisclosure.onOpenChange;
   const cellValue = transaction[columnKey as keyof Transaction];
   switch (columnKey) {
     case "id":
@@ -44,12 +49,30 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
       return <p>{cellValue as string}</p>;
     case "actions":
       return (
-        <div>
-          <Button size="sm" variant="light" onClick={props.onOpen}>
-            <p className="text-xl text-primary">
-              <b>+</b>
-            </p>
-          </Button>
+        <div className="relative flex items-center gap-7 justify-end">
+          <Tooltip content="Ver más">
+            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <EyeIcon />
+            </span>
+          </Tooltip>
+          <Tooltip content="Editar" onClick={onOpenEdit}>
+            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <EditIcon onClick={onOpenEdit} />
+            </span>
+          </Tooltip>
+          <EditTransactionModal
+            isOpen={isOpenEdit}
+            onOpenChange={onOpenChangeEdit}
+            transaction={transaction}
+            onSaveEdit={(t: Transaction) => {
+              console.log(t);
+            }}
+          />
+          <Tooltip color="danger" content="Eliminar">
+            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <DeleteIcon />
+            </span>
+          </Tooltip>
         </div>
       );
     default:

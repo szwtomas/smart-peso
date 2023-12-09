@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Selection, SortDescriptor, useDisclosure } from "@nextui-org/react";
+import { Selection, SortDescriptor } from "@nextui-org/react";
 import {
   columns,
   transactionTypeOptions,
@@ -14,7 +14,6 @@ import {
   TransactionContext,
 } from "../../context/TransactionContext";
 import { toast } from "react-toastify";
-import { TransactionModal } from "./modal/TransactionModal";
 
 export function TransactionContainer() {
   const [needToFetchTransactions, setNeedToFetchTransactions] =
@@ -30,10 +29,7 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
-  const [transactionForEditing, setTransactionForEdit] =
-    useState<Transaction | null>(null);
   const { getTransactions, addTransaction } = useContext(TransactionContext);
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
@@ -98,17 +94,10 @@ export function TransactionContainer() {
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
       return (
-        <TransactionTableCell
-          transaction={transaction}
-          columnKey={columnKey}
-          onOpen={() => {
-            setTransactionForEdit(transaction);
-            onOpen();
-          }}
-        />
+        <TransactionTableCell transaction={transaction} columnKey={columnKey} />
       );
     },
-    [onOpen]
+    []
   );
 
   const onNextPage = useCallback(() => {
@@ -151,7 +140,7 @@ export function TransactionContainer() {
     ) => {
       try {
         await addTransaction(createTransactionData);
-        toast.success("Transacción creada exitosamente");
+        toast.success("Transacción Creada!");
         setNeedToFetchTransactions(true);
       } catch (error) {
         console.error(error);
@@ -223,11 +212,14 @@ export function TransactionContainer() {
         setSortDescriptor={setSortDescriptor}
         setSelectedKeys={setSelectedKeys}
       />
-      <TransactionModal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
-        transaction={transactionForEditing as Transaction}
-      />
+      {/* <EditTransactionModal
+        isOpen={isOpenEdit}
+        onOpenChange={onOpenChangeEdit}
+        transaction={transactionForEditing}
+        onSaveEdit={(t: Transaction) => {
+          console.log(t);
+        }}
+      /> */}
     </>
   );
 }

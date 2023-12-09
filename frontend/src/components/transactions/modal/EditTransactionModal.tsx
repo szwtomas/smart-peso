@@ -11,40 +11,47 @@ import {
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
+import { Transaction } from "../../../context/TransactionContext";
 import { useState } from "react";
-import { CreateTransactionFormData } from "../../../context/TransactionContext";
 
-export interface NewTransactionModalProps {
+export interface EditTransactionModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreateTransaction: (transaction: CreateTransactionFormData) => void;
+  transaction: Transaction;
+  onSaveEdit: (transaction: Transaction) => void;
 }
 
-function dateToString(date: Date): string {
-  return date.toISOString().split("T")[0];
-}
+export function EditTransactionModal(props: EditTransactionModalProps) {
+  const transaction = props.transaction;
+  const [name, setName] = useState<string>(transaction.name);
+  const [date, setDate] = useState<string>(transaction.date);
+  const [type, setType] = useState<string>(transaction.type);
+  const [currency, setCurrency] = useState<string>(transaction.currency);
+  const [value, setValue] = useState<number>(transaction.value);
+  const [category, setCategory] = useState<string>(transaction.category);
+  const [description, setDescription] = useState<string>(
+    transaction.description
+  );
 
-export function NewTransactionModal(props: NewTransactionModalProps) {
-  const [transactionName, setTransactionName] = useState<string>("");
-  const [transactionType, setTransactionType] = useState<string>("income");
-  const [category, setCategory] = useState<string>("");
-  const [currency, setCurrency] = useState<string>("ARS");
-  const [description, setDescription] = useState<string>("");
-  const [transactionValue, setTransactionValue] = useState<number>(0);
-  const [date, setDate] = useState<string>(dateToString(new Date()));
+  function shouldDisableSaveButton(): boolean {
+    return (
+      name === transaction.name &&
+      date === transaction.date &&
+      type === transaction.type &&
+      currency === transaction.currency &&
+      value === transaction.value &&
+      category === transaction.category &&
+      description === transaction.description
+    );
+  }
 
   return (
-    <Modal
-      closeButton
-      isOpen={props.isOpen}
-      onOpenChange={props.onOpenChange}
-      className="p-4"
-    >
+    <Modal closeButton isOpen={props.isOpen} onOpenChange={props.onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              <h2 className="text-2xl text-primary">CREAR NUEVA TRANSACCIÓN</h2>
+              <p>Editar Transacción</p>
             </ModalHeader>
             <ModalBody>
               <div>
@@ -60,8 +67,8 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     placeholder="Ej: Compras en el supermercado"
                     radius="sm"
                     className="my-1"
-                    value={transactionName}
-                    onChange={(e) => setTransactionName(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     label="Nombre"
                   />
                 </div>
@@ -79,10 +86,10 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     radius="sm"
                     className="my-1"
                     label="Tipo transacción"
-                    value={transactionType}
+                    value={type}
                     selectionMode="single"
                     onChange={(e) => {
-                      setTransactionType(e.target.value);
+                      setType(e.target.value);
                     }}
                   >
                     <SelectItem key="income" value="income">
@@ -170,12 +177,8 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                         <span className="text-default-400 text-small">$</span>
                       </div>
                     }
-                    value={
-                      transactionValue !== 0 ? transactionValue.toString() : ""
-                    }
-                    onChange={(e) =>
-                      setTransactionValue(e.target.valueAsNumber)
-                    }
+                    value={value !== 0 ? value.toString() : ""}
+                    onChange={(e) => setValue(e.target.valueAsNumber)}
                     className="my-1"
                   />
                 </div>
@@ -228,31 +231,32 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
             </ModalBody>
             <ModalFooter>
               <Button
+                radius="sm"
                 color="danger"
                 variant="light"
-                onPress={onClose}
-                radius="sm"
+                onClick={() => onClose()}
               >
                 Cerrar
               </Button>
               <Button
+                isDisabled={shouldDisableSaveButton()}
                 variant="shadow"
                 color="primary"
                 onClick={() => {
-                  props.onCreateTransaction({
-                    transactionName,
-                    transactionType,
-                    currency,
-                    description,
-                    transactionValue,
-                    category,
+                  props.onSaveEdit({
+                    transactionId: transaction.transactionId,
+                    name,
                     date,
+                    type: type as "income" | "expense",
+                    currency: currency as "ARS" | "USD",
+                    value,
+                    category,
+                    description,
                   });
-                  onClose();
                 }}
                 radius="sm"
               >
-                Crear Transacción
+                Editar
               </Button>
             </ModalFooter>
           </>

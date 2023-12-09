@@ -11,8 +11,8 @@ export const columns: Column[] = [
     { name: "MONEDA", uid: "currency", sortable: true },
     { name: "VALOR", uid: "value", sortable: true},
     { name: "CATEGORÍA", uid: "category", sortable: true},
-    { name: "VER MÁS", uid: "actions", sortable: false},
-];
+    { name: "", uid: "actions", sortable: false},
+];  
 
 export interface TransactionTypeOption {
   name: string;

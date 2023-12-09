@@ -71,7 +71,7 @@ export class Api {
                 body: JSON.stringify(body),
             });
         } catch(err) {
-            console.log(err);
+            console.error(err);
             throw new Error("Error inesperado");
         }
     }
