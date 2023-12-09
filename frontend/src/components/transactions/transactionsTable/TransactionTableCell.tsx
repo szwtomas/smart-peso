@@ -51,7 +51,13 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
     case "actions":
       return (
         <div className="relative flex items-center gap-7 justify-end">
-          <Tooltip content="Ver más">
+          <Tooltip
+            content={
+              transaction.description === ""
+                ? "No hay descripción"
+                : transaction.description
+            }
+          >
             <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
               <EyeIcon />
             </span>
