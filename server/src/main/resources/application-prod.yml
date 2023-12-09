@@ -1,0 +1,12 @@
+server:
+  port: 9090
+
+jwt:
+  secret: ${JWT_SECRET}
+
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI}
+      database: ${MONGO_DB}
+      authentication-database: admin
