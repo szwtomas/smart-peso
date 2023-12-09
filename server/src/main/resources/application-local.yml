@@ -1,0 +1,17 @@
+server:
+  port: 9090
+  servlet:
+    session:
+      cookie:
+        domain: localhost
+
+jwt:
+  secret: "8B887EAA238F79D1E117EA8BBBCED515396CD2ABB9172D476F24F1D432"
+
+spring:
+  data:
+    mongodb:
+      uri: "mongodb://smartpeso:password@localhost:27017/smartpeso-db"
+      database: smartpeso-db
+      authentication-database: admin
+
