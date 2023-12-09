@@ -7,6 +7,7 @@ import { EditTransactionModal } from "../modal/EditTransactionModal";
 export interface TransactionTableCellProps {
   transaction: Transaction;
   columnKey: React.Key;
+  onSaveEditTransaction: (transaction: Transaction) => void;
 }
 
 export function TransactionTableCell(props: TransactionTableCellProps) {
@@ -64,9 +65,7 @@ export function TransactionTableCell(props: TransactionTableCellProps) {
             isOpen={isOpenEdit}
             onOpenChange={onOpenChangeEdit}
             transaction={transaction}
-            onSaveEdit={(t: Transaction) => {
-              console.log(t);
-            }}
+            onSaveEdit={props.onSaveEditTransaction}
           />
           <Tooltip color="danger" content="Eliminar">
             <span className="text-lg text-danger cursor-pointer active:opacity-50">

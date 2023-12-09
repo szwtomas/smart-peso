@@ -29,7 +29,8 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
-  const { getTransactions, addTransaction } = useContext(TransactionContext);
+  const { getTransactions, addTransaction, editTransaction } =
+    useContext(TransactionContext);
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
@@ -93,11 +94,20 @@ export function TransactionContainer() {
 
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
+      const onSaveEdit = async (transaction: Transaction) => {
+        await editTransaction(transaction);
+        setNeedToFetchTransactions(true);
+      };
+
       return (
-        <TransactionTableCell transaction={transaction} columnKey={columnKey} />
+        <TransactionTableCell
+          transaction={transaction}
+          columnKey={columnKey}
+          onSaveEditTransaction={onSaveEdit}
+        />
       );
     },
-    []
+    [editTransaction, setNeedToFetchTransactions]
   );
 
   const onNextPage = useCallback(() => {
@@ -212,14 +222,6 @@ export function TransactionContainer() {
         setSortDescriptor={setSortDescriptor}
         setSelectedKeys={setSelectedKeys}
       />
-      {/* <EditTransactionModal
-        isOpen={isOpenEdit}
-        onOpenChange={onOpenChangeEdit}
-        transaction={transactionForEditing}
-        onSaveEdit={(t: Transaction) => {
-          console.log(t);
-        }}
-      /> */}
     </>
   );
 }

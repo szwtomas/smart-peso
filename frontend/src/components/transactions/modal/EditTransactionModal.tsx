@@ -16,7 +16,7 @@ import { useState } from "react";
 
 export interface EditTransactionModalProps {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: () => void;
   transaction: Transaction;
   onSaveEdit: (transaction: Transaction) => void;
 }
@@ -243,6 +243,7 @@ export function EditTransactionModal(props: EditTransactionModalProps) {
                 variant="shadow"
                 color="primary"
                 onClick={() => {
+                  onClose();
                   props.onSaveEdit({
                     transactionId: transaction.transactionId,
                     name,

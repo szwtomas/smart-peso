@@ -35,11 +35,13 @@ export interface TransactionDTO {
 interface TransactionContextProps {
   getTransactions: () => Promise<Transaction[]>;
   addTransaction: (transaction: CreateTransactionFormData) => Promise<void>;
+  editTransaction: (transaction: Transaction) => Promise<void>;
 }
 
 const initialTransactionContext: TransactionContextProps = {
   getTransactions: async () => [],
-  addTransaction: async () => console.log("Add Transaction"),
+  addTransaction: async () => {},
+  editTransaction: async () => {},
 };
 
 export const TransactionContext = createContext<TransactionContextProps>(
@@ -71,11 +73,16 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = (
     });
   }
 
+  async function editTransaction(transaction: Transaction): Promise<void> {
+    await api.updateTransaction(transaction);
+  }
+
   return (
     <TransactionContext.Provider
       value={{
         getTransactions,
         addTransaction,
+        editTransaction,
       }}
     >
       {props.children}
