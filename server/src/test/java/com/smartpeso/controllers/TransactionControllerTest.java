@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,7 +119,7 @@ public class TransactionControllerTest {
         User user = getUser();
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
 
-        Transaction newTransaction = getTransaction(editTransactionRequest.id());
+        Transaction newTransaction = getTransaction(editTransactionRequest.transactionId());
         newTransaction.setName(editTransactionRequest.name());
 
         when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenReturn(newTransaction);
@@ -184,7 +183,7 @@ public class TransactionControllerTest {
     @Test
     public void deleteTransaction_givenDeletionIsSuccessful_shouldReturnSuccessStatus() {
         User user = getUser();
-        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-id");
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-transactionId");
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -196,9 +195,9 @@ public class TransactionControllerTest {
     @Test
     public void deleteTransaction_givenDeletionThrowsNotFound_shouldReturnNotFoundStatus() {
         User user = getUser();
-        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-id");
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-transactionId");
 
-        doThrow(new TransactionNotFoundException("not found")).when(transactionServiceMock).deleteTransaction(eq("some-id"), eq(user));
+        doThrow(new TransactionNotFoundException("not found")).when(transactionServiceMock).deleteTransaction(eq("some-transactionId"), eq(user));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -210,9 +209,9 @@ public class TransactionControllerTest {
     @Test
     public void deleteTransaction_givenDeletionThrowsDeletionException_shouldReturnInternalServerErrorStatus() {
         User user = getUser();
-        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-id");
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-transactionId");
 
-        doThrow(new DeleteTransactionException("some error")).when(transactionServiceMock).deleteTransaction(eq("some-id"), eq(user));
+        doThrow(new DeleteTransactionException("some error")).when(transactionServiceMock).deleteTransaction(eq("some-transactionId"), eq(user));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 

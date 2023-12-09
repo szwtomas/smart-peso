@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,19 +81,19 @@ public class TransactionServiceTest {
     @Test
     public void editTransaction_givenExistingTransactionAndValidRequest_shouldReturnUpdatedTransaction() {
         User user = getUser();
-        user.setUserId("user-id");
+        user.setUserId("user-transactionId");
 
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUserId("user-id");
+        existingTransaction.setUserId("user-transactionId");
 
-        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.of(existingTransaction));
+        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.transactionId()))).thenReturn(Optional.of(existingTransaction));
         when(transactionRepositoryMock.upsertTransaction(any(Transaction.class))).thenReturn(existingTransaction);
 
         TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
         Transaction editedTransaction = unit.editTransaction(editTransactionRequest, user);
 
-        verify(transactionRepositoryMock).getTransactionById(eq(editTransactionRequest.id()));
+        verify(transactionRepositoryMock).getTransactionById(eq(editTransactionRequest.transactionId()));
         verify(transactionValidatorMock).validateTransaction(eq(existingTransaction));
         verify(transactionRepositoryMock).upsertTransaction(eq(existingTransaction));
 
@@ -111,13 +110,13 @@ public class TransactionServiceTest {
     @Test
     public void editTransaction_givenTransactionDoesNotExist_shouldThrowTransactionNotFoundException() {
         User user = getUser();
-        user.setUserId("user-id");
+        user.setUserId("user-transactionId");
 
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUserId("user-id");
+        existingTransaction.setUserId("user-transactionId");
 
-        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.empty());
+        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.transactionId()))).thenReturn(Optional.empty());
 
         TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
 
@@ -127,13 +126,13 @@ public class TransactionServiceTest {
     @Test
     public void editTransaction_givenTransactionExistsButBelongsToDifferentUser_shouldThrowTransactionNotFoundException() {
         User user = getUser();
-        user.setUserId("user-id");
+        user.setUserId("user-transactionId");
 
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUserId("other-user-id");
+        existingTransaction.setUserId("other-user-transactionId");
 
-        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.id()))).thenReturn(Optional.of(existingTransaction));
+        when(transactionRepositoryMock.getTransactionById(eq(editTransactionRequest.transactionId()))).thenReturn(Optional.of(existingTransaction));
 
         TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
 
@@ -143,10 +142,10 @@ public class TransactionServiceTest {
     @Test
     public void deleteTransaction_givenExistingTransactionAndCorrectUser_shouldNotThrowException() {
         User user = getUser();
-        user.setUserId("user-id");
+        user.setUserId("user-transactionId");
 
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUserId("user-id");
+        existingTransaction.setUserId("user-transactionId");
 
         when(transactionRepositoryMock.getTransactionById(eq("someId"))).thenReturn(Optional.of(existingTransaction));
 
@@ -170,10 +169,10 @@ public class TransactionServiceTest {
     @Test
     public void deleteTransaction_givenUserDoesNotHaveTheTransaction_shouldNotThrowException() {
         User user = getUser();
-        user.setUserId("user-id");
+        user.setUserId("user-transactionId");
 
         Transaction existingTransaction = createTransaction("someId");
-        existingTransaction.setUserId("other-user-id");
+        existingTransaction.setUserId("other-user-transactionId");
 
         when(transactionRepositoryMock.getTransactionById(eq("someId"))).thenReturn(Optional.of(existingTransaction));
 
@@ -198,7 +197,7 @@ public class TransactionServiceTest {
     private Transaction transactionFromTransactionDTO(TransactionDTO transactionDTO) {
         return new Transaction(
                 "someId",
-                "user-id",
+                "user-transactionId",
                 transactionDTO.name(),
                 LocalDateTime.now(),
                 transactionDTO.type(),
@@ -213,7 +212,7 @@ public class TransactionServiceTest {
     private Transaction createTransaction(String id) {
         return new Transaction(
                 id,
-                "user-id",
+                "user-transactionId",
                 "Salary Paycheck",
                 LocalDateTime.now(),
                 "income",

@@ -60,11 +60,11 @@ public class TransactionController {
             @RequestBody EditTransactionRequest editTransactionRequest) {
         try {
             Transaction transaction = transactionService.editTransaction(editTransactionRequest, user);
-            log.info(String.format("Transaction with id %s successfully edited", editTransactionRequest.id()));
+            log.info(String.format("Transaction with transactionId %s successfully edited", editTransactionRequest.transactionId()));
             return new ResponseEntity<>(transaction, HttpStatus.OK);
         } catch (TransactionNotFoundException e) {
-            log.error(String.format("User %s tried to edit transaction [%s], but it does not exist", user.getEmail(), editTransactionRequest.id()));
-            return new ResponseEntity<>(String.format("Transaction %s does not exist", editTransactionRequest.id()), HttpStatus.NOT_FOUND);
+            log.error(String.format("User %s tried to edit transaction [%s], but it does not exist", user.getEmail(), editTransactionRequest.transactionId()));
+            return new ResponseEntity<>(String.format("Transaction %s does not exist", editTransactionRequest.transactionId()), HttpStatus.NOT_FOUND);
         } catch (TransactionValidationException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

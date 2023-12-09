@@ -53,7 +53,7 @@ public class TransactionService {
     }
 
     public Transaction editTransaction(EditTransactionRequest editTransactionRequest, User user) {
-        Transaction transaction = findUserTransaction(editTransactionRequest.id(), user.getUserId());
+        Transaction transaction = findUserTransaction(editTransactionRequest.transactionId(), user.getUserId());
         setNewFieldsToTransaction(transaction, editTransactionRequest);
         transactionValidator.validateTransaction(transaction);
         return transactionRepository.upsertTransaction(transaction);
@@ -67,7 +67,7 @@ public class TransactionService {
     private Transaction findUserTransaction(String transactionId, String userId) {
         Transaction transaction = transactionRepository
                 .getTransactionById(transactionId)
-                .orElseThrow(() -> new TransactionNotFoundException("Transaction with id " + transactionId + " not found"));
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction with transactionId " + transactionId + " not found"));
 
         if (!transaction.getUserId().equals(userId)) {
             throw new TransactionNotFoundException(String.format("User %s does not have transaction %s", userId, transactionId));

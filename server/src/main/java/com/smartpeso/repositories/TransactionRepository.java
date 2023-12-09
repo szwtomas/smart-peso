@@ -46,7 +46,7 @@ public class TransactionRepository {
     public void deleteTransaction(Transaction transaction) {
         DeleteResult deleteResult = mongoTemplate.remove(transaction, TRANSACTION_COLLECTION);
         if (deleteResult.getDeletedCount() != 1) {
-            throw new DeleteTransactionException("transaction with id " + transaction.getTransactionId() + " not found");
+            throw new DeleteTransactionException("transaction with transactionId " + transaction.getTransactionId() + " not found");
         }
     }
 }
