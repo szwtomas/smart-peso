@@ -99,13 +99,29 @@ export function TransactionContainer() {
   const renderCell = useCallback(
     (transaction: Transaction, columnKey: React.Key) => {
       const onSaveEdit = async (transaction: Transaction) => {
-        await editTransaction(transaction);
-        setNeedToFetchTransactions(true);
+        try {
+          await editTransaction(transaction);
+          setNeedToFetchTransactions(true);
+          toast.success("Transacción editada!");
+        } catch (error) {
+          console.error(error);
+          if (error instanceof Error) {
+            toast.error("Error inesperado editando la transacción");
+          }
+        }
       };
 
       const onDelete = async (transaction: Transaction) => {
-        await deleteTransaction(transaction);
-        setNeedToFetchTransactions(true);
+        try {
+          await deleteTransaction(transaction);
+          setNeedToFetchTransactions(true);
+          toast.success("Transacción eliminada!");
+        } catch (error) {
+          console.error(error);
+          if (error instanceof Error) {
+            toast.error("Error inesperado eliminando la transacción");
+          }
+        }
       };
 
       return (
