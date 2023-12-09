@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ import java.util.Date;
 @Service
 public class JwtService {
     private final static long ACCESS_TOKEN_DURATION_MILLIS = 1000 * 60 * 24;
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     public String generateAccessToken(String email, long duration) {
         return buildToken(email, duration);
@@ -63,8 +67,7 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        String secretKey = "8B887EAA238F79D1E117EA8BBBCED515396CD2ABB9172D476F24F1D432"; // TODO: Change this!!!
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
