@@ -21,6 +21,10 @@ export interface NewTransactionModalProps {
   onCreateTransaction: (transaction: CreateTransactionFormData) => void;
 }
 
+function dateToString(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
 export function NewTransactionModal(props: NewTransactionModalProps) {
   const [transactionName, setTransactionName] = useState<string>("");
   const [transactionType, setTransactionType] = useState<string>("income");
@@ -28,6 +32,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
   const [currency, setCurrency] = useState<string>("ARS");
   const [description, setDescription] = useState<string>("");
   const [transactionValue, setTransactionValue] = useState<number>(0);
+  const [date, setDate] = useState<string>(dateToString(new Date()));
 
   return (
     <Modal
@@ -185,6 +190,22 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                   </div>
                 )}
                 <div className="mt-2">
+                  <p className="text-md text-default-500">Fecha</p>
+                  <Input
+                    type="date"
+                    variant="flat"
+                    size="md"
+                    radius="sm"
+                    className="my-1"
+                    placeholder=""
+                    label=""
+                    value={date}
+                    onValueChange={(newDate) => {
+                      setDate(newDate);
+                    }}
+                  />
+                </div>
+                <div className="mt-2">
                   <p className="text-md text-default-500">Categoría</p>
                   <Input
                     size="md"
@@ -235,6 +256,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     description,
                     transactionValue,
                     category,
+                    date,
                   });
                   onClose();
                 }}

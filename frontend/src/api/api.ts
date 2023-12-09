@@ -41,10 +41,7 @@ export class Api {
 
     public async getTransactions(): Promise<Transaction[]> {
         const response = await this.get("/api/transaction");
-        const jsonResponse = (await response.json()) as unknown as Transaction[];
-        return jsonResponse.map((transaction: Transaction) => {
-            return {...transaction, date: new Date(transaction.date)};
-        });
+        return (await response.json()) as unknown as Transaction[];
     }
 
     public async createTransaction(transaction: TransactionDTO): Promise<void> {

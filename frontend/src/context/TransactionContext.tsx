@@ -4,7 +4,7 @@ import { api } from "../api";
 export interface Transaction {
   transactionId: string;
   name: string;
-  date: Date;
+  date: string; // yyyy-mm-dd
   value: number;
   type: "income" | "expense";
   description: string;
@@ -19,6 +19,7 @@ export interface CreateTransactionFormData {
   description: string;
   transactionValue: number;
   category: string;
+  date: string; // yyyy-mm-dd
 }
 
 export interface TransactionDTO {
@@ -28,6 +29,7 @@ export interface TransactionDTO {
   value: number;
   category: string;
   description: string;
+  date: string; // yyyy-mm-dd
 }
 
 interface TransactionContextProps {
@@ -65,6 +67,7 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = (
       value: createTransactionData.transactionValue,
       category: createTransactionData.category,
       description: createTransactionData.description,
+      date: createTransactionData.date,
     });
   }
 

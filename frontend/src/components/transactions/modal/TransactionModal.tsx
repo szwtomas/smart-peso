@@ -1,5 +1,6 @@
 import {
   Button,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -15,6 +16,8 @@ export interface TransactionModalProps {
 }
 
 export function TransactionModal(props: TransactionModalProps) {
+  const { transaction } = props;
+
   return (
     <Modal closeButton isOpen={props.isOpen} onOpenChange={props.onOpenChange}>
       <ModalContent>
@@ -24,8 +27,19 @@ export function TransactionModal(props: TransactionModalProps) {
               <h2 className="text-2xl text-primary">TRANSACCIÓN</h2>
             </ModalHeader>
             <ModalBody>
-              <p>Name</p>
-              <p>{props.transaction.name}</p>
+              <div>
+                <Input
+                  isReadOnly
+                  type="text"
+                  label="Name"
+                  variant="bordered"
+                  defaultValue={transaction.name}
+                  className="max-w-xs"
+                />
+              </div>
+              <div>
+                <Input type="date" />
+              </div>
             </ModalBody>
             <ModalFooter>
               <Button
