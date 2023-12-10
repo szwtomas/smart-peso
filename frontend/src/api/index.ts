@@ -1,15 +1,15 @@
 import { Api } from "./api";
 
 function getHost(): string {
-    if (process.env.VITE_VERCEL_ENVIRONMENT === "prod") {
-        const prodHost = process.env.VITE_VERCEL_PROD_HOST as string;
-        console.log("Setting host: ", prodHost);
-        return prodHost;
+    const localhost = import.meta.env.VITE_BACKEND_HOST;
+    if (localhost) {
+        return localhost as string;
     } else {
-        const localhost = import.meta.env.VITE_BACKEND_HOST as string;
-        console.log("Setting host: ", localhost);
-        return localhost;
+        return "https://smart-peso-production.up.railway.app";
     }
 }
 
-export const api = new Api(getHost());
+const host = getHost();
+console.log("Setting backend host: " + host);
+
+export const api = new Api(host);
