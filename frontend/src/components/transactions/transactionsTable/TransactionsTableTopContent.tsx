@@ -1,11 +1,12 @@
 import { Button, Selection, useDisclosure } from "@nextui-org/react";
-import { TransactionTypeOption } from "./columnData";
+import { TransactionFilterOption } from "./columnData";
 import { RowsPerPageSelector } from "./RowsPerPageSelector";
-import { TransactioTypeSelectorDropdown } from "./TransactionTypeSelectorDropdown";
+import { TransactionTypeSelectorDropdown } from "./TransactionTypeSelectorDropdown";
 import { TransactionTableFilterInput } from "./TransactionTableFilterInput";
 import { PlusIcon } from "../../Icons";
 import { NewTransactionModal } from "../modal/NewTransactionModal";
 import { CreateTransactionFormData } from "../../../context/TransactionContext";
+import { TransactionCurrencySelectorDropdown } from "./TransactionCurrencySelectorDropdown";
 
 interface TransactionTableTopContentProps {
   filterValue: string;
@@ -13,7 +14,10 @@ interface TransactionTableTopContentProps {
   onSearchChange: (value?: string) => void;
   transactionTypeFilter: Selection;
   setTransactionTypeFilter: React.Dispatch<React.SetStateAction<Selection>>;
-  transactionTypeOptions: TransactionTypeOption[];
+  transactionTypeOptions: TransactionFilterOption[];
+  transactionCurrencyFilter: Selection;
+  setTransactionCurrencyFilter: React.Dispatch<React.SetStateAction<Selection>>;
+  transactionCurrencyOptions: TransactionFilterOption[];
   transactionCount: number;
   onRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onCreateTransaction: (transaction: CreateTransactionFormData) => void;
@@ -33,10 +37,15 @@ export function TransactionsTableTopContent(
           onClear={props.onClear}
         />
         <div className="flex gap-3">
-          <TransactioTypeSelectorDropdown
+          <TransactionTypeSelectorDropdown
             transactionTypeFilter={props.transactionTypeFilter}
             transactionTypeOptions={props.transactionTypeOptions}
             setTransactionTypeFilter={props.setTransactionTypeFilter}
+          />
+          <TransactionCurrencySelectorDropdown
+            transactionCurrencyFilter={props.transactionCurrencyFilter}
+            transactionCurrencyOptions={props.transactionCurrencyOptions}
+            setTransactionCurrencyFilter={props.setTransactionCurrencyFilter}
           />
           <Button
             color="primary"

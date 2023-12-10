@@ -8,15 +8,15 @@ import {
 } from "@nextui-org/react";
 import { ChevronDownIcon } from "../../Icons";
 import { capitalize } from "../../../utils/utils";
-import { TransactionTypeOption } from "./columnData";
+import { TransactionFilterOption } from "./columnData";
 
 export interface TransactionTypeSelectorDropdownProps {
   transactionTypeFilter: Selection;
   setTransactionTypeFilter: React.Dispatch<React.SetStateAction<Selection>>;
-  transactionTypeOptions: TransactionTypeOption[];
+  transactionTypeOptions: TransactionFilterOption[];
 }
 
-export function TransactioTypeSelectorDropdown(
+export function TransactionTypeSelectorDropdown(
   props: TransactionTypeSelectorDropdownProps
 ) {
   return (

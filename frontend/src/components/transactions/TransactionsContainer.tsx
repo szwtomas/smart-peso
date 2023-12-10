@@ -1,9 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Selection, SortDescriptor } from "@nextui-org/react";
-import {
-  columns,
-  transactionTypeOptions,
-} from "./transactionsTable/columnData";
+import { columns } from "./transactionsTable/columnData";
 import { TransactionsTableTopContent } from "./transactionsTable/TransactionsTableTopContent";
 import { TransactionTableBottomContent } from "./transactionsTable/TransactionTableBottomContent";
 import { TransactionTableCell } from "./transactionsTable/TransactionTableCell";
@@ -14,6 +11,11 @@ import {
   TransactionContext,
 } from "../../context/TransactionContext";
 import { toast } from "react-toastify";
+import {
+  filterTransactions,
+  transactionCurrencyOptions,
+  transactionTypeOptions,
+} from "./transactionsTable/transactionFilters";
 
 export function TransactionContainer() {
   const [needToFetchTransactions, setNeedToFetchTransactions] =
@@ -24,6 +26,8 @@ export function TransactionContainer() {
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [transactionTypeFilter, setTransactionTypeFilter] =
+    useState<Selection>("all");
+  const [transactionCurrencyFilter, setTransactionCurrencyFilter] =
     useState<Selection>("all");
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "date",
@@ -37,8 +41,6 @@ export function TransactionContainer() {
   } = useContext(TransactionContext);
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
-  const hasSearchFilter = Boolean(filterValue);
-
   useEffect(() => {
     const fetchTransactions = async () => {
       if (!needToFetchTransactions) return;
@@ -58,26 +60,17 @@ export function TransactionContainer() {
   }, [getTransactions, needToFetchTransactions]);
 
   const filteredItems = useMemo(() => {
-    let filteredTransactions = [...transactionData];
-
-    if (hasSearchFilter) {
-      filteredTransactions = filteredTransactions.filter(
-        (transaction: Transaction) =>
-          transaction.name.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-    if (
-      transactionTypeFilter !== "all" &&
-      Array.from(transactionTypeFilter).length !== transactionTypeOptions.length
-    ) {
-      filteredTransactions = filteredTransactions.filter(
-        (transaction: Transaction) =>
-          Array.from(transactionTypeFilter).includes(transaction.type)
-      );
-    }
-
-    return filteredTransactions;
-  }, [transactionData, filterValue, transactionTypeFilter, hasSearchFilter]);
+    return filterTransactions(transactionData, {
+      name: filterValue,
+      type: transactionTypeFilter,
+      currency: transactionCurrencyFilter,
+    });
+  }, [
+    transactionData,
+    filterValue,
+    transactionTypeFilter,
+    transactionCurrencyFilter,
+  ]);
 
   const sortedItems = useMemo(() => {
     return [...filteredItems].sort((a: Transaction, b: Transaction) => {
@@ -195,6 +188,9 @@ export function TransactionContainer() {
         transactionTypeFilter={transactionTypeFilter}
         setTransactionTypeFilter={setTransactionTypeFilter}
         transactionTypeOptions={transactionTypeOptions}
+        transactionCurrencyFilter={transactionCurrencyFilter}
+        setTransactionCurrencyFilter={setTransactionCurrencyFilter}
+        transactionCurrencyOptions={transactionCurrencyOptions}
         transactionCount={transactionData.length}
         onCreateTransaction={onCreateTransaction}
       />
@@ -207,6 +203,8 @@ export function TransactionContainer() {
     onClear,
     transactionData.length,
     addTransaction,
+    transactionCurrencyFilter,
+    setTransactionCurrencyFilter,
   ]);
 
   const bottomContent = useMemo(() => {
