@@ -13,4 +13,4 @@ spring:
     mongodb:
       uri: "mongodb://smartpeso:password@localhost:27017/smartpeso-db"
       database: smartpeso-db
-      authentication-database: admin
+
