@@ -10,7 +10,7 @@ import {
   filterTransactions,
   transactionCurrencyOptions,
   transactionTypeOptions,
-} from "./transactionsTable/transactionFilters";
+} from "./transactionsTable/filters/transactionFilters";
 import { sortTransactions } from "./transactionsTable/transactionSort";
 import {
   CreateTransactionFormData,

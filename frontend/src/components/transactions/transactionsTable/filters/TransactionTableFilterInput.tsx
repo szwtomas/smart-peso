@@ -1,5 +1,5 @@
 import { Input } from "@nextui-org/react";
-import { SearchIcon } from "../../icons/Icons";
+import { SearchIcon } from "../../../icons/Icons";
 
 export interface TransactionTableFilterInputProps {
   filterValue: string;
@@ -21,6 +21,7 @@ export function TransactionTableFilterInput(
       value={props.filterValue}
       onClear={() => props.onClear()}
       onValueChange={props.onSearchChange}
+      variant="bordered"
     />
   );
 }

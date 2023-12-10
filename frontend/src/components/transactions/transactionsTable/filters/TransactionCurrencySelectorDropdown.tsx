@@ -7,8 +7,8 @@ import {
   DropdownTrigger,
   Selection,
 } from "@nextui-org/react";
-import { ChevronDownIcon } from "../../icons/Icons";
-import { capitalize } from "../../../utils/utils";
+import { ChevronDownIcon } from "../../../icons/Icons";
+import { capitalize } from "../../../../utils/utils";
 import { TransactionFilterOption } from "./transactionFilters";
 
 export interface TransactionCurrencySelectorDropdownProps {
