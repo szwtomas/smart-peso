@@ -5,7 +5,7 @@ WORKDIR /home/app
 COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
 
-RUN gradle build -x test
+RUN gradle build
 
 FROM amazoncorretto:17
 
