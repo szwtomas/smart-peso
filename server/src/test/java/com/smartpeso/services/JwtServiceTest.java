@@ -11,10 +11,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JwtServiceTest {
+    private final String JWT_TEST_SECRET = "testsecrettestsecrettestsecrettestsecrettestsecrettestsecrettestsecret";
+
     @Test
     public void generateToken_givenValidEmail_shouldGenerateToken() {
         String email = "john.doe@mail.com";
         JwtService unit = new JwtService();
+        unit.setJwtSecret(JWT_TEST_SECRET);
         String token = unit.generateAccessToken(email);
         assertNotNull(token);
     }
@@ -22,6 +25,7 @@ public class JwtServiceTest {
     @Test
     public void generateToken_givenNullValidEmail_shouldNotGenerateToken() {
         JwtService unit = new JwtService();
+        unit.setJwtSecret(JWT_TEST_SECRET);
         String token = unit.generateAccessToken("");
         assertNull(token);
     }
@@ -29,7 +33,7 @@ public class JwtServiceTest {
     @Test
     public void extractClaim_givenSubjectClaim_shouldReturnSubjectEmail() {
         JwtService unit = new JwtService();
-
+        unit.setJwtSecret(JWT_TEST_SECRET);
         String jwt = unit.generateAccessToken("john.doe@mail.com");
         String actual = unit.extractClaim(jwt, Claims::getSubject);
 
@@ -39,7 +43,7 @@ public class JwtServiceTest {
     @Test
     public void extractSubject_givenValidSubjectClaim_shouldReturnSubjectEmail() {
         JwtService unit = new JwtService();
-
+        unit.setJwtSecret(JWT_TEST_SECRET);
         String jwt = unit.generateAccessToken("john.doe@mail.com");
         String actual = unit.extractSubject(jwt);
 
@@ -52,6 +56,8 @@ public class JwtServiceTest {
         when(userDetailsMock.getUsername()).thenReturn("mary.jane@mail.com");
 
         JwtService unit = new JwtService();
+        unit.setJwtSecret(JWT_TEST_SECRET);
+
         String jwt = unit.generateAccessToken("john.doe@mail.com");
 
         boolean isValidToken = unit.isValidToken(jwt, userDetailsMock);
@@ -64,6 +70,7 @@ public class JwtServiceTest {
         when(userDetailsMock.getUsername()).thenReturn("john.doe@mail.com");
 
         JwtService unit = new JwtService();
+        unit.setJwtSecret(JWT_TEST_SECRET);
         String jwt = unit.generateAccessToken("john.doe@mail.com");
 
         boolean isValidToken = unit.isValidToken(jwt, userDetailsMock);
@@ -76,6 +83,8 @@ public class JwtServiceTest {
         when(userDetailsMock.getUsername()).thenReturn("john.doe@mail.com");
 
         JwtService unit = new JwtService();
+        unit.setJwtSecret(JWT_TEST_SECRET);
+
         String jwt = unit.generateAccessToken("john.doe@mail.com", -1000 * 60);
 
         assertThrows(ExpiredJwtException.class, () -> unit.isValidToken(jwt, userDetailsMock));

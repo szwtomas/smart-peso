@@ -21,6 +21,10 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    public void setJwtSecret(String secret) {
+        this.jwtSecret = secret;
+    }
+
     public String generateAccessToken(String email, long duration) {
         return buildToken(email, duration);
     }
