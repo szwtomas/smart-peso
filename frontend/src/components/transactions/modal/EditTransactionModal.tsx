@@ -11,8 +11,8 @@ import {
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
-import { Transaction } from "../../../context/TransactionContext";
 import { useState } from "react";
+import { Transaction } from "../../../services/TransactionService";
 
 export interface EditTransactionModalProps {
   isOpen: boolean;

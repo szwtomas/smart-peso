@@ -1,12 +1,12 @@
 import { Button, Selection, useDisclosure } from "@nextui-org/react";
-import { TransactionFilterOption } from "./columnData";
 import { RowsPerPageSelector } from "./RowsPerPageSelector";
 import { TransactionTypeSelectorDropdown } from "./TransactionTypeSelectorDropdown";
 import { TransactionTableFilterInput } from "./TransactionTableFilterInput";
-import { PlusIcon } from "../../Icons";
+import { PlusIcon } from "../../icons/Icons";
 import { NewTransactionModal } from "../modal/NewTransactionModal";
-import { CreateTransactionFormData } from "../../../context/TransactionContext";
 import { TransactionCurrencySelectorDropdown } from "./TransactionCurrencySelectorDropdown";
+import { TransactionFilterOption } from "./transactionFilters";
+import { CreateTransactionFormData } from "../../../services/TransactionService";
 
 interface TransactionTableTopContentProps {
   filterValue: string;

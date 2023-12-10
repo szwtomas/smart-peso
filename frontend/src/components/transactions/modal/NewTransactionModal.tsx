@@ -12,7 +12,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { CreateTransactionFormData } from "../../../context/TransactionContext";
+import { CreateTransactionFormData } from "../../../services/TransactionService";
 
 export interface NewTransactionModalProps {
   isOpen: boolean;

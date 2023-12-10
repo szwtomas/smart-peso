@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { api } from "../api";
+import { authService } from "../services";
 
 export interface User {
   email: string;
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   }, []);
 
   const logIn = async (email: string, password: string) => {
-    const logInResponse = await api.logIn(email, password);
+    const logInResponse = await authService.logIn(email, password);
     setUser(logInResponse);
   };
 
@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     firstName: string,
     lastName: string
   ): Promise<void> => {
-    const signUpResponse = await api.signUp({
+    const signUpResponse = await authService.signUp({
       email,
       password,
       firstName,

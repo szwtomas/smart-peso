@@ -6,10 +6,10 @@ import {
   Tooltip,
   useDisclosure,
 } from "@nextui-org/react";
-import { Transaction } from "../../../context/TransactionContext";
 import { yyyyMMddToddMMyyyy } from "../../../utils/utils";
-import { DeleteIcon, EditIcon, EyeIcon } from "../../Icons";
+import { DeleteIcon, EditIcon, EyeIcon } from "../../icons/Icons";
 import { EditTransactionModal } from "../modal/EditTransactionModal";
+import { Transaction } from "../../../services/TransactionService";
 
 export interface TransactionTableCellProps {
   transaction: Transaction;

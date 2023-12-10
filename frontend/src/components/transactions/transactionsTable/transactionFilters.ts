@@ -1,5 +1,5 @@
 import { Selection } from "@nextui-org/react";
-import { Transaction } from "../../../context/TransactionContext";
+import { Transaction } from "../../../services/TransactionService";
 
 export interface TransactionFilterOption {
   name: string;

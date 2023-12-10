@@ -1,5 +1,5 @@
 import { Input } from "@nextui-org/react";
-import { SearchIcon } from "../../Icons";
+import { SearchIcon } from "../../icons/Icons";
 
 export interface TransactionTableFilterInputProps {
   filterValue: string;

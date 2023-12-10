@@ -1,15 +1,10 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Selection, SortDescriptor } from "@nextui-org/react";
 import { columns } from "./transactionsTable/columnData";
 import { TransactionsTableTopContent } from "./transactionsTable/TransactionsTableTopContent";
 import { TransactionTableBottomContent } from "./transactionsTable/TransactionTableBottomContent";
 import { TransactionTableCell } from "./transactionsTable/TransactionTableCell";
 import { TransactionsTable } from "./transactionsTable/TrasactionsTable";
-import {
-  CreateTransactionFormData,
-  Transaction,
-  TransactionContext,
-} from "../../context/TransactionContext";
 import { toast } from "react-toastify";
 import {
   filterTransactions,
@@ -17,6 +12,11 @@ import {
   transactionTypeOptions,
 } from "./transactionsTable/transactionFilters";
 import { sortTransactions } from "./transactionsTable/transactionSort";
+import {
+  CreateTransactionFormData,
+  Transaction,
+} from "../../services/TransactionService";
+import { transactionService } from "../../services";
 
 export function TransactionContainer() {
   const [needToFetchTransactions, setNeedToFetchTransactions] =
@@ -25,7 +25,7 @@ export function TransactionContainer() {
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [transactionTypeFilter, setTransactionTypeFilter] =
     useState<Selection>("all");
   const [transactionCurrencyFilter, setTransactionCurrencyFilter] =
@@ -34,19 +34,13 @@ export function TransactionContainer() {
     column: "date",
     direction: "descending",
   });
-  const {
-    getTransactions,
-    addTransaction,
-    editTransaction,
-    deleteTransaction,
-  } = useContext(TransactionContext);
 
   const pageCount = Math.ceil(transactionData.length / rowsPerPage);
   useEffect(() => {
     const fetchTransactions = async () => {
       if (!needToFetchTransactions) return;
       try {
-        const transactions = await getTransactions();
+        const transactions = await transactionService.getTransactions();
         setTransactionData(transactions);
         setNeedToFetchTransactions(false);
       } catch (error) {
@@ -58,7 +52,7 @@ export function TransactionContainer() {
     };
 
     fetchTransactions();
-  }, [getTransactions, needToFetchTransactions]);
+  }, [needToFetchTransactions]);
 
   const filteredItems = useMemo(() => {
     return filterTransactions(transactionData, {
@@ -81,7 +75,7 @@ export function TransactionContainer() {
     (transaction: Transaction, columnKey: React.Key) => {
       const onSaveEdit = async (transaction: Transaction) => {
         try {
-          await editTransaction(transaction);
+          await transactionService.updateTransaction(transaction);
           setNeedToFetchTransactions(true);
           toast.success("Transacción editada!");
         } catch (error) {
@@ -94,7 +88,7 @@ export function TransactionContainer() {
 
       const onDelete = async (transaction: Transaction) => {
         try {
-          await deleteTransaction(transaction);
+          await transactionService.deleteTransaction(transaction.transactionId);
           setNeedToFetchTransactions(true);
           toast.success("Transacción eliminada!");
         } catch (error) {
@@ -114,7 +108,7 @@ export function TransactionContainer() {
         />
       );
     },
-    [editTransaction, setNeedToFetchTransactions, deleteTransaction]
+    [setNeedToFetchTransactions]
   );
 
   const onNextPage = useCallback(() => {
@@ -156,7 +150,7 @@ export function TransactionContainer() {
       createTransactionData: CreateTransactionFormData
     ) => {
       try {
-        await addTransaction(createTransactionData);
+        await transactionService.addTransaction(createTransactionData);
         toast.success("Transacción Creada!");
         setNeedToFetchTransactions(true);
       } catch (error) {
@@ -190,7 +184,6 @@ export function TransactionContainer() {
     onRowsPerPageChange,
     onClear,
     transactionData.length,
-    addTransaction,
     transactionCurrencyFilter,
     setTransactionCurrencyFilter,
   ]);

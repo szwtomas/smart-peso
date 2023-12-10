@@ -1,5 +1,5 @@
 import { SortDescriptor } from "@nextui-org/react";
-import { Transaction } from "../../../context/TransactionContext";
+import { Transaction } from "../../../services/TransactionService";
 
 export function sortTransactions(transactions: Transaction[], sortDescriptor: SortDescriptor): Transaction[] {
     return [...transactions].sort((a: Transaction, b: Transaction) => {

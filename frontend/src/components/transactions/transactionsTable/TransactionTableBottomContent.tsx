@@ -1,6 +1,6 @@
 import { Button, Pagination, Selection } from "@nextui-org/react";
 import { Dispatch } from "react";
-import { Transaction } from "../../../context/TransactionContext";
+import { Transaction } from "../../../services/TransactionService";
 
 export interface TransactionTableBottomContentProps {
   filteredItems: Transaction[];
