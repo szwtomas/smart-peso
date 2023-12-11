@@ -1,0 +1,20 @@
+databaseType = "MySql"
+name = "smart-peso"
+id = "9f6f5d01-4620-49ca-9436-cbfe923c7c84"
+
+[flywayDesktop]
+developmentEnvironment = "development"
+shadowEnvironment = "shadow"
+schemaModel = "./schema-model"
+
+[redgateCompare]
+filterFile = "filter.rgf"
+
+[redgateCompare.mysql.options.ignores]
+ignoreNewlinesInTextObjects = "off"
+
+[flyway]
+mixed = true
+outOfOrder = true
+locations = [ "filesystem:migrations" ]
+validateMigrationNaming = true
