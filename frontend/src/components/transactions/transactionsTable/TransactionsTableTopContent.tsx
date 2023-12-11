@@ -1,5 +1,5 @@
 import { Button, Selection, useDisclosure } from "@nextui-org/react";
-import { RowsPerPageSelector } from "./RowsPerPageSelector";
+import { RowsPerPageSelector } from "./filters/RowsPerPageSelector";
 import { TransactionTypeSelectorDropdown } from "./filters/TransactionTypeSelectorDropdown";
 import { TransactionTableFilterInput } from "./filters/TransactionTableFilterInput";
 import { PlusIcon } from "../../icons/Icons";

@@ -24,7 +24,7 @@ export function TransactionTypeSelectorDropdown(
       <DropdownTrigger className="hidden sm:flex">
         <Button
           endContent={<ChevronDownIcon />}
-          variant="flat"
+          variant="ghost"
           size="lg"
           radius="sm"
         >
