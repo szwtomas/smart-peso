@@ -27,6 +27,7 @@ export function TransactionTypeSelectorDropdown(
           variant="ghost"
           size="lg"
           radius="sm"
+          className="bg-white text-primary"
         >
           Tipo
         </Button>
@@ -38,10 +39,11 @@ export function TransactionTypeSelectorDropdown(
         selectedKeys={props.transactionTypeFilter}
         selectionMode="multiple"
         onSelectionChange={props.setTransactionTypeFilter}
+        className="text-primary"
       >
         {props.transactionTypeOptions.map((transactionType) => (
-          <DropdownItem key={transactionType.uid} className="capitalize">
-            {capitalize(transactionType.name)}
+          <DropdownItem key={transactionType.uid}>
+            <p className="text-primary">{capitalize(transactionType.name)}</p>
           </DropdownItem>
         ))}
       </DropdownMenu>

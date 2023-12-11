@@ -22,6 +22,7 @@ export function TransactionTableFilterInput(
       onClear={() => props.onClear()}
       onValueChange={props.onSearchChange}
       variant="bordered"
+      color="primary"
     />
   );
 }

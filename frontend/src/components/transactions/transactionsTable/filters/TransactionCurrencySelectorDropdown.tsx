@@ -28,6 +28,7 @@ export function TransactionCurrencySelectorDropdown(
           variant="ghost"
           size="lg"
           radius="sm"
+          className="text-primary"
         >
           Moneda
         </Button>
@@ -60,7 +61,9 @@ export function TransactionCurrencySelectorDropdown(
               )
             }
           >
-            {capitalize(transactionCurrency.name)}
+            <p className="text-primary">
+              {capitalize(transactionCurrency.name)}
+            </p>
           </DropdownItem>
         ))}
       </DropdownMenu>

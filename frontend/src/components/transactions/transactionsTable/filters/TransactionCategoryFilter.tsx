@@ -13,6 +13,7 @@ export function TransactionCategoryFilter(
   return (
     <Input
       isClearable
+      color="primary"
       startContent={<SearchIcon />}
       size="sm"
       radius="sm"
