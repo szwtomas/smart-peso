@@ -2,7 +2,7 @@ import { HTTP_STATUS_ACCEPTED, HTTP_STATUS_CREATED, HTTP_STATUS_OK } from "./htt
 import { HttpService } from "./HttpService";
 
 export interface Transaction {
-  transactionId: string;
+  transactionId: number;
   name: string;
   date: string; // yyyy-mm-dd
   value: number;
@@ -75,7 +75,7 @@ export class TransactionService {
         }
     }
 
-    public async deleteTransaction(transactionId: string): Promise<void> {
+    public async deleteTransaction(transactionId: number): Promise<void> {
         const response = await this.httpService.delete(`/api/transaction`, { transactionId });
         if (response.status !== HTTP_STATUS_ACCEPTED) {
             console.error(await response.text());

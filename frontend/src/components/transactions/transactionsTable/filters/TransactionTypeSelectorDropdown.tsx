@@ -21,15 +21,19 @@ export function TransactionTypeSelectorDropdown(
 ) {
   return (
     <Dropdown>
-      <DropdownTrigger className="hidden sm:flex">
+      <DropdownTrigger className="hidden md:flex">
         <Button
           endContent={<ChevronDownIcon />}
           variant="ghost"
           size="lg"
           radius="sm"
           className="bg-white text-primary"
+          color="primary"
         >
-          Tipo
+          <div className="flex flex-row items-center">
+            <p className="mr-3 ml-3">Tipo</p>
+            <ChevronDownIcon />
+          </div>
         </Button>
       </DropdownTrigger>
       <DropdownMenu

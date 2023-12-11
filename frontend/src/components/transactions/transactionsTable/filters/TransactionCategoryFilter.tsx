@@ -22,6 +22,7 @@ export function TransactionCategoryFilter(
       onClear={() => props.onClear()}
       onValueChange={props.onSearchChange}
       variant="bordered"
+      className="w-[100%]"
     />
   );
 }

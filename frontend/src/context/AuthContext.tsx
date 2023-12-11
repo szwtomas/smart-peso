@@ -48,8 +48,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   }, []);
 
   const logIn = async (email: string, password: string) => {
-    const logInResponse = await authService.logIn(email, password);
-    setUser(logInResponse);
+    const authResponse = await authService.logIn(email, password);
+    setUser({
+      email: authResponse.email,
+      firstName: authResponse.firstName,
+      lastName: authResponse.lastName,
+      accessToken: authResponse.accessToken,
+    });
   };
 
   const logout = async () => {
@@ -62,14 +67,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     firstName: string,
     lastName: string
   ): Promise<void> => {
-    const signUpResponse = await authService.signUp({
+    const authResponse = await authService.signUp({
       email,
       password,
       firstName,
       lastName,
     });
 
-    setUser(signUpResponse);
+    setUser({
+      email: authResponse.email,
+      firstName: authResponse.firstName,
+      lastName: authResponse.lastName,
+      accessToken: authResponse.accessToken,
+    });
   };
 
   return (

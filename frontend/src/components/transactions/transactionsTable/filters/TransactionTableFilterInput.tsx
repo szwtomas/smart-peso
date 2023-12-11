@@ -14,7 +14,6 @@ export function TransactionTableFilterInput(
     <Input
       isClearable
       startContent={<SearchIcon />}
-      className="w-[200%]"
       size="sm"
       radius="sm"
       placeholder="Buscar por nombre..."
@@ -23,6 +22,7 @@ export function TransactionTableFilterInput(
       onValueChange={props.onSearchChange}
       variant="bordered"
       color="primary"
+      className="w-100%"
     />
   );
 }

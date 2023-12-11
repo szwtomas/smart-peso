@@ -22,15 +22,19 @@ export function TransactionCurrencySelectorDropdown(
 ) {
   return (
     <Dropdown>
-      <DropdownTrigger className="hidden sm:flex">
+      <DropdownTrigger className="hidden md:flex">
         <Button
-          endContent={<ChevronDownIcon />}
+          endContent={<ChevronDownIcon color="blue" />}
+          color="primary"
           variant="ghost"
           size="lg"
           radius="sm"
           className="text-primary"
         >
-          Moneda
+          <div className="flex flex-row items-center">
+            <p className="mr-3 ml-3">Moneda</p>
+            <ChevronDownIcon />
+          </div>
         </Button>
       </DropdownTrigger>
       <DropdownMenu

@@ -34,18 +34,24 @@ export function TransactionsTableTopContent(
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-3 items-end">
-        <TransactionTableFilterInput
-          onSearchChange={props.onNameSearchChange}
-          filterValue={props.nameFilterValue}
-          onClear={props.onNameFilterClear}
-        />
-        <TransactionCategoryFilter
-          filterValue={props.categoryFilterValue}
-          onSearchChange={props.onCategorySearchChange}
-          onClear={props.onCategoryFilterClear}
-        />
-        <div className="flex gap-3">
+      <div className="flex flex-col xl:flex-row justify-between gap-3 items-end">
+        <div className="flex flex-row gap-6 w-full">
+          <div className="w-[100%] xl:w-[65%]">
+            <TransactionTableFilterInput
+              onSearchChange={props.onNameSearchChange}
+              filterValue={props.nameFilterValue}
+              onClear={props.onNameFilterClear}
+            />
+          </div>
+          <div className="w-[100%] xl:w-[35%]">
+            <TransactionCategoryFilter
+              filterValue={props.categoryFilterValue}
+              onSearchChange={props.onCategorySearchChange}
+              onClear={props.onCategoryFilterClear}
+            />
+          </div>
+        </div>
+        <div className="flex flex-row gap-3">
           <TransactionTypeSelectorDropdown
             transactionTypeFilter={props.transactionTypeFilter}
             transactionTypeOptions={props.transactionTypeOptions}
@@ -63,6 +69,7 @@ export function TransactionsTableTopContent(
             variant="shadow"
             onPress={onOpen}
             radius="sm"
+            className="sm:w-[100%]"
           >
             Nueva Transacción
           </Button>
