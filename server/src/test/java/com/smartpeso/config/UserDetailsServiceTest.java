@@ -30,14 +30,14 @@ public class UserDetailsServiceTest {
 
     @Test
     public void userDetailsService_givenUserExists_shouldReturnUser() {
+        int userId = 123;
         String email = "john.doe@mail.com";
+        User user = new User(userId, email, "password", "user", "John", "Doe");
 
         SecurityConfig securityConfig = new SecurityConfig(userRepositoryMock, jwtServiceMock);
         UserDetailsService unit = securityConfig.userDetailsService();
 
-        when(userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(
-                new User(email, "password", "user", "John", "Doe")
-        ));
+        when(userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(user));
 
         UserDetails userDetails = unit.loadUserByUsername(email);
         String actualEmail = userDetails.getUsername();

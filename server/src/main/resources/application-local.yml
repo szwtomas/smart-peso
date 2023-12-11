@@ -9,8 +9,8 @@ jwt:
   secret: "8B887EAA238F79D1E117EA8BBBCED515396CD2ABB9172D476F24F1D432"
 
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://smartpeso:password@localhost:27017/smartpeso-db"
-      database: smartpeso-db
-
+  datasource:
+    url: jdbc:mysql://localhost:4000/smartpeso
+    username: smartpeso
+    password: 12345678
+    driver-class-name: com.mysql.cj.jdbc.Driver

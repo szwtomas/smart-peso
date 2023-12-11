@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public record EditTransactionRequest(
-        String transactionId,
+        int transactionId,
         String name,
         String type,
         String currency,

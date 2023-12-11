@@ -31,9 +31,10 @@ public class AuthControllerTest {
         String firstName = "John";
         String lastName = "Doe";
         String password = "somepassword";
+        String accessToken = "access-token";
 
         SignUpRequest signUpDTO = new SignUpRequest(email, password, firstName, lastName);
-        AuthenticationResponse authResponse = new AuthenticationResponse("access-token", email, firstName, lastName);
+        AuthenticationResponse authResponse = new AuthenticationResponse(accessToken);
         UserCreationResult userCreationResult = UserCreationResult.success(authResponse);
         when(authServiceMock.signUp(eq(email), eq(password), eq(firstName), eq(lastName))).thenReturn(userCreationResult);
         AuthController unit = new AuthController(authServiceMock);
@@ -44,9 +45,6 @@ public class AuthControllerTest {
         assertEquals(201, response.getStatusCode().value());
         assertNotNull(actual);
         assertEquals("access-token", actual.accessToken());
-        assertEquals("john.doe@mail.com", actual.email());
-        assertEquals("John", actual.firstName());
-        assertEquals("Doe", actual.lastName());
     }
 
     @Test

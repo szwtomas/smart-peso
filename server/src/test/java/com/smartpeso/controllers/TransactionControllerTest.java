@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,21 +35,17 @@ public class TransactionControllerTest {
     }
 
     @Test
-    public void createTransaction_givenValidUserAndTransactionDTO_transactionIsCreated_shouldReturnCreatedCode() {
+    public void createTransaction_givenValidUserAndTransactionDTO_transactionIsCreated_shouldReturnCreatedStatusCode() {
         User user = getUser();
         TransactionDTO transactionDTO = getTransactionDTO();
-        Transaction transaction = transactionFromTransactionDTO(transactionDTO);
 
-        when(transactionServiceMock.createTransaction(any(TransactionDTO.class), any(User.class))).thenReturn(transaction);
+        doNothing().when(transactionServiceMock).createTransaction(any(TransactionDTO.class), any(User.class));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
         ResponseEntity<?> actualResponse = unit.createTransaction(user, transactionDTO);
-        Transaction createdTransaction = (Transaction) actualResponse.getBody();
 
         assertEquals(201, actualResponse.getStatusCode().value());
-        assertNotNull(createdTransaction);
-        assertEquals("someId", createdTransaction.getTransactionId());
     }
 
     @Test
@@ -58,7 +53,7 @@ public class TransactionControllerTest {
         User user = getUser();
         TransactionDTO transactionDTO = getTransactionDTO();
 
-        when(transactionServiceMock.createTransaction(any(TransactionDTO.class), any(User.class))).thenThrow(new TransactionValidationException("validation error"));
+        doThrow(new TransactionValidationException("validation error")).when(transactionServiceMock).createTransaction(any(TransactionDTO.class), any(User.class));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -73,7 +68,7 @@ public class TransactionControllerTest {
         User user = getUser();
         TransactionDTO transactionDTO = getTransactionDTO();
 
-        when(transactionServiceMock.createTransaction(any(TransactionDTO.class), any(User.class))).thenThrow(new TransactionCreationException("creation error"));
+        doThrow(new TransactionCreationException("creation error")).when(transactionServiceMock).createTransaction(any(TransactionDTO.class), any(User.class));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -86,8 +81,7 @@ public class TransactionControllerTest {
     @Test
     public void getTransaction_givenTransactionsAreFetchedCorrectly_shouldReturnTransactionsAndStatusOK() {
         User user = getUser();
-        when(transactionServiceMock.getTransactions(eq(user)))
-                .thenReturn(Arrays.asList(getTransaction("id1"), getTransaction("id2")));
+        when(transactionServiceMock.getTransactions(eq(user))).thenReturn(List.of(getTransaction(555), getTransaction(678)));
         TransactionController unit = new TransactionController(transactionServiceMock);
 
         ResponseEntity<?> actualResponse = unit.getUserTransactions(user);
@@ -96,8 +90,8 @@ public class TransactionControllerTest {
         assertEquals(200, actualResponse.getStatusCode().value());
         assertNotNull(actualTransactions);
         assertEquals(2, actualTransactions.size());
-        assertEquals("id1", actualTransactions.get(0).getTransactionId());
-        assertEquals("id2", actualTransactions.get(1).getTransactionId());
+        assertEquals(555, actualTransactions.get(0).getTransactionId());
+        assertEquals(678, actualTransactions.get(1).getTransactionId());
     }
 
     @Test
@@ -119,20 +113,14 @@ public class TransactionControllerTest {
         User user = getUser();
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
 
-        Transaction newTransaction = getTransaction(editTransactionRequest.transactionId());
-        newTransaction.setName(editTransactionRequest.name());
-
-        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenReturn(newTransaction);
+        doNothing().when(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
         TransactionController unit = new TransactionController(transactionServiceMock);
 
         ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
-        Transaction actualTransaction = (Transaction) actualResponse.getBody();
 
         verify(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
 
         assertEquals(200, actualResponse.getStatusCode().value());
-        assertNotNull(actualTransaction);
-        assertEquals("Updated Salary Paycheck", actualTransaction.getName());
     }
 
     @Test
@@ -140,7 +128,7 @@ public class TransactionControllerTest {
         User user = getUser();
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
 
-        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenThrow(new TransactionNotFoundException("not found"));
+        doThrow(new TransactionNotFoundException("not found")).when(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
         TransactionController unit = new TransactionController(transactionServiceMock);
 
         ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
@@ -155,7 +143,7 @@ public class TransactionControllerTest {
         User user = getUser();
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
 
-        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenThrow(new TransactionValidationException("validation failed"));
+        doThrow(new TransactionValidationException("validation failed")).when(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
         TransactionController unit = new TransactionController(transactionServiceMock);
 
         ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
@@ -170,7 +158,7 @@ public class TransactionControllerTest {
         User user = getUser();
         EditTransactionRequest editTransactionRequest = getEditTransactionRequest();
 
-        when(transactionServiceMock.editTransaction(eq(editTransactionRequest), eq(user))).thenThrow(new RuntimeException("something failed"));
+        doThrow(new RuntimeException("something failed")).when(transactionServiceMock).editTransaction(eq(editTransactionRequest), eq(user));
         TransactionController unit = new TransactionController(transactionServiceMock);
 
         ResponseEntity<?> actualResponse = unit.editTransaction(user, editTransactionRequest);
@@ -182,8 +170,9 @@ public class TransactionControllerTest {
 
     @Test
     public void deleteTransaction_givenDeletionIsSuccessful_shouldReturnSuccessStatus() {
+        int transactionId = 553;
         User user = getUser();
-        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-transactionId");
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest(transactionId);
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -194,10 +183,11 @@ public class TransactionControllerTest {
 
     @Test
     public void deleteTransaction_givenDeletionThrowsNotFound_shouldReturnNotFoundStatus() {
+        int transactionId = 553;
         User user = getUser();
-        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-transactionId");
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest(transactionId);
 
-        doThrow(new TransactionNotFoundException("not found")).when(transactionServiceMock).deleteTransaction(eq("some-transactionId"), eq(user));
+        doThrow(new TransactionNotFoundException("not found")).when(transactionServiceMock).deleteTransaction(eq(transactionId), eq(user));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -208,10 +198,11 @@ public class TransactionControllerTest {
 
     @Test
     public void deleteTransaction_givenDeletionThrowsDeletionException_shouldReturnInternalServerErrorStatus() {
+        int transactionId = 553;
         User user = getUser();
-        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest("some-transactionId");
+        DeleteTransactionRequest deleteRequest = new DeleteTransactionRequest(transactionId);
 
-        doThrow(new DeleteTransactionException("some error")).when(transactionServiceMock).deleteTransaction(eq("some-transactionId"), eq(user));
+        doThrow(new DeleteTransactionException("some error")).when(transactionServiceMock).deleteTransaction(eq(transactionId), eq(user));
 
         TransactionController unit = new TransactionController(transactionServiceMock);
 
@@ -233,25 +224,10 @@ public class TransactionControllerTest {
         );
     }
 
-    private Transaction transactionFromTransactionDTO(TransactionDTO transactionDTO) {
-        return new Transaction(
-                "someId",
-                "userId",
-                transactionDTO.name(),
-                LocalDateTime.now(),
-                transactionDTO.type(),
-                transactionDTO.currency(),
-                transactionDTO.value(),
-                transactionDTO.category(),
-                transactionDTO.description(),
-                null
-        );
-    }
-
-    private Transaction getTransaction(String transactionId) {
+    private Transaction getTransaction(int transactionId) {
         return new Transaction(
                 transactionId,
-                "userId",
+                444,
                 "Shopping",
                 LocalDateTime.now(),
                 "expense",
@@ -264,12 +240,12 @@ public class TransactionControllerTest {
     }
 
     private User getUser() {
-        return new User("john.doe@mail.com", "password", "user", "John", "Doe");
+        return new User(444, "john.doe@mail.com", "password", "user", "John", "Doe");
     }
 
     private EditTransactionRequest getEditTransactionRequest() {
         return new EditTransactionRequest(
-                "someId",
+                123,
                 "Updated Salary Paycheck",
                 "income",
                 "USD",

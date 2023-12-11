@@ -1,6 +1,5 @@
 package com.smartpeso.services.auth;
 
-import com.smartpeso.model.User;
 import com.smartpeso.model.dto.auth.AuthenticationResponse;
 import com.smartpeso.repositories.exceptions.UserAlreadyExistsException;
 import com.smartpeso.repositories.exceptions.UserCreationException;
@@ -40,9 +39,9 @@ public class AuthService {
         try {
             userValidator.validateUser(email, rawPassword, firstName, lastName);
             String encodedPassword = passwordEncoder.encode(rawPassword);
-            User user = userRepository.createUser(email, encodedPassword, "user", firstName, lastName);
+            userRepository.createUser(email, encodedPassword, "user", firstName, lastName);
             String accessToken = jwtService.generateAccessToken(email);
-            AuthenticationResponse response = new AuthenticationResponse(accessToken, email, user.getFirstName(), user.getLastName());
+            AuthenticationResponse response = new AuthenticationResponse(accessToken);
             return UserCreationResult.success(response);
         } catch(UserAlreadyExistsException e) {
             return UserCreationResult.userAlreadyExists(email);
@@ -54,8 +53,7 @@ public class AuthService {
     public AuthenticationResponse authenticate(String email, String rawPassword) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(email, rawPassword);
         authenticationManager.authenticate(authentication);
-        User user = userRepository.findByEmail(email).orElseThrow();
         String accessToken = jwtService.generateAccessToken(email);
-        return new AuthenticationResponse(accessToken, email, user.getFirstName(), user.getLastName());
+        return new AuthenticationResponse(accessToken);
     }
 }

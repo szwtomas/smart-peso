@@ -5,8 +5,8 @@ jwt:
   secret: ${JWT_SECRET}
 
 spring:
-  data:
-    mongodb:
-      uri: ${MONGO_URI}
-      database: ${MONGO_DB}
-      authentication-database: admin
+  datasource:
+    url: ${MYSQL_URI}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver

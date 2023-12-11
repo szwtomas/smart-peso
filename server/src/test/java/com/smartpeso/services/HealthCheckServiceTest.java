@@ -1,23 +1,19 @@
 package com.smartpeso.services;
 
-import com.mongodb.client.MongoDatabase;
 import com.smartpeso.services.healthCheck.HealthCheckService;
-import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class HealthCheckServiceTest {
     @Mock
-    private MongoTemplate mongoTemplateMock;
-    @Mock
-    private MongoDatabase mongoDatabaseMock;
+    private JdbcTemplate jdbcTemplateMock;
 
     @BeforeEach
     public void setUp() {
@@ -25,24 +21,16 @@ public class HealthCheckServiceTest {
     }
 
     @Test
-    public void healthCheck_mongoIsOk_shouldNotThrowException() {
-        Document pingResult = new Document().append("ok", "1.0");
-        when(mongoDatabaseMock.runCommand(any(Document.class))).thenReturn(pingResult);
-        when(mongoTemplateMock.getDb()).thenReturn(mongoDatabaseMock);
-
-        HealthCheckService unit = new HealthCheckService(mongoTemplateMock);
-
+    public void healthCheck_givenMySQLIsOk_shouldNotThrowException() {
+        doNothing().when(jdbcTemplateMock).execute(anyString());
+        HealthCheckService unit = new HealthCheckService(jdbcTemplateMock);
         unit.doHealthCheck();
     }
 
     @Test
-    public void healthCheck_mongoPingFails_shouldThrowException() {
-        Document pingResult = new Document().append("ok", "-1");
-        when(mongoDatabaseMock.runCommand(any(Document.class))).thenReturn(pingResult);
-        when(mongoTemplateMock.getDb()).thenReturn(mongoDatabaseMock);
-
-        HealthCheckService unit = new HealthCheckService(mongoTemplateMock);
-
-        assertThrows(RuntimeException.class, unit::doHealthCheck);
+    public void healthCheck_givenMySQLFails_shouldThrowException() {
+        doThrow(new RuntimeException("some error")).when(jdbcTemplateMock).execute(anyString());
+        HealthCheckService unit = new HealthCheckService(jdbcTemplateMock);
+        assertThrows(Exception.class, () -> unit.doHealthCheck());
     }
 }

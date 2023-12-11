@@ -10,10 +10,7 @@ public class UserCreationResultTest {
     @Test
     public void givenResultIsSuccess_UserCreationResultShouldBeSuccessAnReturnTheAuthResponse() {
         String accessToken = "soooomeeeeacccesssstokeeeenn";
-        String email = "john.doe@mail.com";
-        String firstName = "John";
-        String lastName = "Doe";
-        AuthenticationResponse response = new AuthenticationResponse(accessToken, email, firstName, lastName);
+        AuthenticationResponse response = new AuthenticationResponse(accessToken);
         UserCreationResult creationResult = UserCreationResult.success(response);
 
         AuthenticationResponse actual = creationResult.getAuthenticationResponse();
@@ -24,9 +21,6 @@ public class UserCreationResultTest {
         assertNull(creationResult.getExistingUserEmail());
         assertNotNull(actual);
         assertEquals(accessToken, actual.accessToken());
-        assertEquals("john.doe@mail.com", actual.email());
-        assertEquals("John", actual.firstName());
-        assertEquals("Doe", actual.lastName());
     }
 
     @Test

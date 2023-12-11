@@ -24,8 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AuthServiceTest {
     @Mock
@@ -46,6 +45,7 @@ public class AuthServiceTest {
 
     @Test
     public void signUp_userCreatedSuccessfully_shouldReturnSuccessResult() {
+        int userId = 123;
         String email = "john.doe@mail.com";
         String firstName = "John";
         String lastName = "Doe";
@@ -54,10 +54,8 @@ public class AuthServiceTest {
         String role = "user";
         String accessToken = "access-token";
 
-        User newUser = new User(email, password, role, firstName, lastName);
-
         when(passwordEncoderMock.encode(eq(password))).thenReturn(encodedPassword);
-        when(userRepositoryMock.createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName))).thenReturn(newUser);
+        doNothing().when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName));
         when(jwtServiceMock.generateAccessToken(eq(email))).thenReturn(accessToken);
 
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
@@ -67,9 +65,6 @@ public class AuthServiceTest {
 
         assertTrue(creationResult.isSuccess());
         assertEquals("access-token", actual.accessToken());
-        assertEquals("john.doe@mail.com", actual.email());
-        assertEquals("John", actual.firstName());
-        assertEquals("Doe", actual.lastName());
     }
 
     @Test
@@ -82,7 +77,7 @@ public class AuthServiceTest {
         String role = "user";
 
         when(passwordEncoderMock.encode(password)).thenReturn(encodedPassword);
-        when(userRepositoryMock.createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName))).thenThrow(new UserAlreadyExistsException("some error"));
+        doThrow(new UserAlreadyExistsException("some error")).when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName));
 
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
 
@@ -102,7 +97,7 @@ public class AuthServiceTest {
         String role = "user";
 
         when(passwordEncoderMock.encode(password)).thenReturn(encodedPassword);
-        when(userRepositoryMock.createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName))).thenThrow(new UserCreationException("some error"));
+        doThrow(new UserCreationException("some error")).when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName));
 
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
 
@@ -131,10 +126,11 @@ public class AuthServiceTest {
 
     @Test
     public void logIn_givenUserCredentialsAreValid_shouldReturnAuthenticationResponseWithUserDataAndAccessToken() {
+        int userId = 123;
         String email = "john.doe@mail.com";
         String rawPassword = "password";
 
-        User user = new User(email, "encodedPassword", "user", "John", "Doe");
+        User user = new User(userId, email, "encodedPassword", "user", "John", "Doe");
         when(userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(user));
         when(jwtServiceMock.generateAccessToken(email)).thenReturn("access-token");
 
@@ -142,9 +138,6 @@ public class AuthServiceTest {
         AuthenticationResponse authResponse = unit.authenticate(email, rawPassword);
 
         assertEquals("access-token", authResponse.accessToken());
-        assertEquals("john.doe@mail.com", authResponse.email());
-        assertEquals("John", authResponse.firstName());
-        assertEquals("Doe", authResponse.lastName());
     }
 
     @Test
@@ -156,17 +149,5 @@ public class AuthServiceTest {
         AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
 
         assertThrows(BadCredentialsException.class, () -> unit.authenticate(email, rawPassword));
-    }
-
-    @Test
-    public void logIn_givenCredentialsAreOkButUserDoesNotExist_shouldThrowUserDoesNotExistException() {
-        String email = "john.doe@mail.com";
-        String rawPassword = "password";
-
-        when(userRepositoryMock.findByEmail(eq(email))).thenReturn(Optional.empty());
-
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
-
-        assertThrows(Exception.class, () -> unit.authenticate(email, rawPassword));
     }
 }

@@ -4,6 +4,7 @@ import com.smartpeso.model.User;
 import com.smartpeso.model.dto.auth.AuthenticationResponse;
 import com.smartpeso.model.dto.auth.LogInRequest;
 import com.smartpeso.model.dto.auth.SignUpRequest;
+import com.smartpeso.model.dto.auth.UserDTO;
 import com.smartpeso.services.auth.AuthService;
 import com.smartpeso.services.auth.UserCreationResult;
 import lombok.extern.slf4j.Slf4j;
@@ -59,10 +60,9 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/userdata")
-    public String userData(@AuthenticationPrincipal User user) {
-        String userId = user.getUserId();
-        String role = String.valueOf(user.getAuthorities().stream().toList().get(0));
-        return userId + " " + role;
+    @GetMapping("/user")
+    public ResponseEntity<UserDTO> getUserData(@AuthenticationPrincipal User user) {
+        UserDTO userDTO = new UserDTO(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 }

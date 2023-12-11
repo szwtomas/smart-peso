@@ -1,29 +1,27 @@
 package com.smartpeso.repositories;
 
-import com.mongodb.client.result.DeleteResult;
 import com.smartpeso.model.Transaction;
+import com.smartpeso.model.dto.transaction.TransactionDTO;
 import com.smartpeso.repositories.exceptions.DeleteTransactionException;
 import com.smartpeso.repositories.exceptions.TransactionCreationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TransactionRepositoryTest {
     @Mock
-    private MongoTemplate mongoTemplateMock;
+    private JdbcTemplate jdbcTemplateMock;
 
     @BeforeEach
     public void setUp() {
@@ -31,129 +29,137 @@ public class TransactionRepositoryTest {
     }
 
     @Test
-    public void createTransaction_givenInsertionIsSuccessful_shouldReturnSameTransactionAndCallSave() {
-        Transaction transactionToCreate = createTransaction();
-        when(mongoTemplateMock.save(eq(transactionToCreate), eq("transactions"))).thenReturn(transactionToCreate);
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-        Transaction createdTransaction = unit.upsertTransaction(transactionToCreate);
+    public void createTransaction_givenInsertionIsSuccessful_shouldNotThrowException() {
+        int userId = 123;
+        TransactionDTO transactionToCreate = createTransactionDTO();
 
-        verify(mongoTemplateMock).save(eq(transactionToCreate), eq("transactions"));
+        when(jdbcTemplateMock.update(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(1);
 
-        assertEquals("someId", createdTransaction.getTransactionId());
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
+        unit.createTransaction(transactionToCreate, userId);
     }
 
     @Test
-    public void createTransaction_givenInsertionFails_shouldThrowTransactionCreationInsertion() {
-        Transaction transactionToCreate = createTransaction();
-        when(mongoTemplateMock.save(eq(transactionToCreate), eq("transactions"))).thenThrow(new RuntimeException("some error"));
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-        assertThrows(TransactionCreationException.class, () -> unit.upsertTransaction(transactionToCreate));
+    public void createTransaction_givenInsertionFails_shouldThrowException() {
+        int userId = 123;
+        TransactionDTO transactionToCreate = createTransactionDTO();
+
+        when(jdbcTemplateMock.update(any(), any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(0);
+
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
+
+        assertThrows(TransactionCreationException.class, () -> unit.createTransaction(transactionToCreate, userId));
+    }
+
+    @Test
+    public void updateTransaction_givenUpdateIsSuccessful_shouldNotThrowException() {
+        Transaction transactionToUpdate = createTransaction();
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
+
+        unit.updateTransaction(transactionToUpdate);
+
+        verify(jdbcTemplateMock).update(
+                anyString(),
+                eq(transactionToUpdate.getName()),
+                eq(Timestamp.valueOf(transactionToUpdate.getDate())),
+                eq(transactionToUpdate.getType()),
+                eq(transactionToUpdate.getCurrency()),
+                eq(transactionToUpdate.getValue()),
+                eq(transactionToUpdate.getCategory()),
+                eq(transactionToUpdate.getDescription()),
+                eq(transactionToUpdate.getPaymentMethod()),
+                eq(transactionToUpdate.getTransactionId())
+        );
     }
 
     @Test
     public void getTransactions_givenUserHasNoTransactions_shouldReturnEmptyList() {
-        when(mongoTemplateMock.find(any(Query.class), eq(Transaction.class), eq("transactions"))).thenReturn(new ArrayList<>());
+        int userId = 123;
+        when(jdbcTemplateMock.query(anyString(), any(TransactionRowMapper.class), eq(userId))).thenReturn(new ArrayList<>());
 
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
 
-        List<Transaction> transactions = unit.getTransactionsByUserId("someId");
+        List<Transaction> transactions = unit.getUserTransactions(userId);
 
         assertTrue(transactions.isEmpty());
     }
 
     @Test
     public void getTransactions_givenUserHasTransactions_shouldTransactionsList() {
+        int userId = 123;
+        when(jdbcTemplateMock.query(anyString(), any(TransactionRowMapper.class), eq(userId)))
+                .thenReturn(Arrays.asList(createTransaction(1), createTransaction(2), createTransaction(3)));
 
-        when(mongoTemplateMock.find(any(Query.class), eq(Transaction.class), eq("transactions")))
-                .thenReturn(Arrays.asList(createTransaction("id1"), createTransaction("id2"), createTransaction("id3")));
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
 
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-
-        List<Transaction> transactions = unit.getTransactionsByUserId("someId");
+        List<Transaction> transactions = unit.getUserTransactions(userId);
 
         assertEquals(3, transactions.size());
-        assertEquals("id1", transactions.get(0).getTransactionId());
-        assertEquals("id2", transactions.get(1).getTransactionId());
-        assertEquals("id3", transactions.get(2).getTransactionId());
+        assertEquals(1, transactions.get(0).getTransactionId());
+        assertEquals(2, transactions.get(1).getTransactionId());
+        assertEquals(3, transactions.get(2).getTransactionId());
     }
 
     @Test
     public void getTransactionById_givenExistingTransactionId_shouldReturnTransaction() {
-        String existingTransactionId = "existingId";
+        int existingTransactionId = 667;
         Transaction existingTransaction = createTransaction(existingTransactionId);
-        Query query = new Query(Criteria.where("_id").is(existingTransactionId));
 
-        when(mongoTemplateMock.findOne(query, Transaction.class, "transactions")).thenReturn(existingTransaction);
+        when(jdbcTemplateMock.queryForObject(
+                anyString(),
+                any(TransactionRowMapper.class),
+                eq(existingTransactionId))
+        ).thenReturn(existingTransaction);
 
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
 
         Optional<Transaction> actual = unit.getTransactionById(existingTransactionId);
 
         assertTrue(actual.isPresent());
-        assertEquals(existingTransactionId, actual.get().getTransactionId());
+        assertEquals(667, actual.get().getTransactionId());
     }
 
     @Test
     public void getTransactionById_givenNonExistingTransactionId_shouldReturnEmptyOptional() {
-        String nonExistingTransactionId = "nonExistingId";
-        Query query = new Query(Criteria.where("_id").is(nonExistingTransactionId));
+        int nonExistingTransactionId = 887;
+        when(jdbcTemplateMock.queryForObject(
+                anyString(),
+                any(TransactionRowMapper.class),
+                eq(nonExistingTransactionId))
+        ).thenThrow(new RuntimeException("Transaction not found"));
 
-        when(mongoTemplateMock.findOne(query, Transaction.class, "transactions")).thenReturn(null);
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
 
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
+        Optional<Transaction> actual = unit.getTransactionById(nonExistingTransactionId);
 
-        Optional<Transaction> result = unit.getTransactionById(nonExistingTransactionId);
-
-        assertFalse(result.isPresent());
+        assertTrue(actual.isEmpty());
     }
 
     @Test
     public void deleteTransaction_givenDeletionResultIsOk_shouldNotThrowException() {
-        Transaction transaction = createTransaction();
+        int transactionId = 123;
+        when(jdbcTemplateMock.update(anyString(), eq(transactionId))).thenReturn(1);
 
-        when(mongoTemplateMock.remove(eq(transaction), eq("transactions"))).thenReturn(new DeleteResult() {
-            @Override
-            public boolean wasAcknowledged() {
-                return false;
-            }
-
-            @Override
-            public long getDeletedCount() {
-                return 1;
-            }
-        });
-
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-        unit.deleteTransaction(transaction);
-
-        verify(mongoTemplateMock).remove(eq(transaction), eq("transactions"));
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
+        unit.deleteTransaction(transactionId);
     }
 
     @Test
-    public void deleteTransaction_givenDeletionResultIsNotOk_shouldThrowTransactionDeletionException() {
-        Transaction transaction = createTransaction();
+    public void deleteTransaction_givenDeletionResultIsNotOk_shouldThrowException() {
+        int transactionId = 123;
+        when(jdbcTemplateMock.update(anyString(), eq(transactionId))).thenReturn(0);
 
-        when(mongoTemplateMock.remove(eq(transaction), eq("transactions"))).thenReturn(new DeleteResult() {
-            @Override
-            public boolean wasAcknowledged() {
-                return false;
-            }
-
-            @Override
-            public long getDeletedCount() {
-                return 0;
-            }
-        });
-
-        TransactionRepository unit = new TransactionRepository(mongoTemplateMock);
-
-        assertThrows(DeleteTransactionException.class, () -> unit.deleteTransaction(transaction));
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
+        assertThrows(DeleteTransactionException.class, () -> unit.deleteTransaction(transactionId));
     }
+
+
+
 
     private Transaction createTransaction() {
         return new Transaction(
-                "someId",
-                "userId",
+                1,
+                1,
                 "Salary Paycheck",
                 LocalDateTime.now(),
                 "income",
@@ -165,10 +171,10 @@ public class TransactionRepositoryTest {
         );
     }
 
-    private Transaction createTransaction(String id) {
+    private Transaction createTransaction(int id) {
         return new Transaction(
                 id,
-                "userId",
+                1,
                 "Salary Paycheck",
                 LocalDateTime.now(),
                 "income",
@@ -177,6 +183,19 @@ public class TransactionRepositoryTest {
                 "Salary",
                 "This month paycheck",
                 null
+        );
+    }
+
+    private TransactionDTO createTransactionDTO() {
+        return new TransactionDTO(
+                "Salary Paycheck",
+                "income",
+                "USD",
+                Optional.empty(),
+                1000,
+                "salary",
+                "This month paycheck",
+                LocalDateTime.now()
         );
     }
 }

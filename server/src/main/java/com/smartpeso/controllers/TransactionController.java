@@ -33,8 +33,8 @@ public class TransactionController {
             @RequestBody TransactionDTO createTransactionRequest
     ) {
         try {
-            Transaction transaction = transactionService.createTransaction(createTransactionRequest, user);
-            return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+            transactionService.createTransaction(createTransactionRequest, user);
+            return new ResponseEntity<>("Transaction created successfully", HttpStatus.CREATED);
         } catch (TransactionValidationException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (TransactionCreationException e) {
@@ -59,15 +59,15 @@ public class TransactionController {
             @AuthenticationPrincipal User user,
             @RequestBody EditTransactionRequest editTransactionRequest) {
         try {
-            Transaction transaction = transactionService.editTransaction(editTransactionRequest, user);
-            log.info(String.format("Transaction with transactionId %s successfully edited", editTransactionRequest.transactionId()));
-            return new ResponseEntity<>(transaction, HttpStatus.OK);
+            transactionService.editTransaction(editTransactionRequest, user);
+            return new ResponseEntity<>("Transaction successfully edited", HttpStatus.OK);
         } catch (TransactionNotFoundException e) {
             log.error(String.format("User %s tried to edit transaction [%s], but it does not exist", user.getEmail(), editTransactionRequest.transactionId()));
             return new ResponseEntity<>(String.format("Transaction %s does not exist", editTransactionRequest.transactionId()), HttpStatus.NOT_FOUND);
         } catch (TransactionValidationException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            log.error("Error editing transaction: " + e.getMessage());
             return new ResponseEntity<>("Failed editing transaction", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

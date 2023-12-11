@@ -4,43 +4,35 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
-@Document
 @JsonIgnoreProperties({ "userId", "password" })
 public class User implements UserDetails {
         @Id
         @Getter
         @Setter
-        @Field(name = "_id")
-        private String userId;
+        private int userId;
 
         @Getter
-        @Field(name = "email")
         private String email;
 
-        @Field(name = "password")
-        private String password;
+        private final String password;
 
         @Getter
-        @Field(name = "role")
         private String role;
 
         @Getter
-        @Field(name = "firstName")
         private String firstName;
 
         @Getter
-        @Field(name = "lastName")
         private String lastName;
 
-        public User(String email, String password, String role, String firstName, String lastName) {
+        public User(int userId, String email, String password, String role, String firstName, String lastName) {
+                this.userId = userId;
                 this.email = email;
                 this.password = password;
                 this.role = role;

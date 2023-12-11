@@ -3,14 +3,14 @@ package com.smartpeso.repositories;
 import com.smartpeso.model.User;
 import com.smartpeso.repositories.exceptions.UserAlreadyExistsException;
 import com.smartpeso.repositories.exceptions.UserCreationException;
-import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 public class UserRepositoryTest {
     @Mock
-    private MongoTemplate mongoMock;
+    private JdbcTemplate jdbcTemplateMock;
 
     @BeforeEach
     public void setUp() {
@@ -27,85 +27,85 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void createUser_userDoesNotExist_shouldReturnCreatedUser() {
+    public void createUser_userDoesNotExist_shouldNotThrowException() {
         String newUserEmail = "john.doe@mail.com";
         String newUserFirstName = "John";
         String newUserLastName = "Doe";
         String newUserRole = "user";
         String newUserPassword = "some-password";
 
-        UserRepository unit = new UserRepository(mongoMock);
+        when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(newUserEmail))).thenReturn(new ArrayList<>());
+        when(jdbcTemplateMock.update(anyString(), eq(newUserEmail), eq(newUserPassword), eq(newUserRole), eq(newUserFirstName), eq(newUserLastName))).thenReturn(1);
 
-        when(mongoMock.findOne(any(Query.class), eq(User.class), eq("users"))).thenReturn(null);
-        when(mongoMock.insert(any(), eq("users"))).thenReturn(null);
-        User actual = unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName);
+        UserRepository unit = new UserRepository(jdbcTemplateMock);
 
-        assertEquals("john.doe@mail.com", actual.getEmail());
-        assertEquals("user", actual.getRole());
-        assertEquals("John", actual.getFirstName());
-        assertEquals("Doe", actual.getLastName());
+        unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName);
+    }
+
+    @Test
+    public void createUser_userDoesNotExistButInsertionFails_shouldThrowUserCreationException() {
+        String newUserEmail = "john.doe@mail.com";
+        String newUserFirstName = "John";
+        String newUserLastName = "Doe";
+        String newUserRole = "user";
+        String newUserPassword = "some-password";
+
+        when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(newUserEmail))).thenReturn(new ArrayList<>());
+        when(jdbcTemplateMock.update(anyString(), eq(newUserEmail), eq(newUserPassword), eq(newUserRole), eq(newUserFirstName), eq(newUserLastName))).thenReturn(0);
+
+        UserRepository unit = new UserRepository(jdbcTemplateMock);
+
+        assertThrows(UserCreationException.class, () -> unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName));
     }
 
     @Test
     public void createUser_userAlreadyExists_shouldThrowUserAlreadyExistsException() {
+        int userId = 123;
         String newUserEmail = "john.doe@mail.com";
         String newUserFirstName = "John";
         String newUserLastName = "Doe";
-        String newUserPassword = "some-password";
         String newUserRole = "user";
-
-        User existingUser = new User(newUserPassword, newUserEmail, newUserRole, newUserFirstName, newUserLastName);
-
-        UserRepository unit = new UserRepository(mongoMock);
-        when(mongoMock.findOne(any(Query.class), eq(User.class), eq("users"))).thenReturn(existingUser);
-
-        assertThrows(UserAlreadyExistsException.class, () -> {
-            unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName);
-        });
-    }
-
-    @Test
-    public void createUser_insertionFails_shouldThrowUserCreationException() {
-        String newUserEmail = "john.doe@mail.com";
-        String newUserFirstName = "John";
-        String newUserLastName = "Doe";
         String newUserPassword = "some-password";
-        String newUserRole = "role";
+        String password = "password";
+        String role = "user";
 
-        UserRepository unit = new UserRepository(mongoMock);
+        User user = new User(userId, newUserEmail, password, role, newUserFirstName, newUserLastName);
 
-        when(mongoMock.findOne(any(Query.class), eq(User.class), eq("users"))).thenReturn(null);
-        when(mongoMock.insert(any(Document.class), anyString())).thenThrow(new RuntimeException("some error"));
+        when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(newUserEmail))).thenReturn(List.of(user));
 
-        assertThrows(UserCreationException.class, () -> {
-            unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName);
-        });
+        UserRepository unit = new UserRepository(jdbcTemplateMock);
+
+        assertThrows(UserAlreadyExistsException.class, () -> unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName));
     }
 
     @Test
     public void findByEmail_givenUserDoesNotExist_shouldReturnEmptyOptional() {
-        UserRepository unit = new UserRepository(mongoMock);
+        String email = "john.doe@mail.com";
+        UserRepository unit = new UserRepository(jdbcTemplateMock);
 
-        when(mongoMock.findOne(any(Query.class), eq(User.class), eq("users"))).thenReturn(null);
+        when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(email))).thenReturn(new ArrayList<>());
 
-        Optional<User> actual = unit.findByEmail("john.doe@mail.com");
+        Optional<User> actual = unit.findByEmail(email);
 
         assertTrue(actual.isEmpty());
     }
 
     @Test
-    public void findByEmail_givenUserExists_shouldReturnExistingUser() {
-        User user = new User("john.doe@mail.com", "some-password", "user", "John", "Doe");
-        UserRepository unit = new UserRepository(mongoMock);
+    public void findByEmail_givenUserExists_shouldReturnOptionalWithExistingUser() {
+        int userId = 123;
+        String email = "john.doe@mail.com";
+        User user = new User(userId, email, "some-password", "user", "John", "Doe");
+        UserRepository unit = new UserRepository(jdbcTemplateMock);
 
-        when(mongoMock.findOne(any(Query.class), eq(User.class), eq("users"))).thenReturn(user);
+        when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(email))).thenReturn(List.of(user));
 
-        Optional<User> actual = unit.findByEmail("john.doe@mail.com");
+        Optional<User> actual = unit.findByEmail(email);
 
         assertTrue(actual.isPresent());
-        assertEquals("john.doe@mail.com", user.getEmail());
-        assertEquals("John", user.getFirstName());
-        assertEquals("Doe", user.getLastName());
-        assertEquals("user", user.getRole());
+        assertEquals(123, actual.get().getUserId());
+        assertEquals("john.doe@mail.com", actual.get().getEmail());
+        assertEquals("John", actual.get().getFirstName());
+        assertEquals("Doe", actual.get().getLastName());
+        assertEquals("user", actual.get().getRole());
     }
 }

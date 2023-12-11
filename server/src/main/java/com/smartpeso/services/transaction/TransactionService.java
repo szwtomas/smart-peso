@@ -4,13 +4,13 @@ import com.smartpeso.model.Transaction;
 import com.smartpeso.model.User;
 import com.smartpeso.model.dto.transaction.EditTransactionRequest;
 import com.smartpeso.model.dto.transaction.TransactionDTO;
+import com.smartpeso.model.dto.transaction.TransactionData;
 import com.smartpeso.repositories.TransactionRepository;
 import com.smartpeso.validators.TransactionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -23,53 +23,32 @@ public class TransactionService {
         this.transactionValidator = transactionValidator;
     }
 
-    public Transaction createTransaction(TransactionDTO transactionDTO, User user) {
-        Transaction transaction = createTransactionModel(transactionDTO, user.getUserId());
-        transactionValidator.validateTransaction(transaction);
-        return transactionRepository.upsertTransaction(transaction);
+    public void createTransaction(TransactionDTO transactionDTO, User user) {
+        transactionValidator.validateTransaction(TransactionData.fromDTO(transactionDTO));
+        transactionRepository.createTransaction(transactionDTO, user.getUserId());
     }
 
     public List<Transaction> getTransactions(User user) {
-        return transactionRepository.getTransactionsByUserId(user.getUserId());
+        return transactionRepository.getUserTransactions(user.getUserId());
     }
 
-    private String createTransactionId() {
-        return UUID.randomUUID().toString();
-    }
-
-    private Transaction createTransactionModel(TransactionDTO createTransactionRequest, String userId) {
-        return new Transaction(
-                createTransactionId(),
-                userId,
-                createTransactionRequest.name(),
-                createTransactionRequest.date(),
-                createTransactionRequest.type(),
-                createTransactionRequest.currency(),
-                createTransactionRequest.value(),
-                createTransactionRequest.category(),
-                createTransactionRequest.description(),
-                createTransactionRequest.paymentMethod().orElse(null)
-        );
-    }
-
-    public Transaction editTransaction(EditTransactionRequest editTransactionRequest, User user) {
+    public void editTransaction(EditTransactionRequest editTransactionRequest, User user) {
+        transactionValidator.validateTransaction(TransactionData.fromEditRequest(editTransactionRequest));
         Transaction transaction = findUserTransaction(editTransactionRequest.transactionId(), user.getUserId());
         setNewFieldsToTransaction(transaction, editTransactionRequest);
-        transactionValidator.validateTransaction(transaction);
-        return transactionRepository.upsertTransaction(transaction);
+        transactionRepository.updateTransaction(transaction);
     }
 
-    public void deleteTransaction(String transactionId, User user) {
+    public void deleteTransaction(int transactionId, User user) {
         Transaction transactionToDelete = findUserTransaction(transactionId, user.getUserId());
-        transactionRepository.deleteTransaction(transactionToDelete);
+        transactionRepository.deleteTransaction(transactionToDelete.getTransactionId());
     }
 
-    private Transaction findUserTransaction(String transactionId, String userId) {
-        Transaction transaction = transactionRepository
-                .getTransactionById(transactionId)
+    private Transaction findUserTransaction(int transactionId, int userId) {
+        Transaction transaction = transactionRepository.getTransactionById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction with transactionId " + transactionId + " not found"));
 
-        if (!transaction.getUserId().equals(userId)) {
+        if (!(transaction.getUserId() == userId)) {
             throw new TransactionNotFoundException(String.format("User %s does not have transaction %s", userId, transactionId));
         }
 
