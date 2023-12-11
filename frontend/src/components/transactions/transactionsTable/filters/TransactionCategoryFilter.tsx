@@ -1,23 +1,22 @@
 import { Input } from "@nextui-org/react";
 import { SearchIcon } from "../../../icons/Icons";
 
-export interface TransactionTableFilterInputProps {
+export interface TransactionCategoryFilterInputProps {
   filterValue: string;
   onClear: () => void;
   onSearchChange: (value?: string) => void;
 }
 
-export function TransactionTableFilterInput(
-  props: TransactionTableFilterInputProps
+export function TransactionCategoryFilter(
+  props: TransactionCategoryFilterInputProps
 ) {
   return (
     <Input
       isClearable
       startContent={<SearchIcon />}
-      className="w-[200%]"
       size="sm"
       radius="sm"
-      placeholder="Buscar por nombre..."
+      placeholder="Buscar por categoría..."
       value={props.filterValue}
       onClear={() => props.onClear()}
       onValueChange={props.onSearchChange}

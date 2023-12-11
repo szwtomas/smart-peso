@@ -7,11 +7,15 @@ import { NewTransactionModal } from "../modal/NewTransactionModal";
 import { TransactionCurrencySelectorDropdown } from "./filters/TransactionCurrencySelectorDropdown";
 import { TransactionFilterOption } from "./filters/transactionFilters";
 import { CreateTransactionFormData } from "../../../services/TransactionService";
+import { TransactionCategoryFilter } from "./filters/TransactionCategoryFilter";
 
 interface TransactionTableTopContentProps {
-  filterValue: string;
-  onClear: () => void;
-  onSearchChange: (value?: string) => void;
+  nameFilterValue: string;
+  onNameFilterClear: () => void;
+  onNameSearchChange: (value?: string) => void;
+  categoryFilterValue: string;
+  onCategoryFilterClear: () => void;
+  onCategorySearchChange: (value?: string) => void;
   transactionTypeFilter: Selection;
   setTransactionTypeFilter: React.Dispatch<React.SetStateAction<Selection>>;
   transactionTypeOptions: TransactionFilterOption[];
@@ -32,9 +36,14 @@ export function TransactionsTableTopContent(
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-3 items-end">
         <TransactionTableFilterInput
-          onSearchChange={props.onSearchChange}
-          filterValue={props.filterValue}
-          onClear={props.onClear}
+          onSearchChange={props.onNameSearchChange}
+          filterValue={props.nameFilterValue}
+          onClear={props.onNameFilterClear}
+        />
+        <TransactionCategoryFilter
+          filterValue={props.categoryFilterValue}
+          onSearchChange={props.onCategorySearchChange}
+          onClear={props.onCategoryFilterClear}
         />
         <div className="flex gap-3">
           <TransactionTypeSelectorDropdown

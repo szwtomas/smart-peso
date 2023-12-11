@@ -18,6 +18,7 @@ export const transactionTypeOptions: TransactionFilterOption[] = [
 
 export interface TransactionFilters {
     name: string;
+    category: string;
     currency: Selection;
     type: Selection;
 }
@@ -25,11 +26,16 @@ export interface TransactionFilters {
 export function filterTransactions(transactions: Transaction[], filters: TransactionFilters): Transaction[] {
     let filteredTransactions = [...transactions];
     const nameFilter = filters.name.toLowerCase();
+    const categoryFilter = filters.category.toLowerCase();
     const currencyFilter = filters.currency;
     const typeFilter = filters.type;
 
     if (nameFilter !== "") {
-        filteredTransactions = filteredTransactions.filter((transaction) => transaction.name.toLowerCase().includes(nameFilter));
+        filteredTransactions = filteredTransactions.filter((transaction) => transaction.name.toLowerCase().startsWith(nameFilter));
+    }
+
+    if (categoryFilter !== "") {
+        filteredTransactions = filteredTransactions.filter((transaction) => transaction.category.toLowerCase().startsWith(categoryFilter));
     }
 
     if (typeFilter !== "all" && Array.from(typeFilter).length !== transactionTypeOptions.length) {

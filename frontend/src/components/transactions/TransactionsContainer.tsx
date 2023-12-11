@@ -23,7 +23,8 @@ export function TransactionContainer() {
     useState<boolean>(true);
   const [transactionData, setTransactionData] = useState<Transaction[]>([]);
   const [page, setPage] = useState(1);
-  const [filterValue, setFilterValue] = useState("");
+  const [nameFilterValue, setNameFilterValue] = useState("");
+  const [categoryFilterValue, setCategoryFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [transactionTypeFilter, setTransactionTypeFilter] =
@@ -56,13 +57,15 @@ export function TransactionContainer() {
 
   const filteredItems = useMemo(() => {
     return filterTransactions(transactionData, {
-      name: filterValue,
+      name: nameFilterValue,
+      category: categoryFilterValue,
       type: transactionTypeFilter,
       currency: transactionCurrencyFilter,
     });
   }, [
     transactionData,
-    filterValue,
+    nameFilterValue,
+    categoryFilterValue,
     transactionTypeFilter,
     transactionCurrencyFilter,
   ]);
@@ -131,17 +134,31 @@ export function TransactionContainer() {
     []
   );
 
-  const onSearchChange = useCallback((value?: string) => {
+  const onNameSearchChange = useCallback((value?: string) => {
     if (value) {
-      setFilterValue(value);
+      setNameFilterValue(value);
       setPage(1);
     } else {
-      setFilterValue("");
+      setNameFilterValue("");
     }
   }, []);
 
-  const onClear = useCallback(() => {
-    setFilterValue("");
+  const onCategorySearchChange = useCallback((value?: string) => {
+    if (value) {
+      setCategoryFilterValue(value);
+      setPage(1);
+    } else {
+      setCategoryFilterValue("");
+    }
+  }, []);
+
+  const onNameFilterClear = useCallback(() => {
+    setNameFilterValue("");
+    setPage(1);
+  }, []);
+
+  const onCategoryFilterClear = useCallback(() => {
+    setCategoryFilterValue("");
     setPage(1);
   }, []);
 
@@ -163,9 +180,12 @@ export function TransactionContainer() {
 
     return (
       <TransactionsTableTopContent
-        filterValue={filterValue}
-        onClear={onClear}
-        onSearchChange={onSearchChange}
+        nameFilterValue={nameFilterValue}
+        onNameFilterClear={onNameFilterClear}
+        onNameSearchChange={onNameSearchChange}
+        categoryFilterValue={categoryFilterValue}
+        onCategoryFilterClear={onCategoryFilterClear}
+        onCategorySearchChange={onCategorySearchChange}
         onRowsPerPageChange={onRowsPerPageChange}
         transactionTypeFilter={transactionTypeFilter}
         setTransactionTypeFilter={setTransactionTypeFilter}
@@ -178,14 +198,17 @@ export function TransactionContainer() {
       />
     );
   }, [
-    filterValue,
+    nameFilterValue,
     transactionTypeFilter,
-    onSearchChange,
+    onNameSearchChange,
     onRowsPerPageChange,
-    onClear,
+    onNameFilterClear,
     transactionData.length,
     transactionCurrencyFilter,
     setTransactionCurrencyFilter,
+    categoryFilterValue,
+    onCategorySearchChange,
+    onCategoryFilterClear,
   ]);
 
   const bottomContent = useMemo(() => {
