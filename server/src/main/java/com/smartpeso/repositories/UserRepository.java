@@ -27,16 +27,16 @@ public class UserRepository {
         }
     }
 
-    public void createUser(String email, String password, String role, String firstName, String lastName) {
+    public void createUser(String email, String password, String salt, String role, String firstName, String lastName) {
         checkIfUserExistsByEmail(email);
-        int insertedRows = insertUser(email, password, role, firstName, lastName);
+        int insertedRows = insertUser(email, password, salt, role, firstName, lastName);
         if (insertedRows <= 0) throw new UserCreationException("failed to create user with email " + email);
     }
 
-    private int insertUser(String email, String password, String role, String firstName, String lastName) {
-        String sql = "INSERT INTO user (email, password, role, firstname, lastname) VALUES (?, ?, ?, ?, ?)";
+    private int insertUser(String email, String password, String salt, String role, String firstName, String lastName) {
+        String sql = "INSERT INTO user (email, password, salt, role, firstname, lastname) VALUES (?, ?, ?, ?, ?, ?)";
         try {
-            return jdbcTemplate.update(sql, email, password, role, firstName, lastName);
+            return jdbcTemplate.update(sql, email, password, salt, role, firstName, lastName);
         } catch(Exception e) {
             throw new UserCreationException(e.getMessage());
         }

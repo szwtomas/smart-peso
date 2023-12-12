@@ -214,7 +214,7 @@ public class TransactionServiceTest {
     }
 
     private User getUser() {
-        return new User(555, "john.doe@mail.com", "password", "user", "John", "Doe");
+        return new User(555, "john.doe@mail.com", "password", "salt","user", "John", "Doe");
     }
 
     private User getUser(int userId) {

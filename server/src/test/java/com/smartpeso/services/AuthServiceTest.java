@@ -7,6 +7,7 @@ import com.smartpeso.repositories.exceptions.UserCreationException;
 import com.smartpeso.repositories.UserRepository;
 import com.smartpeso.services.auth.AuthService;
 import com.smartpeso.services.auth.JwtService;
+import com.smartpeso.services.auth.SaltGenerator;
 import com.smartpeso.services.auth.UserCreationResult;
 import com.smartpeso.validators.UserValidationException;
 import com.smartpeso.validators.UserValidator;
@@ -34,6 +35,8 @@ public class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoderMock;
     @Mock
+    SaltGenerator saltGeneratorMock;
+    @Mock
     private AuthenticationManager authenticationManagerMock;
     @Mock
     private JwtService jwtServiceMock;
@@ -41,24 +44,27 @@ public class AuthServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(saltGeneratorMock.generateSalt()).thenReturn("salt");
     }
 
     @Test
     public void signUp_userCreatedSuccessfully_shouldReturnSuccessResult() {
-        int userId = 123;
         String email = "john.doe@mail.com";
         String firstName = "John";
         String lastName = "Doe";
         String password = "password";
+        String salt = "salt";
+        String pepper = "pepper";
         String encodedPassword = "encoded-password";
         String role = "user";
         String accessToken = "access-token";
 
-        when(passwordEncoderMock.encode(eq(password))).thenReturn(encodedPassword);
-        doNothing().when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName));
+        when(passwordEncoderMock.encode(eq(password + salt + pepper))).thenReturn(encodedPassword);
+        doNothing().when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(salt), eq(role), eq(firstName), eq(lastName));
         when(jwtServiceMock.generateAccessToken(eq(email))).thenReturn(accessToken);
 
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
+        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, saltGeneratorMock, jwtServiceMock, authenticationManagerMock);
+        unit.setPepper(pepper);
 
         UserCreationResult creationResult = unit.signUp(email, password, firstName, lastName);
         AuthenticationResponse actual = creationResult.getAuthenticationResponse();
@@ -73,13 +79,16 @@ public class AuthServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String password = "password";
+        String salt = "salt";
+        String pepper = "pepper";
         String encodedPassword = "encoded-password";
         String role = "user";
 
-        when(passwordEncoderMock.encode(password)).thenReturn(encodedPassword);
-        doThrow(new UserAlreadyExistsException("some error")).when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName));
+        when(passwordEncoderMock.encode(password + salt + pepper)).thenReturn(encodedPassword);
+        doThrow(new UserAlreadyExistsException("some error")).when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(salt), eq(role), eq(firstName), eq(lastName));
 
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
+        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, saltGeneratorMock, jwtServiceMock, authenticationManagerMock);
+        unit.setPepper(pepper);
 
         UserCreationResult creationResult = unit.signUp(email, password, firstName, lastName);
 
@@ -93,13 +102,16 @@ public class AuthServiceTest {
         String firstName = "John";
         String lastName = "Doe";
         String password = "password";
+        String salt = "salt";
+        String pepper = "pepper";
         String encodedPassword = "encoded-password";
         String role = "user";
 
-        when(passwordEncoderMock.encode(password)).thenReturn(encodedPassword);
-        doThrow(new UserCreationException("some error")).when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(role), eq(firstName), eq(lastName));
+        when(passwordEncoderMock.encode(password + salt + pepper)).thenReturn(encodedPassword);
+        doThrow(new UserCreationException("some error")).when(userRepositoryMock).createUser(eq(email), eq(encodedPassword), eq(salt), eq(role), eq(firstName), eq(lastName));
 
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
+        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, saltGeneratorMock, jwtServiceMock, authenticationManagerMock);
+        unit.setPepper(pepper);
 
         UserCreationResult creationResult = unit.signUp(email, password, firstName, lastName);
 
@@ -107,6 +119,7 @@ public class AuthServiceTest {
         assertFalse(creationResult.isUserAlreadyExists());
         assertEquals("some error", creationResult.getError().getMessage());
     }
+
     @Test
     public void signUp_userValidationFails_shouldReturnTheThrownError() {
         String email = "john.doe@mail.com";
@@ -115,7 +128,7 @@ public class AuthServiceTest {
         String password = "password";
 
         doThrow(new UserValidationException("invalid user")).when(userValidatorMock).validateUser(eq(email), eq(password), eq(firstName), eq(lastName));
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
+        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, saltGeneratorMock, jwtServiceMock, authenticationManagerMock);
 
         UserCreationResult creationResult = unit.signUp(email, password, firstName, lastName);
 
@@ -130,11 +143,11 @@ public class AuthServiceTest {
         String email = "john.doe@mail.com";
         String rawPassword = "password";
 
-        User user = new User(userId, email, "encodedPassword", "user", "John", "Doe");
+        User user = new User(userId, email, "encodedPassword", "salt", "user", "John", "Doe");
         when(userRepositoryMock.findByEmail(email)).thenReturn(Optional.of(user));
         when(jwtServiceMock.generateAccessToken(email)).thenReturn("access-token");
 
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
+        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, saltGeneratorMock, jwtServiceMock, authenticationManagerMock);
         AuthenticationResponse authResponse = unit.authenticate(email, rawPassword);
 
         assertEquals("access-token", authResponse.accessToken());
@@ -146,7 +159,7 @@ public class AuthServiceTest {
         String rawPassword = "password";
 
         doThrow(new BadCredentialsException("bad credentials")).when(authenticationManagerMock).authenticate(any(Authentication.class));
-        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, jwtServiceMock, authenticationManagerMock);
+        AuthService unit = new AuthService(userRepositoryMock, userValidatorMock, passwordEncoderMock, saltGeneratorMock, jwtServiceMock, authenticationManagerMock);
 
         assertThrows(BadCredentialsException.class, () -> unit.authenticate(email, rawPassword));
     }

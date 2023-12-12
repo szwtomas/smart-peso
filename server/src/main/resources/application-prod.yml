@@ -10,3 +10,6 @@ spring:
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+app-properties:
+  pepper: ${SECRET_PEPPER_KEY}

@@ -14,3 +14,6 @@ spring:
     username: smartpeso
     password: 12345678
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+app-properties:
+  pepper: "6B888FCB558F79D1E117EA8B1B2AD515396CD2ABB9172D476F66F3C490"

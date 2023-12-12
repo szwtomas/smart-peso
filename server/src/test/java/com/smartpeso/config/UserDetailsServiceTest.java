@@ -32,7 +32,7 @@ public class UserDetailsServiceTest {
     public void userDetailsService_givenUserExists_shouldReturnUser() {
         int userId = 123;
         String email = "john.doe@mail.com";
-        User user = new User(userId, email, "password", "user", "John", "Doe");
+        User user = new User(userId, email, "password", "salt","user", "John", "Doe");
 
         SecurityConfig securityConfig = new SecurityConfig(userRepositoryMock, jwtServiceMock);
         UserDetailsService unit = securityConfig.userDetailsService();

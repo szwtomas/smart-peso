@@ -240,7 +240,7 @@ public class TransactionControllerTest {
     }
 
     private User getUser() {
-        return new User(444, "john.doe@mail.com", "password", "user", "John", "Doe");
+        return new User(444, "john.doe@mail.com", "password", "salt", "user", "John", "Doe");
     }
 
     private EditTransactionRequest getEditTransactionRequest() {

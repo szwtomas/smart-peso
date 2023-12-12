@@ -33,13 +33,14 @@ public class UserRepositoryTest {
         String newUserLastName = "Doe";
         String newUserRole = "user";
         String newUserPassword = "some-password";
+        String salt = "salt";
 
         when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(newUserEmail))).thenReturn(new ArrayList<>());
-        when(jdbcTemplateMock.update(anyString(), eq(newUserEmail), eq(newUserPassword), eq(newUserRole), eq(newUserFirstName), eq(newUserLastName))).thenReturn(1);
+        when(jdbcTemplateMock.update(anyString(), eq(newUserEmail), eq(newUserPassword), eq(salt), eq(newUserRole), eq(newUserFirstName), eq(newUserLastName))).thenReturn(1);
 
         UserRepository unit = new UserRepository(jdbcTemplateMock);
 
-        unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName);
+        unit.createUser(newUserEmail, newUserPassword, salt, newUserRole, newUserFirstName, newUserLastName);
     }
 
     @Test
@@ -49,13 +50,14 @@ public class UserRepositoryTest {
         String newUserLastName = "Doe";
         String newUserRole = "user";
         String newUserPassword = "some-password";
+        String salt = "salt";
 
         when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(newUserEmail))).thenReturn(new ArrayList<>());
         when(jdbcTemplateMock.update(anyString(), eq(newUserEmail), eq(newUserPassword), eq(newUserRole), eq(newUserFirstName), eq(newUserLastName))).thenReturn(0);
 
         UserRepository unit = new UserRepository(jdbcTemplateMock);
 
-        assertThrows(UserCreationException.class, () -> unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName));
+        assertThrows(UserCreationException.class, () -> unit.createUser(newUserEmail, newUserPassword, salt, newUserRole, newUserFirstName, newUserLastName));
     }
 
     @Test
@@ -67,15 +69,16 @@ public class UserRepositoryTest {
         String newUserRole = "user";
         String newUserPassword = "some-password";
         String password = "password";
+        String salt = "salt";
         String role = "user";
 
-        User user = new User(userId, newUserEmail, password, role, newUserFirstName, newUserLastName);
+        User user = new User(userId, newUserEmail, password, salt, role, newUserFirstName, newUserLastName);
 
         when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(newUserEmail))).thenReturn(List.of(user));
 
         UserRepository unit = new UserRepository(jdbcTemplateMock);
 
-        assertThrows(UserAlreadyExistsException.class, () -> unit.createUser(newUserEmail, newUserPassword, newUserRole, newUserFirstName, newUserLastName));
+        assertThrows(UserAlreadyExistsException.class, () -> unit.createUser(newUserEmail, newUserPassword, salt, newUserRole, newUserFirstName, newUserLastName));
     }
 
     @Test
@@ -94,7 +97,7 @@ public class UserRepositoryTest {
     public void findByEmail_givenUserExists_shouldReturnOptionalWithExistingUser() {
         int userId = 123;
         String email = "john.doe@mail.com";
-        User user = new User(userId, email, "some-password", "user", "John", "Doe");
+        User user = new User(userId, email, "some-password","salt", "user", "John", "Doe");
         UserRepository unit = new UserRepository(jdbcTemplateMock);
 
         when(jdbcTemplateMock.query(anyString(), any(UserRowMapper.class), eq(email))).thenReturn(List.of(user));
@@ -107,5 +110,6 @@ public class UserRepositoryTest {
         assertEquals("John", actual.get().getFirstName());
         assertEquals("Doe", actual.get().getLastName());
         assertEquals("user", actual.get().getRole());
+        assertEquals("salt", actual.get().getSalt());
     }
 }

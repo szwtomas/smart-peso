@@ -21,6 +21,8 @@ public class User implements UserDetails {
         private String email;
 
         private final String password;
+        @Getter
+        private final String salt;
 
         @Getter
         private String role;
@@ -31,10 +33,11 @@ public class User implements UserDetails {
         @Getter
         private String lastName;
 
-        public User(int userId, String email, String password, String role, String firstName, String lastName) {
+        public User(int userId, String email, String password, String salt, String role, String firstName, String lastName) {
                 this.userId = userId;
                 this.email = email;
                 this.password = password;
+                this.salt = salt;
                 this.role = role;
                 this.firstName = firstName;
                 this.lastName = lastName;
