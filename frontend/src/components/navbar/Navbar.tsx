@@ -11,22 +11,22 @@ export function Navbar() {
 
   return (
     <NextUINavbar
+      isBordered
       maxWidth="full"
       position="sticky"
       isBlurred={false}
-      isBordered
-      className="bg-primary shadow-xl p-2"
+      className="bg-primary shadow-xl p-1 lg:p-2 min-w-full"
     >
-      <NavbarContent className="basis-1/5 sm:basis-full justify-start">
+      <NavbarContent className="basis-full">
         <NavbarBrand className="gap-3 max-w-fit">
           <a className="flex justify-start items-center gap-1" href={"/"}>
-            <p className="text-white fixed left-0 top-0 flex pl-5 text-3xl lg:static font-inter font-black">
+            <p className="text-white left-0 top-0 flex pl-5 text-3xl static font-inter font-black">
               SMART PESO
             </p>
           </a>
         </NavbarBrand>
       </NavbarContent>
-      <NavbarContent className="basis-1/5 sm:basis-full" justify="end">
+      <NavbarContent className="basis-full" justify="end">
         <p className="text-white text-lg">
           {user ? `${user.firstName} ${user.lastName}` : ""}
         </p>
