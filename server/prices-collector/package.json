@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc && node dist/index.js",
+    "dev": "RUN_ONCE=true && tsc && node dist/index.js",
     "start": "node dist/index.js"
   },
   "author": "",
@@ -16,6 +16,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "node-cron": "^3.0.3"
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "puppeteer": "^21.6.1"
   }
 }
