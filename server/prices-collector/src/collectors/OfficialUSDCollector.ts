@@ -1,24 +1,48 @@
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
 import { Collector } from "./Collector";
+import { USD_OFFICIAL } from "../constants";
 
 dotenv.config();
 
-export class OfficialUSDCollector implements Collector {
-    private url: string;
+export interface PriceResult {
+    error?: string;
+    price: number;
+}
 
-    constructor() {
-        this.url = process.env.OFFICIAL_USD_PAGE_URL || "";
+export class OfficialUSDCollector implements Collector {
+    public async collect(): Promise<number> {
+        const sources = [this.tryCollectFirstSource, this.tryCollectSecondSource];
+        for (const source of sources) {
+            const result = await this.tryCollectSource(source);
+            if (!result.error) {
+                return result.price;
+            }
+        }
+
+        throw new Error("All sources failed for " + this.currencyName());
     }
 
-    public async collect(): Promise<number> {
+    private async tryCollectSource(collectFunction: () => Promise<number>): Promise<PriceResult> {
+        try {
+            const price = await collectFunction();
+            return { price };
+        } catch(error) {
+            if (error instanceof Error) {
+                console.log("Failed fetching official USD: " + error.message);
+                return { error: error.message, price: 0 };
+            } else {
+                return { error: "Unknown error", price: 0 };
+            }
+        }
+    }
+
+    private async tryCollectFirstSource(): Promise<number> {
+        const url = process.env.OFFICIAL_USD_PAGE_URL_SOURCE_1 || "";
         const browser = await puppeteer.launch({ headless: "new" });
         const page = await browser.newPage();
-        console.log("Page is " + this.url);
-        await page.goto(this.url);
-        
-        await page.waitForSelector('.table.cotizacion'); 
-
+        await page.goto(url);
+        await page.waitForSelector(".table.cotizacion"); 
         const targetValue = await page.evaluate(() => {
             const table = document.querySelector(".table.cotizacion");
             const targetRow = table?.querySelectorAll("tr")[1];
@@ -26,16 +50,27 @@ export class OfficialUSDCollector implements Collector {
             return targetCell?.innerText.trim();
         });
 
+        await browser.close();
         if(!targetValue) {
-            throw new Error('Target value not found');
+            throw new Error("Could not get target value");
         }
 
-        const price: number = parseInt(targetValue.split(",")[0]);
-        
-        return price;
+        return parseInt(targetValue.split(",")[0]);
+    }
+
+    private async tryCollectSecondSource(): Promise<number> {
+        const url = process.env.OFFICIAL_USD_PAGE_URL_SOURCE_2 || "";
+        const response = await fetch(url);
+        const responseJson = await response.json();
+        const sellValue = responseJson?.venta;
+        if (!sellValue) {
+            throw new Error("Could not get sell value");
+        }
+
+        return parseInt(sellValue);
     }
 
     public currencyName(): string {
-        return 'official-usd';
+        return USD_OFFICIAL;
     }
 }
