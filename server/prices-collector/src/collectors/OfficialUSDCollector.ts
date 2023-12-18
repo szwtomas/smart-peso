@@ -7,7 +7,7 @@ dotenv.config();
 
 export class OfficialUSDCollector implements Collector {
     public async collect(): Promise<number> {
-        const sources = [this.tryCollectFirstSource, this.tryCollectSecondSource];
+        const sources = [this.secondSource, this.firstSource];
         for (const source of sources) {
             const result = await this.tryCollectSource(source);
             if (!result.error) {
@@ -32,7 +32,19 @@ export class OfficialUSDCollector implements Collector {
         }
     }
 
-    private async tryCollectFirstSource(): Promise<number> {
+    private async firstSource(): Promise<number> {
+        const url = process.env.DOLAR_API_HOST || "";
+        const response = await fetch(`${url}/oficial`);
+        const responseJson = await response.json();
+        const sellValue = responseJson?.venta;
+        if (!sellValue) {
+            throw new Error("Could not get sell value");
+        }
+
+        return parseInt(sellValue);
+    }
+
+    private async secondSource(): Promise<number> {
         const url = process.env.OFFICIAL_USD_PAGE_URL_SOURCE_1 || "";
         const browser = await puppeteer.launch({ headless: "new" });
         const page = await browser.newPage();
@@ -51,18 +63,6 @@ export class OfficialUSDCollector implements Collector {
         }
 
         return parseInt(targetValue.split(",")[0]);
-    }
-
-    private async tryCollectSecondSource(): Promise<number> {
-        const url = process.env.DOLAR_API_HOST || "";
-        const response = await fetch(`${url}/oficial`);
-        const responseJson = await response.json();
-        const sellValue = responseJson?.venta;
-        if (!sellValue) {
-            throw new Error("Could not get sell value");
-        }
-
-        return parseInt(sellValue);
     }
 
     public currencyName(): string {
