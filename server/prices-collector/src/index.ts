@@ -12,6 +12,8 @@ async function run() {
     insertPricesInDB(prices);
 }
 
+console.log("App Started");
+
 if (runOnce) {
     run();
 } else {
