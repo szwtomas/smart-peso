@@ -1,7 +1,6 @@
 export interface PriceCollectorResult {
     usdOfficial?: number;
-    usdMep?: number;
+    usdMEP?: number;
     usdBlue?: number;
-    usdCcl?: number;
-    btc?: number;
+    usdCCL?: number;
 }

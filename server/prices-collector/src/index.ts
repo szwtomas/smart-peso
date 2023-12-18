@@ -1,24 +1,22 @@
 import dotenv from "dotenv";
 import cron from "node-cron";
 import { PricesCollector } from "./PricesCollector";
-import { AppRunner } from "./AppRunner";
+import { insertPricesInDB } from "./priceDbInserter";
 
 dotenv.config();
 
 const runOnce = process.env.RUN_ONCE;
 
-async function collectPrice() {
-    const priceCollector = new PricesCollector();
-    await new AppRunner(priceCollector).run();
+async function run() {
+    const prices = await new PricesCollector().collect();
+    insertPricesInDB(prices);
 }
 
 if (runOnce) {
-    collectPrice().then(() => process.exit(0));
+    run();
 } else {
     cron.schedule("0 * * * *", async () => {
         console.log("Running Price Collector Cron");
-        const priceCollector = new PricesCollector();
-        const appRunner = new AppRunner(priceCollector);
-        appRunner.run();
+        run();
     });
 }

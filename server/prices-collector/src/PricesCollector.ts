@@ -1,13 +1,21 @@
+import { BlueUSDCollector } from "./collectors/BlueUSDCollector";
+import { CclUSDCollector } from "./collectors/CclUSDColelctor";
 import { Collector } from "./collectors/Collector";
+import { MepUSDCollector } from "./collectors/MepUSDCollector";
 import { OfficialUSDCollector } from "./collectors/OfficialUSDCollector";
 import { PriceCollectorResult } from "./collectors/PriceCollectorResult";
-import { BTC, USD_BLUE, USD_CCL, USD_MEP, USD_OFFICIAL } from "./constants";
+import { USD_BLUE, USD_CCL, USD_MEP, USD_OFFICIAL } from "./constants";
 
 export class PricesCollector {
     private collectors: Collector[];
 
     constructor() {
-        this.collectors = [new OfficialUSDCollector()];
+        this.collectors = [
+            new OfficialUSDCollector(),
+            new BlueUSDCollector(),
+            new MepUSDCollector(),
+            new CclUSDCollector(),
+        ];
     }
 
     public async collect(): Promise<PriceCollectorResult> {
@@ -25,12 +33,12 @@ export class PricesCollector {
             
         }
 
+        console.log("Price collector finished");
         return {
             usdOfficial: prices[USD_OFFICIAL],
-            usdMep: prices[USD_MEP],
-            usdCcl: prices[USD_CCL],
+            usdMEP: prices[USD_MEP],
+            usdCCL: prices[USD_CCL],
             usdBlue: prices[USD_BLUE],
-            btc: prices[BTC],
         };
     }
 }

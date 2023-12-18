@@ -1,14 +1,9 @@
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
-import { Collector } from "./Collector";
+import { Collector, PriceResult } from "./Collector";
 import { USD_OFFICIAL } from "../constants";
 
 dotenv.config();
-
-export interface PriceResult {
-    error?: string;
-    price: number;
-}
 
 export class OfficialUSDCollector implements Collector {
     public async collect(): Promise<number> {
@@ -59,8 +54,8 @@ export class OfficialUSDCollector implements Collector {
     }
 
     private async tryCollectSecondSource(): Promise<number> {
-        const url = process.env.OFFICIAL_USD_PAGE_URL_SOURCE_2 || "";
-        const response = await fetch(url);
+        const url = process.env.DOLAR_API_HOST || "";
+        const response = await fetch(`${url}/oficial`);
         const responseJson = await response.json();
         const sellValue = responseJson?.venta;
         if (!sellValue) {
