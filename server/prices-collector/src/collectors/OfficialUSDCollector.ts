@@ -7,7 +7,7 @@ dotenv.config();
 
 export class OfficialUSDCollector implements Collector {
     public async collect(): Promise<number> {
-        const sources = [this.secondSource, this.firstSource];
+        const sources = [this.firstSource, this.secondSource];
         for (const source of sources) {
             const result = await this.tryCollectSource(source);
             if (!result.error) {
