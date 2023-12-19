@@ -1,0 +1,9 @@
+CREATE TABLE currencyPrices (
+    currencyPricesId INT AUTO_INCREMENT,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usdOfficial DOUBLE DEFAULT NULL,
+    usdMEP DOUBLE DEFAULT NULL,
+    usdBlue DOUBLE DEFAULT NULL,
+    usdCCL DOUBLE DEFAULT NULL,
+    PRIMARY KEY (currencyPricesId, date)
+);
