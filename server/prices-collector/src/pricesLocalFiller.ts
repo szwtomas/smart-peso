@@ -25,9 +25,15 @@ function getLastDateWithLocalData(connection: Connection, callback: (date: Date 
     });
 }
 
-function getProdRowsToInsert(connection: Connection, date: Date, callback: (rowsToInsert: PricesRow[]) => void) {
-    const sql: string = "SELECT * FROM currencyPrices WHERE date >= ?";
-    connection.query(sql, [date], (error, response) => {
+function getProdRowsToInsert(connection: Connection, date: Date | null, callback: (rowsToInsert: PricesRow[]) => void) {
+    let sql: string = "SELECT * FROM currencyPrices";
+    const queryParams = [];
+    if (date != null) {
+        sql += " WHERE date >= ?";
+        queryParams.push(date);
+    }
+
+    connection.query(sql, queryParams, (error, response) => {
         if (error) {
             throw new Error("Error fetching rows to insert: " + error.message);
         }
@@ -78,11 +84,6 @@ function getDBConnections(callback: (localConnection: Connection, prodConnection
 function runFill() {
     getDBConnections((localConnection, prodConnection) => {
         getLastDateWithLocalData(localConnection, (date: Date | null) => {
-            if (date == null) {
-                console.log("No rows to insert, program finished");
-                process.exit(0);
-            }
-
             getProdRowsToInsert(prodConnection, date, (rowsToInsert) => {
                 if (rowsToInsert.length === 0) {
                     console.log("No rows to insert, program finished");
