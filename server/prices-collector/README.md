@@ -32,3 +32,9 @@ If you run the code with `npm run dev`, it will run the code once, noe activatin
 ## How does it work
 
 First, `price-collector`fetches the USD currency rates into different sources, having a fallback source if it fails for some reason. Once it has the rates, it inserts them into the mysql database, with today's date in Argentina timezome.
+
+## Local Filler Script
+
+This project also contains a npm script `fill-local`, which you can run with `npm run fill-local`, that fills your local MySQL with production data regarding currency prices.
+This exists because, since prices are filled with a cronjob, it's hard to keep the local DB updated and quite tedious to add the values manually, so this fills it with the real prices.
+You will need the `.env` file with the required environment variables to use this scripts, you can ask the project owner for that file since it is not pushed to the repository.
