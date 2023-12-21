@@ -1,10 +1,10 @@
-import { BlueUSDCollector } from "./collectors/BlueUSDCollector";
-import { CclUSDCollector } from "./collectors/CclUSDColelctor";
-import { Collector } from "./collectors/Collector";
-import { MepUSDCollector } from "./collectors/MepUSDCollector";
-import { OfficialUSDCollector } from "./collectors/OfficialUSDCollector";
-import { PriceCollectorResult } from "./collectors/PriceCollectorResult";
-import { USD_BLUE, USD_CCL, USD_MEP, USD_OFFICIAL } from "./constants";
+import {BlueUSDCollector} from "./collectors/BlueUSDCollector";
+import {CclUSDCollector} from "./collectors/CclUSDColelctor";
+import {Collector} from "./collectors/Collector";
+import {MepUSDCollector} from "./collectors/MepUSDCollector";
+import {OfficialUSDCollector} from "./collectors/OfficialUSDCollector";
+import {PriceCollectorResult} from "./collectors/PriceCollectorResult";
+import {USD_BLUE, USD_CCL, USD_MEP, USD_OFFICIAL} from "./constants";
 
 export class PricesCollector {
     private collectors: Collector[];
@@ -23,11 +23,10 @@ export class PricesCollector {
         console.log("Price collector running...");
         for (const collector of this.collectors) {
             try {
-                const price = await collector.collect();
-                prices[collector.currencyName()] = price;
+                prices[collector.currencyName()] = await collector.collect();
             } catch(err) {
                 if (err instanceof Error) {
-                    console.log("Failed fetching " + collector.currencyName() + ": " + err.message);
+                    console.log(`Failed fetching ${collector.currencyName()}: ${err.message}`);
                 }
             }
             

@@ -7,7 +7,7 @@ export function insertPricesInDB(prices: PriceCollectorResult) {
     connection.connect((connectionError) => {
         if (connectionError) throw connectionError;
         console.log("Connected to database");
-        const sql = 'INSERT INTO currencyPrices SET ?';
+        const sql = "INSERT INTO currencyPrices SET ?";
         const rowData = {
             usdOfficial: prices.usdOfficial,
             usdBlue: prices.usdBlue,
