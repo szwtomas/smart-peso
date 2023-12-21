@@ -12,8 +12,8 @@ interface PricesRow {
     usdCCL?: number;
 }
 
-function getLastDayWithData(connection: Connection, callback: (date: Date | null) => void) {
-    const sql = "SELECT date FROM currencyPrices ORDER BY date DESC LIMIT 1";
+function getLastDateWithLocalData(connection: Connection, callback: (date: Date | null) => void) {
+    const sql: string = "SELECT date FROM currencyPrices ORDER BY date DESC LIMIT 1";
     connection.query(sql, (error: QueryError | null, results) => {
         if (error || !Array.isArray(results)) {
             console.log(`Error in last day query: ${error?.message}`);
@@ -26,7 +26,7 @@ function getLastDayWithData(connection: Connection, callback: (date: Date | null
 }
 
 function getProdRowsToInsert(connection: Connection, date: Date, callback: (rowsToInsert: PricesRow[]) => void) {
-    const sql = "SELECT * FROM currencyPrices WHERE date >= ?";
+    const sql: string = "SELECT * FROM currencyPrices WHERE date >= ?";
     connection.query(sql, [date], (error, response) => {
         if (error) {
             throw new Error("Error fetching rows to insert: " + error.message);
@@ -46,7 +46,7 @@ function insertRowsInLocalDB(connection: Connection, rowsToInsert: PricesRow[], 
     ]);
 
     const placeholders = rowsToInsert.map(() => '(?, ?, ?, ?, ?)').join(', ');
-    const sql = "INSERT INTO currencyPrices (date, usdOfficial, usdMEP, usdBlue, usdCCL) VALUES " + placeholders;
+    const sql: string = "INSERT INTO currencyPrices (date, usdOfficial, usdMEP, usdBlue, usdCCL) VALUES " + placeholders;
     connection.query(sql, values.flat(), (error: QueryError | null) => {
         if (error) {
             throw new Error(`Error inserting rows in local db: ${error.message}`);
@@ -56,24 +56,42 @@ function insertRowsInLocalDB(connection: Connection, rowsToInsert: PricesRow[], 
     });
 }
 
-function runFill() {
+function getDBConnections(callback: (localConnection: Connection, prodConnection: Connection) => void) {
     const localMySQLConnection: Connection = mysql.createConnection(localConnectionOptions);
     const prodMySQLConnection: Connection = mysql.createConnection(prodConnectionOptions);
     localMySQLConnection.connect((localConnectionError) => {
         prodMySQLConnection.connect((prodConnectionError) => {
             if (localConnectionError || prodConnectionError) {
-                console.log(`Local error: ${localConnectionError?.message}`);
-                console.log(`production error: ${prodConnectionError?.message}`);
-                return;
+                throw new Error(
+                    "Could not connect to db: Local Error: " +
+                    localConnectionError?.message +
+                    ", prod error: " +
+                    prodConnectionError?.message
+                );
             }
 
-            getLastDayWithData(localMySQLConnection, (date: Date | null) => {
-                if (!date) throw new Error("Received no date");
-                getProdRowsToInsert(prodMySQLConnection, date, (rowsToInsert) => {
-                    insertRowsInLocalDB(localMySQLConnection, rowsToInsert, (insertedRows) => {
-                        console.log(`Script finished successfully, inserted ${insertedRows} rows`);
-                        process.exit(0);
-                    });
+            callback(localMySQLConnection, prodMySQLConnection);
+        });
+    });
+}
+
+function runFill() {
+    getDBConnections((localConnection, prodConnection) => {
+        getLastDateWithLocalData(localConnection, (date: Date | null) => {
+            if (date == null) {
+                console.log("No rows to insert, program finished");
+                process.exit(0);
+            }
+
+            getProdRowsToInsert(prodConnection, date, (rowsToInsert) => {
+                if (rowsToInsert.length === 0) {
+                    console.log("No rows to insert, program finished");
+                    process.exit(0);
+                }
+
+                insertRowsInLocalDB(localConnection, rowsToInsert, (insertedRows) => {
+                    console.log(`Script finished successfully, inserted ${insertedRows} rows`);
+                    process.exit(0);
                 });
             });
         });
