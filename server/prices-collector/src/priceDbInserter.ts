@@ -1,6 +1,6 @@
 import mysql, { ResultSetHeader } from "mysql2";
 import { PriceCollectorResult } from "./collectors/PriceCollectorResult";
-import { connectionOptions } from "./mysqlConnectionOptions";
+import { connectionOptions } from "./db/mysqlConnectionOptions";
 
 export function insertPricesInDB(prices: PriceCollectorResult) {
     const connection = mysql.createConnection(connectionOptions);

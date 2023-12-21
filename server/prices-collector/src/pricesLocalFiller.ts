@@ -2,7 +2,7 @@ import mysql, {Connection, QueryError} from "mysql2";
 import {
     connectionOptions as localConnectionOptions,
     prodConnectionOptions
-} from "./mysqlConnectionOptions";
+} from "./db/mysqlConnectionOptions";
 
 interface PricesRow {
     date: Date;
@@ -68,13 +68,11 @@ function runFill() {
             }
 
             getLastDayWithData(localMySQLConnection, (date: Date | null) => {
-                if (!date) {
-                    throw new Error("Received no date");
-                }
-
+                if (!date) throw new Error("Received no date");
                 getProdRowsToInsert(prodMySQLConnection, date, (rowsToInsert) => {
                     insertRowsInLocalDB(localMySQLConnection, rowsToInsert, (insertedRows) => {
-                        console.log(`Script finished successfully, inserted ${insertedRows} rows`)
+                        console.log(`Script finished successfully, inserted ${insertedRows} rows`);
+                        process.exit(0);
                     });
                 });
             });

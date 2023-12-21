@@ -7,7 +7,7 @@ import {PriceCollectorResult} from "./collectors/PriceCollectorResult";
 import {USD_BLUE, USD_CCL, USD_MEP, USD_OFFICIAL} from "./constants";
 
 export class PricesCollector {
-    private collectors: Collector[];
+    private readonly collectors: Collector[];
 
     constructor() {
         this.collectors = [
