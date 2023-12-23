@@ -8,26 +8,37 @@ export function PricesCards() {
           title="Dólar Oficial"
           date="23/12/2023"
           price={824}
-          diff={1.0}
+          dailyDiff={1.0}
+          weeklyDiff={-1.2}
+          monthlyDiff={4.3}
+          yearlyDiff={122}
         />
-        <CardPrice title="Dólar MEP" date="23/12/2023" price={947} diff={2.3} />
+        <CardPrice
+          title="Dólar MEP"
+          date="23/12/2023"
+          price={947}
+          dailyDiff={2.3}
+          weeklyDiff={-0.2}
+          monthlyDiff={-4.3}
+          yearlyDiff={122}
+        />
         <CardPrice
           title="Dólar CCL"
           date="23/12/2023"
           price={956}
-          diff={-1.4}
+          dailyDiff={-1.4}
+          weeklyDiff={-0.2}
+          monthlyDiff={-4.3}
+          yearlyDiff={122}
         />
         <CardPrice
           title="Dólar Blue"
           date="23/12/2023"
           price={995}
-          diff={4.3}
-        />
-        <CardPrice
-          title="Dólar Tarjeta"
-          date="23/12/2023"
-          price={1310}
-          diff={2.1}
+          dailyDiff={4.3}
+          weeklyDiff={1.2}
+          monthlyDiff={4.3}
+          yearlyDiff={122}
         />
       </div>
     </>
