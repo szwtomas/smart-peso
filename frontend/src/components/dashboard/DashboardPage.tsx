@@ -1,7 +1,7 @@
-import { PricesCards } from "./PricesCards";
+import { UsdPricesPlot } from "./plot/UsdPricesPlot";
+import { PricesCards } from "./pricesCards/PricesCards";
 
 export function DashboardPage() {
-  const date = "23/12/2023";
   return (
     <>
       <h1 className="text-3xl text-primary font-black mb-5 text-center">
@@ -9,6 +9,7 @@ export function DashboardPage() {
       </h1>
       <div>
         <PricesCards />
+        <UsdPricesPlot />
       </div>
     </>
   );
