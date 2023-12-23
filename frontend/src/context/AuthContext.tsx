@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 
   const logIn = async (email: string, password: string) => {
     const authResponse = await authService.logIn(email, password);
+    console.log(authResponse.accessToken);
     setUser({
       email: authResponse.email,
       firstName: authResponse.firstName,

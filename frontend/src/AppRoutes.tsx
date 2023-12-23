@@ -6,6 +6,7 @@ import { SignUp } from "./components/auth/SignUp";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { TransactionPage } from "./components/transactions/TransactionsPage";
 import { Layout } from "./components/Layout";
+import { DashboardPage } from "./components/dashboard/DashboardPage";
 
 export function AppRoutes() {
   const { user } = useContext(AuthContext);
@@ -28,7 +29,7 @@ export function AppRoutes() {
         element={
           isAuthenticated ? (
             <Layout>
-              <div>Dashboard page</div>
+              <DashboardPage />
             </Layout>
           ) : (
             <Navigate to="/login" />
