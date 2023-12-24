@@ -1,7 +1,7 @@
 package com.smartpeso.controllers;
 
-import com.smartpeso.model.UsdPrices;
-import com.smartpeso.services.PricesService;
+import com.smartpeso.model.UsdPricesSummary;
+import com.smartpeso.services.prices.PricesService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ public class PricesController {
         this.pricesService = pricesService;
     }
 
-    @GetMapping("/usd")
-    public ResponseEntity<?> getUsdPrices() {
+    @GetMapping("/usd/summary")
+    public ResponseEntity<?> getPricesSummary() {
         try {
-            UsdPrices usdPrices = pricesService.getUsdPrices();
-            return new ResponseEntity<>(usdPrices, HttpStatus.OK);
+            UsdPricesSummary summary = pricesService.getUSDPricesSummary();
+            return new ResponseEntity<>(summary, HttpStatus.OK);
         } catch(Exception e) {
-            log.error("Error getting usd prices: " + e.getMessage());
-            return new ResponseEntity<>("Failed getting usd prices", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Error getting usd summary: " + e.getMessage());
+            return new ResponseEntity<>("Failed getting usd prices summary", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

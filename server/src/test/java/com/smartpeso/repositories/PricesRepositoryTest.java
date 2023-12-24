@@ -29,7 +29,7 @@ public class PricesRepositoryTest {
         when(jdbcTemplateMock.queryForObject(anyString(), any(UsdPricesRowMapper.class))).thenReturn(prices);
 
         PricesRepository unit = new PricesRepository(jdbcTemplateMock);
-        UsdPrices actual = unit.getLastPrices();
+        UsdPrices actual = unit.getCurrentUsdPrices();
 
         assertEquals(800, actual.official());
         assertEquals(900, actual.mep());

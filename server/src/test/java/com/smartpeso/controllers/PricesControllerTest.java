@@ -1,13 +1,17 @@
 package com.smartpeso.controllers;
 
 import com.smartpeso.model.UsdPrices;
-import com.smartpeso.services.PricesService;
+import com.smartpeso.model.UsdPricesSummary;
+import com.smartpeso.services.prices.PricesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +20,17 @@ import static org.mockito.Mockito.when;
 
 public class PricesControllerTest {
     @Mock
-    private PricesService pricesService;
+    private PricesService pricesServiceMock;
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    final private Date today = formatter.parse("2023-12-22");
+    final private Date yesterday = formatter.parse("2023-12-21");
+    final private Date lastWeek = formatter.parse("2023-12-15");
+    final private Date lastMonth = formatter.parse("2023-11-22");
+    final private Date lastYear = formatter.parse("2022-12-22");
+
+    public PricesControllerTest() throws ParseException {
+    }
 
     @BeforeEach
     public void setUp() {
@@ -24,30 +38,36 @@ public class PricesControllerTest {
     }
 
     @Test
-    public void getUsdPrices_serviceReturnsPrices_shouldReturnPricesAndStatusOK() {
-        UsdPrices prices = new UsdPrices(new Date(), 800, 905, 900, 1000);
-        when(pricesService.getUsdPrices()).thenReturn(prices);
+    public void getUsdSummary_givenServiceReturnsSummary_shouldReturnItAndStatusCodeOk() {
+        UsdPricesSummary summary = new UsdPricesSummary(
+                new UsdPrices(today, 800, 850, 900, 950),
+                new UsdPrices(yesterday, 790, 860, 890, 930),
+                new UsdPrices(lastWeek, 700, 800, 800, 805),
+                new UsdPrices(lastMonth, 350, 900, 930, 1010),
+                new UsdPrices(lastYear, 120, 350, 360, 400)
+        );
 
-        PricesController unit = new PricesController(pricesService);
+        when(pricesServiceMock.getUSDPricesSummary()).thenReturn(summary);
 
-        ResponseEntity<?> actualResponse = unit.getUsdPrices();
-        UsdPrices actualPrices = (UsdPrices) actualResponse.getBody();
+        PricesController unit = new PricesController(pricesServiceMock);
+        ResponseEntity<?> actualResponse = unit.getPricesSummary();
+        UsdPricesSummary actualPrices = (UsdPricesSummary) actualResponse.getBody();
 
         assertEquals(200, actualResponse.getStatusCode().value());
         assertNotNull(actualPrices);
-        assertEquals(800, actualPrices.official());
-        assertEquals(900, actualPrices.ccl());
-        assertEquals(905, actualPrices.mep());
-        assertEquals(1000, actualPrices.blue());
+        assertEquals(800, actualPrices.today().official());
+        assertEquals(790, actualPrices.yesterday().official());
+        assertEquals(700, actualPrices.weekAgo().official());
+        assertEquals(350, actualPrices.monthAgo().official());
+        assertEquals(120, actualPrices.yearAgo().official());
     }
 
     @Test
-    public void getUsdPrices_serviceFails_shouldReturnInternalServerErrorStatus() {
-        when(pricesService.getUsdPrices()).thenThrow(new RuntimeException("some error"));
+    public void getUsdSummary_givenServiceFails_itShouldReturnInternalServerError() {
+        when(pricesServiceMock.getUSDPricesSummary()).thenThrow(new RuntimeException("some error"));
 
-        PricesController unit = new PricesController(pricesService);
-
-        ResponseEntity<?> actualResponse = unit.getUsdPrices();
+        PricesController unit = new PricesController(pricesServiceMock);
+        ResponseEntity<?> actualResponse = unit.getPricesSummary();
 
         assertEquals(500, actualResponse.getStatusCode().value());
     }
