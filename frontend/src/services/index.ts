@@ -1,5 +1,6 @@
 import { AuthService } from "./AuthService";
 import { HttpService } from "./HttpService";
+import { PricesService } from "./PricesService";
 import { TransactionService } from "./TransactionService";
 
 function getHost(): string {
@@ -16,3 +17,4 @@ const host = getHost();
 export const httpService = new HttpService(host);
 export const authService = new AuthService(httpService);
 export const transactionService = new TransactionService(httpService);
+export const pricesService = new PricesService(httpService);

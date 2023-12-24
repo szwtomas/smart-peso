@@ -22,9 +22,9 @@ interface AuthContextProps {
 
 const initialAuthContext: AuthContextProps = {
   user: null,
-  logIn: async () => console.log("Login"),
-  logout: async () => console.log("Logout"),
-  signUp: async () => console.log("Signup"),
+  logIn: async () => {},
+  logout: async () => {},
+  signUp: async () => {},
 };
 
 export const AuthContext = createContext<AuthContextProps>(initialAuthContext);
@@ -49,7 +49,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 
   const logIn = async (email: string, password: string) => {
     const authResponse = await authService.logIn(email, password);
-    console.log(authResponse.accessToken);
     setUser({
       email: authResponse.email,
       firstName: authResponse.firstName,

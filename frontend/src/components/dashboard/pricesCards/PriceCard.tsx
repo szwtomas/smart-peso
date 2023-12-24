@@ -12,13 +12,15 @@ export interface CardPriceProps {
 }
 
 export function CardPrice(props: CardPriceProps) {
-  const isUp = props.dailyDiff > 0;
+  const isUp = props.dailyDiff >= 0;
   return (
     <>
       <Card className="rounded-xl min-w-[200px] md:min-w-[340px]">
         <CardBody className="pt-6">
           <div className="px-6 flex flex-row justify-left gap-3">
-            {isUp ? (
+            {props.dailyDiff === 0 ? (
+              <span className="text-2xl text-gray-600">-</span>
+            ) : isUp ? (
               <span className="text-2xl text-green-600">↑</span>
             ) : (
               <span className="text-2xl text-red-600">↓</span>
@@ -32,9 +34,17 @@ export function CardPrice(props: CardPriceProps) {
           </div>
           <div className="px-6 flex flex-row gap-6 py-4 align-center justify-center">
             <span className="text-3xl font-black">${props.price}</span>
-            <span className={`text-${isUp ? "green" : "red"}-600 text-lg pt-1`}>
-              {isUp ? "+" : "-"}{" "}
-              {isUp ? `${props.dailyDiff}` : `${props.dailyDiff * -1}`}%
+            <span
+              className={`text-${
+                props.dailyDiff === 0 ? "gray" : isUp ? "green" : "red"
+              }-600 text-lg mt-2`}
+            >
+              {props.dailyDiff === 0 ? "" : isUp ? "+" : "-"}
+              {props.dailyDiff === 0
+                ? "0%"
+                : isUp
+                ? `${props.dailyDiff}%`
+                : `${props.dailyDiff * -1}%`}
             </span>
           </div>
           <hr />
