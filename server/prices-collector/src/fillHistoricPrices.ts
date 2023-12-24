@@ -5,13 +5,16 @@ import { connectionOptions } from "./db/mysqlConnectionOptions";
 const HISTORICAL_PRICES_CSV_PATH: string = "./data/prices.csv";
 
 function formatDateToMySQLFormat(date: string): string {
-    return date.split('/').reverse().join('-');
+    return date
+        .split("/")
+        .reverse()
+        .join("-");
 }
 
 function getRowsFromRawCSVContent(csvContent: string): string[] {
     return csvContent
         .trim()
-        .split('\n')
+        .split("\n")
         .slice(1);
 }
 
