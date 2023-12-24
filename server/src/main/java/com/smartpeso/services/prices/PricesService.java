@@ -19,10 +19,14 @@ public class PricesService {
     public UsdPricesSummary getUSDPricesSummary() {
         UsdPrices todayPrices = pricesRepository.getCurrentUsdPrices();
         int daysSinceLastBusinessDay = getDaysSinceLastBusinessDay();
+        int daysInWeek = 7;
+        int daysInMonth = 30;
+        int daysInYear = 365;
+
         UsdPrices yesterdayPrices = pricesRepository.getPricesFromDaysAgo(daysSinceLastBusinessDay);
-        UsdPrices lastWeekPrices = pricesRepository.getPricesFromDaysAgo(7);
-        UsdPrices lastMonthPrices = pricesRepository.getPricesFromDaysAgo(30);
-        UsdPrices lastYearPrices = pricesRepository.getPricesFromDaysAgo(365);
+        UsdPrices lastWeekPrices = pricesRepository.getPricesFromDaysAgo(daysInWeek);
+        UsdPrices lastMonthPrices = pricesRepository.getPricesFromDaysAgo(daysInMonth);
+        UsdPrices lastYearPrices = pricesRepository.getPricesFromDaysAgo(daysInYear);
         return new UsdPricesSummary(todayPrices, yesterdayPrices, lastWeekPrices, lastMonthPrices, lastYearPrices);
     }
 
