@@ -2,18 +2,33 @@ import * as fs from "fs";
 import mysql, {Connection} from "mysql2";
 import { connectionOptions } from "./db/mysqlConnectionOptions";
 
-function fillHistoricPrices(connection: Connection) {
+const HISTORICAL_PRICES_CSV_PATH: string = "./data/prices.csv";
 
-    const csvPath = "./data/prices.csv";
-    const csvData = fs.readFileSync(csvPath, "utf-8");
-    const rows = csvData.trim().split('\n').slice(1);
+function formatDateToMySQLFormat(date: string): string {
+    return date.split('/').reverse().join('-');
+}
+
+function getRowsFromRawCSVContent(csvContent: string): string[] {
+    return csvContent
+        .trim()
+        .split('\n')
+        .slice(1);
+}
+
+function fillHistoricPrices(connection: Connection) {
+    const csvContent = fs.readFileSync(HISTORICAL_PRICES_CSV_PATH, "utf-8");
+    const rows = getRowsFromRawCSVContent(csvContent);
     for (const row of rows) {
         const [date, official, mep, ccl, blue] = row.split(',');
-
-        // Format date from dd/mm/yyyy to yyyy-mm-dd for MySQL
-        const formattedDate = date.split('/').reverse().join('-');
-        const sql = "INSERT INTO currencyPrices (date, usdOfficial, usdMEP, usdCCL, usdBlue) VALUES (?, ?, ?, ?, ?)";
-        const params = [formattedDate, parseFloat(official), parseFloat(mep), parseFloat(ccl), parseFloat(blue)];
+        const formattedDate = formatDateToMySQLFormat(date);
+        const sql: string = "INSERT INTO currencyPrices (date, usdOfficial, usdMEP, usdCCL, usdBlue) VALUES (?, ?, ?, ?, ?)";
+        const params = [
+            formattedDate,
+            parseFloat(official),
+            parseFloat(mep),
+            parseFloat(ccl),
+            parseFloat(blue)
+        ];
         connection.query(sql, params, (error, result) => {
             if (error) {
                 console.log("Failed inserting row");
@@ -34,6 +49,7 @@ function main() {
        }
 
        fillHistoricPrices(connection);
+       process.exit(0);
     });
 }
 
