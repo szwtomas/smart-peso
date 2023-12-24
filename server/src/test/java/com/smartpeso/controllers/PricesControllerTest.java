@@ -1,8 +1,9 @@
 package com.smartpeso.controllers;
 
-import com.smartpeso.model.UsdPrices;
-import com.smartpeso.model.UsdPricesSummary;
-import com.smartpeso.services.prices.PricesService;
+import com.smartpeso.prices.model.UsdPrices;
+import com.smartpeso.prices.model.UsdPricesSummary;
+import com.smartpeso.prices.PricesController;
+import com.smartpeso.prices.PricesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

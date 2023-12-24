@@ -1,8 +1,9 @@
 package com.smartpeso.config;
 
-import com.smartpeso.model.User;
-import com.smartpeso.repositories.UserRepository;
-import com.smartpeso.services.auth.JwtService;
+import com.smartpeso.auth.model.User;
+import com.smartpeso.auth.dal.UserRepository;
+import com.smartpeso.auth.service.JwtService;
+import com.smartpeso.config.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

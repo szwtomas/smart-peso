@@ -1,7 +1,8 @@
 package com.smartpeso.config;
 
-import com.smartpeso.repositories.UserRepository;
-import com.smartpeso.services.auth.JwtService;
+import com.smartpeso.auth.filter.JwtAuthenticationFilter;
+import com.smartpeso.auth.dal.UserRepository;
+import com.smartpeso.auth.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

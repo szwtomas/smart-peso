@@ -1,6 +1,7 @@
 package com.smartpeso.controllers;
 
-import com.smartpeso.services.healthCheck.HealthCheckService;
+import com.smartpeso.healthCheck.HealthCheckController;
+import com.smartpeso.healthCheck.HealthCheckService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
