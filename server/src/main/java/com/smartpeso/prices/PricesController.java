@@ -1,5 +1,6 @@
 package com.smartpeso.prices;
 
+import com.smartpeso.prices.model.MonthlyUSDPrices;
 import com.smartpeso.prices.model.UsdPricesSummary;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,17 @@ public class PricesController {
         try {
             UsdPricesSummary summary = pricesService.getUSDPricesSummary();
             return new ResponseEntity<>(summary, HttpStatus.OK);
+        } catch(Exception e) {
+            log.error("Error getting usd summary: " + e.getMessage());
+            return new ResponseEntity<>("Failed getting usd prices summary", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/usd/monthly")
+    public ResponseEntity<?> getMonthlyUSDPrices() {
+        try {
+            MonthlyUSDPrices monthlyPrices = pricesService.getMonthlyUSDPrices();
+            return new ResponseEntity<>(monthlyPrices, HttpStatus.OK);
         } catch(Exception e) {
             log.error("Error getting usd summary: " + e.getMessage());
             return new ResponseEntity<>("Failed getting usd prices summary", HttpStatus.INTERNAL_SERVER_ERROR);

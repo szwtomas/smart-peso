@@ -1,12 +1,15 @@
 package com.smartpeso.prices;
 
 import com.smartpeso.prices.dal.PricesRepository;
+import com.smartpeso.prices.model.MonthlyPriceEntry;
+import com.smartpeso.prices.model.MonthlyUSDPrices;
 import com.smartpeso.prices.model.UsdPrices;
 import com.smartpeso.prices.model.UsdPricesSummary;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 @Service
 public class PricesService {
@@ -28,6 +31,33 @@ public class PricesService {
         UsdPrices lastMonthPrices = pricesRepository.getPricesFromDaysAgo(daysInMonth);
         UsdPrices lastYearPrices = pricesRepository.getPricesFromDaysAgo(daysInYear);
         return new UsdPricesSummary(todayPrices, yesterdayPrices, lastWeekPrices, lastMonthPrices, lastYearPrices);
+    }
+
+    public MonthlyUSDPrices getMonthlyUSDPrices() {
+        MonthlyUSDPrices monthlyUSDPrices = new MonthlyUSDPrices();
+        addEntriesToMonthlyPrices(monthlyUSDPrices);
+        addTodayPricesToMonthlyPrices(monthlyUSDPrices);
+        return monthlyUSDPrices;
+    }
+
+    private void addEntriesToMonthlyPrices(MonthlyUSDPrices prices) {
+        List<MonthlyPriceEntry> pricesByMonth = pricesRepository.getMonthlyUSDPrices();
+
+        for (MonthlyPriceEntry entry : pricesByMonth) {
+            prices.addOfficial(entry.official());
+            prices.addMEP(entry.mep());
+            prices.addCCL(entry.ccl());
+            prices.addBlue(entry.blue());
+        }
+    }
+
+    private void addTodayPricesToMonthlyPrices(MonthlyUSDPrices prices) {
+        UsdPrices todayPrices = pricesRepository.getCurrentUsdPrices();
+
+        prices.addOfficial(todayPrices.official());
+        prices.addMEP(todayPrices.mep());
+        prices.addCCL(todayPrices.ccl());
+        prices.addBlue(todayPrices.blue());
     }
 
     private int getDaysSinceLastBusinessDay() {

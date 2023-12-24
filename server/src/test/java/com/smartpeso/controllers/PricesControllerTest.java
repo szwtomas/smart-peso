@@ -1,5 +1,6 @@
 package com.smartpeso.controllers;
 
+import com.smartpeso.prices.model.MonthlyUSDPrices;
 import com.smartpeso.prices.model.UsdPrices;
 import com.smartpeso.prices.model.UsdPricesSummary;
 import com.smartpeso.prices.PricesController;
@@ -13,9 +14,11 @@ import org.springframework.http.ResponseEntity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PricesControllerTest {
@@ -68,6 +71,33 @@ public class PricesControllerTest {
 
         PricesController unit = new PricesController(pricesServiceMock);
         ResponseEntity<?> actualResponse = unit.getPricesSummary();
+
+        assertEquals(500, actualResponse.getStatusCode().value());
+    }
+
+    @Test
+    public void getUsdMonthlyAveragePrices_givenPricesCalculated_itShouldReturnPricesWithStatusOK() {
+        MonthlyUSDPrices monthlyPrices = mock(MonthlyUSDPrices.class);
+        when(monthlyPrices.getOfficialPrices()).thenReturn(List.of(100.0, 120.0, 130.0, 140.0));
+        when(pricesServiceMock.getMonthlyUSDPrices()).thenReturn(monthlyPrices);
+
+        PricesController unit = new PricesController(pricesServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.getMonthlyUSDPrices();
+
+        MonthlyUSDPrices actualPrices = (MonthlyUSDPrices) actualResponse.getBody();
+        assertEquals(200, actualResponse.getStatusCode().value());
+        assertNotNull(actualPrices);
+        assertEquals(4, actualPrices.getOfficialPrices().size());
+    }
+
+    @Test
+    public void getUsdMonthlyAveragePrices_givenPricesCalculatioFails_itShouldReturnInternalServerError() {
+        when(pricesServiceMock.getMonthlyUSDPrices()).thenThrow(new RuntimeException("Some error"));
+
+        PricesController unit = new PricesController(pricesServiceMock);
+
+        ResponseEntity<?> actualResponse = unit.getMonthlyUSDPrices();
 
         assertEquals(500, actualResponse.getStatusCode().value());
     }
