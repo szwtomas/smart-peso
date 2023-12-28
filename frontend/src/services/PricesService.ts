@@ -39,4 +39,16 @@ export class PricesService {
         responseJson.yearAgo.date = new Date(responseJson.yearAgo.date);
         return responseJson as UsdPricesSummary;
     }
+
+    public async getMonthlyPrices() {
+        const response = await this.httpService.get("/api/prices/usd/monthly");
+        if (response.status !== HTTP_STATUS_OK) {
+            console.error(await response.text());
+            throw new Error("Error inesperado al obtener los precios");
+        }
+
+        const responseJson = await response.json();
+
+        return responseJson;
+    }
 }

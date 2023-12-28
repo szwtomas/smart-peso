@@ -1,25 +1,26 @@
-import Chart, { Props } from "react-apexcharts";
+import { useEffect, useState } from "react";
+import { monthNumberToString } from "../../../utils/utils";
+import { CurrencyPlotData, PricesPlot } from "./PricesPlot";
+import { pricesService } from "../../../services";
 
-const state: Props["series"] = [
-  {
-    name: "Oficial",
-    data: [185, 194, 204, 216, 233, 253, 272, 290, 366, 367, 367, 368, 700],
-  },
-  {
-    name: "MEP",
-    data: [329, 357, 362, 402, 428, 469, 484, 509, 670, 709, 898, 930, 933],
-  },
-  {
-    name: "CCL",
-    data: [342, 362, 368, 406, 433, 479, 495, 560, 800, 829, 883, 991, 944],
-  },
-  {
-    name: "Blue",
-    data: [348, 376, 377, 392, 469, 490, 493, 570, 735, 800, 915, 955, 990],
-  },
-];
+function getMonthCategories() {
+  const now = new Date();
+  const currentMonthIndex = now.getMonth();
+  const categories: string[] = [];
+  console.log("Starting");
+  for (let i = 0; i <= 12; i++) {
+    const monthIndex = (currentMonthIndex + i) % 12;
+    const year = monthIndex < i ? now.getFullYear() : now.getFullYear() - 1;
+    const monthName = monthNumberToString(monthIndex);
+    categories.push(`${monthName} ${year}`);
+  }
 
-const options: Props["options"] = {
+  categories.push(`Hoy`);
+
+  return categories;
+}
+
+const options: ApexCharts.ApexOptions = {
   chart: {
     type: "area",
     animations: {
@@ -42,21 +43,7 @@ const options: Props["options"] = {
   },
 
   xaxis: {
-    categories: [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-      "Enero 2024",
-    ],
+    categories: getMonthCategories(),
     labels: {
       show: true,
       style: {
@@ -94,9 +81,55 @@ const options: Props["options"] = {
 };
 
 export function UsdPricesPlot() {
+  const [mep, setMep] = useState<CurrencyPlotData>({} as CurrencyPlotData);
+  const [ccl, setCcl] = useState<CurrencyPlotData>({} as CurrencyPlotData);
+  const [blue, setBlue] = useState<CurrencyPlotData>({} as CurrencyPlotData);
+  const [official, setOfficial] = useState<CurrencyPlotData>(
+    {} as CurrencyPlotData
+  );
+
+  useEffect(() => {
+    const fetchPlotData = async () => {
+      const prices = await pricesService.getMonthlyPrices();
+
+      const officialResponse: CurrencyPlotData = {
+        name: "Oficial",
+        data: prices.official.map((price: number) => Math.round(price)),
+      };
+
+      const mepResponse: CurrencyPlotData = {
+        name: "MEP",
+        data: prices.mep.map((price: number) => Math.round(price)),
+      };
+
+      const cclResponse: CurrencyPlotData = {
+        name: "CCL",
+        data: prices.ccl.map((price: number) => Math.round(price)),
+      };
+
+      const blueResponse: CurrencyPlotData = {
+        name: "Blue",
+        data: prices.blue.map((price: number) => Math.round(price)),
+      };
+
+      setOfficial(officialResponse);
+      setMep(mepResponse);
+      setCcl(cclResponse);
+      setBlue(blueResponse);
+    };
+
+    fetchPlotData();
+  });
+
   return (
-    <div className="w-[100%] z- mt-5">
-      <Chart options={options} series={state} type="area" height={"460"} />
+    <div className="ml-10 w-[90%] z-5 mt-5">
+      <PricesPlot
+        options={options}
+        official={official}
+        mep={mep}
+        ccl={ccl}
+        blue={blue}
+      />
     </div>
   );
 }
