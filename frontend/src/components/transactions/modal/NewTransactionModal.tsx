@@ -33,12 +33,23 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
   const [transactionValue, setTransactionValue] = useState<number>(0);
   const [date, setDate] = useState<string>(dateToString(new Date()));
 
+  function resetFields() {
+    setTransactionName("");
+    setTransactionType("income");
+    setCategory("");
+    setCurrency("ARS");
+    setDescription("");
+    setTransactionValue(0);
+    setDate(dateToString(new Date()));
+  }
+
   return (
     <Modal
       closeButton
       isOpen={props.isOpen}
       onOpenChange={props.onOpenChange}
       className="p-4"
+      size="4xl"
     >
       <ModalContent>
         {(onClose) => (
@@ -249,6 +260,7 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
                     date,
                   });
                   onClose();
+                  resetFields();
                 }}
                 radius="sm"
               >
