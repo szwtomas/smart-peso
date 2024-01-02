@@ -83,10 +83,10 @@ public class PricesServiceTest {
         when(pricesRepositoryMock.getPricesFromDaysAgo(eq(365))).thenReturn(lastYearPrices);
 
         PricesService unit = new PricesService(pricesRepositoryMock);
-        mockedStatic.close();
-
         UsdPricesSummary actual = unit.getUSDPricesSummary();
 
+        mockedStatic.close();
+        
         assertEquals(800, actual.today().official());
         assertEquals(790, actual.yesterday().official());
         assertEquals(700, actual.weekAgo().official());
