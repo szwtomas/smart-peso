@@ -6,6 +6,7 @@ import { SignUp } from "./components/auth/SignUp";
 import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { TransactionPage } from "./components/transactions/TransactionsPage";
 import { Layout } from "./components/Layout";
+import { PricesPage } from "./components/prices/PricesPage";
 import { DashboardPage } from "./components/dashboard/DashboardPage";
 
 export function AppRoutes() {
@@ -30,6 +31,18 @@ export function AppRoutes() {
           isAuthenticated ? (
             <Layout>
               <DashboardPage />
+            </Layout>
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/prices"
+        element={
+          isAuthenticated ? (
+            <Layout>
+              <PricesPage />
             </Layout>
           ) : (
             <Navigate to="/login" />

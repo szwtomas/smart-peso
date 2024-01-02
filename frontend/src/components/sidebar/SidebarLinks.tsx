@@ -3,6 +3,7 @@ import {
   HomeIcon,
   BanknotesIcon,
   ArrowLeftOnRectangleIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 import { clsx } from "clsx";
@@ -13,7 +14,8 @@ export interface SidebarLinksProps {
 }
 
 const links = [
-  { name: "Panel Principal", href: "/dashboard", icon: HomeIcon },
+  { name: "Mis Finanzas", href: "/dashboard", icon: HomeIcon },
+  { name: "Cotizaciones Dólar", href: "/prices", icon: CurrencyDollarIcon },
   {
     name: "Transacciones",
     href: "/transactions",
