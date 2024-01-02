@@ -1,4 +1,4 @@
-FROM gradle:8.5.0-jdk21 AS build
+FROM gradle:8.5.0-jdk17 AS build
 
 WORKDIR /home/app
 
@@ -7,7 +7,7 @@ COPY src ./src
 
 RUN gradle build
 
-FROM amazoncorretto:21
+FROM amazoncorretto:17
 
 WORKDIR /usr/local/lib
 
