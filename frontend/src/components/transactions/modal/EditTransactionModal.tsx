@@ -114,7 +114,7 @@ export function EditTransactionModal(props: EditTransactionModalProps) {
                     radius="sm"
                     className="my-1"
                     label="Moneda"
-                    defaultSelectedKeys={["ARS"]}
+                    defaultSelectedKeys={[currency]}
                     onChange={(e) => {
                       setCurrency(e.target.value);
                     }}
