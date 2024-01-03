@@ -1,4 +1,4 @@
-package com.smartpeso.controllers;
+package com.smartpeso.prices;
 
 import com.smartpeso.prices.model.MonthlyUSDPrices;
 import com.smartpeso.prices.model.UsdPrices;

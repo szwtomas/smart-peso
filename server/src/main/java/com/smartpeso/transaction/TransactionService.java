@@ -7,6 +7,7 @@ import com.smartpeso.transaction.model.dto.TransactionDTO;
 import com.smartpeso.transaction.model.dto.TransactionData;
 import com.smartpeso.transaction.exception.TransactionNotFoundException;
 import com.smartpeso.transaction.model.Transaction;
+import com.smartpeso.transaction.model.TransactionWithPrices;
 import com.smartpeso.transaction.validator.TransactionValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,10 @@ public class TransactionService {
 
     public List<Transaction> getTransactions(User user) {
         return transactionRepository.getUserTransactions(user.getUserId());
+    }
+
+    public List<TransactionWithPrices> getTransactionsWithPrices(User user) {
+        return transactionRepository.getUserTransactionWithPrices(user.getUserId());
     }
 
     public void editTransaction(EditTransactionRequest editTransactionRequest, User user) {

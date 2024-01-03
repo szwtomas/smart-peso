@@ -1,6 +1,9 @@
 package com.smartpeso.transaction;
 
+import com.smartpeso.prices.model.UsdPrices;
+import com.smartpeso.transaction.dal.TransactionWithPricesRowMapper;
 import com.smartpeso.transaction.model.Transaction;
+import com.smartpeso.transaction.model.TransactionWithPrices;
 import com.smartpeso.transaction.model.dto.TransactionDTO;
 import com.smartpeso.transaction.dal.TransactionRowMapper;
 import com.smartpeso.transaction.exception.DeleteTransactionException;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -155,8 +159,32 @@ public class TransactionRepositoryTest {
         assertThrows(DeleteTransactionException.class, () -> unit.deleteTransaction(transactionId));
     }
 
+    @Test
+    public void getTransactionsWithPrices_givenQueryIsSuccessful_shouldReturnTransactionWithPricesList() {
+        int userId = 123;
 
+        Transaction firstTransaction = createTransaction(444);
+        UsdPrices firstPrices = new UsdPrices(new Date(), 1000, 2000, 3000, 4000);
+        Transaction secondTransaction = createTransaction(555);
+        UsdPrices secondPrices = new UsdPrices(new Date(), 2000, 2000, 3000, 4000);
 
+        TransactionWithPrices firstTransactionWithPrices = new TransactionWithPrices(firstTransaction, firstPrices);
+        TransactionWithPrices secondTransactionWithPrices = new TransactionWithPrices(secondTransaction, secondPrices);
+
+        when(jdbcTemplateMock.query(anyString(), any(TransactionWithPricesRowMapper.class), eq(userId)))
+                .thenReturn(List.of(firstTransactionWithPrices, secondTransactionWithPrices));
+
+        TransactionRepository unit = new TransactionRepository(jdbcTemplateMock);
+        List<TransactionWithPrices> actual = unit.getUserTransactionWithPrices(userId);
+
+        assertEquals(2, actual.size());
+
+        assertEquals(444, actual.get(0).transaction().getTransactionId());
+        assertEquals(1000, actual.get(0).prices().official());
+
+        assertEquals(555, actual.get(1).transaction().getTransactionId());
+        assertEquals(2000, actual.get(1).prices().official());
+    }
 
     private Transaction createTransaction() {
         return new Transaction(

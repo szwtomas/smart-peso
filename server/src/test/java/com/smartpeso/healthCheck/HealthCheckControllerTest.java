@@ -1,4 +1,4 @@
-package com.smartpeso.controllers;
+package com.smartpeso.healthCheck;
 
 import com.smartpeso.healthCheck.HealthCheckController;
 import com.smartpeso.healthCheck.HealthCheckService;

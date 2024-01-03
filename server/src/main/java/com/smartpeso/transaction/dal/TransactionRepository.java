@@ -4,6 +4,7 @@ import com.smartpeso.transaction.model.dto.TransactionDTO;
 import com.smartpeso.transaction.exception.DeleteTransactionException;
 import com.smartpeso.transaction.exception.TransactionCreationException;
 import com.smartpeso.transaction.model.Transaction;
+import com.smartpeso.transaction.model.TransactionWithPrices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -40,6 +41,11 @@ public class TransactionRepository {
     public List<Transaction> getUserTransactions(int userId) {
         String sql = "SELECT * FROM transaction WHERE userId = ?";
         return jdbcTemplate.query(sql, new TransactionRowMapper(), userId);
+    }
+
+    public List<TransactionWithPrices> getUserTransactionWithPrices(int userId) {
+        String sql = getUserTransactionsWithPricesSQL(userId);
+        return jdbcTemplate.query(sql, new TransactionWithPricesRowMapper(), userId);
     }
 
     public void updateTransaction(Transaction transaction) {
@@ -79,8 +85,43 @@ public class TransactionRepository {
                     transaction.paymentMethod().orElse(null)
             );
         } catch(Exception e) {
-            log.error("Failed crating trasaction: " + e.getMessage());
+            log.error("Failed crating transaction: " + e.getMessage());
             throw new TransactionCreationException("Failed creating transaction");
         }
+    }
+
+    private String getUserTransactionsWithPricesSQL(int userId) {
+        return """
+            SELECT
+                t.transactionId as transactionId,
+                t.userId as userId,
+                t.name as name,
+                t.date AS date,
+                t.type as type,
+                t.currency as currency,
+                t.value as value,
+                t.category as category,
+                t.description as description,
+                t.paymentMethod as paymentMethod,
+                grouped_cp.official as usdOfficial,
+                grouped_cp.mep as usdMEP,
+                grouped_cp.ccl as usdCCL,
+                grouped_cp.blue as usdBlue
+            FROM transaction t
+            INNER JOIN (
+                SELECT
+                    DATE(cp.date) as date,
+                    ROUND(AVG(cp.usdOfficial), 2) as official,
+                    ROUND(AVG(cp.usdMEP), 2) as mep,
+                    ROUND(AVG(cp.usdCCL), 2) as ccl,
+                    ROUND(AVG(cp.usdBlue), 2) as blue
+                FROM currencyPrices cp
+                GROUP BY DATE(cp.date)
+            ) AS grouped_cp ON (
+                YEAR(t.date) = YEAR(grouped_cp.date)
+                AND MONTH(t.date) = MONTH(grouped_cp.date)
+                AND DAY(t.date) = DAY(grouped_cp.date)
+            ) WHERE t.userId = ?
+        """;
     }
 }

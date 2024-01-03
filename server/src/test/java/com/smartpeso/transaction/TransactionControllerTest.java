@@ -1,7 +1,9 @@
 package com.smartpeso.transaction;
 
+import com.smartpeso.prices.model.UsdPrices;
 import com.smartpeso.transaction.model.Transaction;
 import com.smartpeso.auth.model.User;
+import com.smartpeso.transaction.model.TransactionWithPrices;
 import com.smartpeso.transaction.model.dto.DeleteTransactionRequest;
 import com.smartpeso.transaction.model.dto.EditTransactionRequest;
 import com.smartpeso.transaction.model.dto.TransactionDTO;
@@ -11,6 +13,7 @@ import com.smartpeso.transaction.TransactionController;
 import com.smartpeso.transaction.exception.TransactionNotFoundException;
 import com.smartpeso.transaction.TransactionService;
 import com.smartpeso.transaction.exception.TransactionValidationException;
+import com.smartpeso.transaction.model.dto.TransactionWithPricesResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -212,6 +216,44 @@ public class TransactionControllerTest {
         assertEquals(500, actualResponse.getStatusCode().value());
     }
 
+    @Test
+    public void getTransactionsWithPrices_givenServiceReturnsResponse_itShouldReturnOkStatus() {
+        User user = getUser();
+        List<TransactionWithPrices> transactions = List.of(
+                new TransactionWithPrices(getTransaction(1), getUsdPrices(1000)),
+                new TransactionWithPrices(getTransaction(2), getUsdPrices(2000)),
+                new TransactionWithPrices(getTransaction(3), getUsdPrices(3000))
+        );
+
+        when(transactionServiceMock.getTransactionsWithPrices(eq(user))).thenReturn(transactions);
+
+        TransactionController unit = new TransactionController(transactionServiceMock);
+        ResponseEntity<?> actualResponse = unit.getUserTransactionsWithPrices(user);
+
+        TransactionWithPricesResponse actual = (TransactionWithPricesResponse) actualResponse.getBody();
+
+        assertEquals(200, actualResponse.getStatusCode().value());
+        assertNotNull(actual);
+        assertEquals(actual.data().size(), 3);
+        assertEquals(1, actual.data().get(0).transaction().getTransactionId());
+        assertEquals(1000, actual.data().get(0).prices().official());
+        assertEquals(2, actual.data().get(1).transaction().getTransactionId());
+        assertEquals(2000, actual.data().get(1).prices().official());
+        assertEquals(3, actual.data().get(2).transaction().getTransactionId());
+        assertEquals(3000, actual.data().get(2).prices().official());
+    }
+
+    @Test
+    public void getTransactionsWithPrices_givenServiceFails_itShouldReturnInternalServerError() {
+        User user = getUser();
+        when(transactionServiceMock.getTransactionsWithPrices(eq(user))).thenThrow(new RuntimeException("some error"));
+
+        TransactionController unit = new TransactionController(transactionServiceMock);
+        ResponseEntity<?> actualResponse = unit.getUserTransactionsWithPrices(user);
+
+        assertEquals(500, actualResponse.getStatusCode().value());
+    }
+
     private TransactionDTO getTransactionDTO() {
         return new TransactionDTO(
                 "Salary Paycheck",
@@ -256,5 +298,9 @@ public class TransactionControllerTest {
                 "Updated this month paycheck",
                 LocalDateTime.now()
         );
+    }
+
+    private UsdPrices getUsdPrices(int officialValue) {
+        return new UsdPrices(new Date(), officialValue, 2000, 3000, 4000);
     }
 }

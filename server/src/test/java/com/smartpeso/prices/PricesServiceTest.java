@@ -86,7 +86,7 @@ public class PricesServiceTest {
         UsdPricesSummary actual = unit.getUSDPricesSummary();
 
         mockedStatic.close();
-        
+
         assertEquals(800, actual.today().official());
         assertEquals(790, actual.yesterday().official());
         assertEquals(700, actual.weekAgo().official());

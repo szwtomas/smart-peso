@@ -8,6 +8,8 @@ import com.smartpeso.transaction.exception.TransactionCreationException;
 import com.smartpeso.transaction.exception.TransactionNotFoundException;
 import com.smartpeso.transaction.model.Transaction;
 import com.smartpeso.transaction.exception.TransactionValidationException;
+import com.smartpeso.transaction.model.TransactionWithPrices;
+import com.smartpeso.transaction.model.dto.TransactionWithPricesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,6 +86,18 @@ public class TransactionController {
         } catch(Exception e) {
             log.error("Failed deleting transaction: " + e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/prices")
+    public ResponseEntity<?> getUserTransactionsWithPrices(@AuthenticationPrincipal User user) {
+        try {
+            List<TransactionWithPrices> userTransactions = transactionService.getTransactionsWithPrices(user);
+            TransactionWithPricesResponse response = new TransactionWithPricesResponse(userTransactions);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch(Exception e) {
+            log.error("Failed getting transactions with prices for user " + user.getEmail() + ", error: " + e.getMessage());
+            return new ResponseEntity<>("Could not get transaction with prices", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

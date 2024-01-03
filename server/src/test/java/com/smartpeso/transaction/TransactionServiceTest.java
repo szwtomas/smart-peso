@@ -1,7 +1,9 @@
 package com.smartpeso.transaction;
 
+import com.smartpeso.prices.model.UsdPrices;
 import com.smartpeso.transaction.model.Transaction;
 import com.smartpeso.auth.model.User;
+import com.smartpeso.transaction.model.TransactionWithPrices;
 import com.smartpeso.transaction.model.dto.EditTransactionRequest;
 import com.smartpeso.transaction.model.dto.TransactionDTO;
 import com.smartpeso.transaction.model.dto.TransactionData;
@@ -17,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -169,6 +172,35 @@ public class TransactionServiceTest {
         TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
 
         assertThrows(TransactionNotFoundException.class, () -> unit.deleteTransaction(444, user));
+    }
+
+    @Test
+    public void getTransactionsWithPrices_shouldReturnSameResponseAsRepository() {
+        int userId = 123;
+        User user = getUser(userId);
+
+        Transaction firstTransaction = createTransaction(444, 999);
+        UsdPrices firstPrices = new UsdPrices(new Date(), 1000, 2000, 3000, 4000);
+        Transaction secondTransaction = createTransaction(555, 999);
+        UsdPrices secondPrices = new UsdPrices(new Date(), 2000, 2000, 3000, 4000);
+
+        TransactionWithPrices firstTransactionWithPrices = new TransactionWithPrices(firstTransaction, firstPrices);
+        TransactionWithPrices secondTransactionWithPrices = new TransactionWithPrices(secondTransaction, secondPrices);
+
+        when(transactionRepositoryMock.getUserTransactionWithPrices(userId)).thenReturn(List.of(firstTransactionWithPrices, secondTransactionWithPrices));
+
+        TransactionService unit = new TransactionService(transactionRepositoryMock, transactionValidatorMock);
+        List<TransactionWithPrices> actual = unit.getTransactionsWithPrices(user);
+
+        assertEquals(2, actual.size());
+
+        assertEquals(444, actual.get(0).transaction().getTransactionId());
+        assertEquals(999, actual.get(0).transaction().getUserId());
+        assertEquals(1000, actual.get(0).prices().official());
+
+        assertEquals(555, actual.get(1).transaction().getTransactionId());
+        assertEquals(999, actual.get(1).transaction().getUserId());
+        assertEquals(2000, actual.get(1).prices().official());
     }
 
     private TransactionDTO getTransactionDTO() {
