@@ -119,7 +119,7 @@ export function UsdPricesPlot() {
     };
 
     fetchPlotData();
-  });
+  }, []);
 
   return (
     <div className="ml-10 w-[90%] z-5 mt-5">
